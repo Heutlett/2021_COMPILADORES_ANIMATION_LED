@@ -155,7 +155,8 @@ def t_ID(token):
     # Checkea si el tamano de la variable es mayor menor a 10
     if len(token.value) <= 10:
         return token
-    print("No se ha creado el token tipo ID {0} porque tiene un tamano mayor a 10".format(token.value) )
+    print("Token no permitido '{0} en la linea {1}'".format(token.value, token.lineno))
+    token.lexer.skip(1)
 
 
 # Identifica las variables del programa, excluye las palabras reservadas
@@ -167,7 +168,8 @@ def t_RESERVADA(token):
         token.type = palabras_reservadas[token.value]
         # Regresa la variable
         return token    # Crea el token solo si esta dentro de las palabras reservadas
-    print("Token no permitido " + token.value)
+    print("Token no permitido '{0} en la linea {1}'".format(token.value, token.lineno))
+    token.lexer.skip(1)
 
 # Regla de expresión regular para un número (int)
 def t_INT(token):
@@ -183,8 +185,10 @@ def t_INT(token):
 
 # Se define el token "newline" para que el lexer pueda saber actualizar el número de línea que está recorriendo (útil en el futuro para indicar errores)
 def t_newline(token):
+
     r'\n+'
     token.lexer.lineno += token.value.count("\n")
+    print("prueba")
     return token
 
 
@@ -224,7 +228,7 @@ insert
 del
 T
 F
-Blink
+Blink 
 Delay
 PrintLed
 PrintLedX
@@ -244,7 +248,7 @@ x = 5 + 6; , True False type [ ] : .
 len
 Neg "asdadsadsads" 
 °
-
+miLista[2]
 """)
 
 print("\n--------- Resultados del lexer: (Incluye errores que debe dar) ---------")
