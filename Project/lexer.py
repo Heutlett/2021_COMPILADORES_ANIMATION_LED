@@ -60,7 +60,7 @@ tokens = [
 
     # Operadores aritmeticos
 
-    'PLUS',
+    'SUMA',
     'RESTA',
     'DIVISION',
     'MULTIPLICACION',
@@ -100,7 +100,7 @@ t_ignore_COMENTARIO = r'\#\#.*'  # Ignorará los comentarios (empiezan con ##)
 
 # Operadores aritmeticos
 
-t_PLUS = r'\+'
+t_SUMA = r'\+'
 t_RESTA = r'-'
 t_MULTIPLICACION = '\*'
 t_EXPONENTE = r'\*\*'
