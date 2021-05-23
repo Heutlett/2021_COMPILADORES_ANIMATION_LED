@@ -120,7 +120,7 @@ t_MENORIGUAL = r'<='
 
 t_PARENTESISIZQ = r'\('
 t_PARENTESISDER = r'\)'
-t_PUNTO = r'.'
+t_PUNTO = r'\.'
 t_DOSPUNTOS = r':'
 t_PYC = r';'   # Punto y coma
 t_COMA = r','
