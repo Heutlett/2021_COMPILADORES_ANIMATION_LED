@@ -91,11 +91,10 @@ tokens = [
 
      # Booleanos
 
-    'TRUE',
-    'FALSE'] + list(palabras_reservadas.values())
+    'BOOLEAN'] + list(palabras_reservadas.values())
 
 # Expresiones regulares de los tokens
-t_ignore = '  \t\n'  # Esto indica que ignorará tabs, espacios en blanco
+t_ignore = '  \t'  # Esto indica que ignorará tabs, espacios en blanco
 t_ignore_COMENTARIO = r'\#\#.*'  # Ignorará los comentarios (empiezan con ##)
 
 # Operadores aritmeticos
@@ -132,15 +131,13 @@ t_STRING = r'"[a-zA-Z0-9_ ]*"'
 
 
 # Define el token del valor booleano TRUE
-def t_TRUE(token):
-    r'(True)'
-    token.value = True
-    return token
+def t_BOOLEAN(token):
+    r'(True|False)'
+    if token.value == 'True':
+        token.value = True
+    else:
+        token.value = False
 
-# Define el token del valor booleano FALSE
-def t_FALSE(token):
-    r'(False)'
-    token.value = False
     return token
 
 # Identifica las variables del programa, excluye las palabras reservadas
@@ -187,9 +184,7 @@ def t_INT(token):
 def t_newline(token):
 
     r'\n+'
-    token.lexer.lineno += token.value.count("\n")
-    print("prueba")
-    return token
+    token.lexer.lineno += len(token.value)
 
 
 # Regla para manejar los errores
@@ -206,6 +201,8 @@ def t_eof(t):
 
 # Construir el lexer después de crear las reglas
 lexer = lex.lex()
+
+
 
 # Prueba para el lexer
 # Detecta e ignore comentarios - Check
@@ -249,6 +246,9 @@ len
 Neg "asdadsadsads" 
 °
 miLista[2]
+True
+False
+miLista[True]
 """)
 
 print("\n--------- Resultados del lexer: (Incluye errores que debe dar) ---------")
@@ -263,3 +263,4 @@ while True:
     # Imprime la línea y, en forma de par ordenado, el tipo de token y qué fue lo que catalogó de esa manera
     print("En la linea " + str(token.lineno) + " se encontró el token: "
           + '(' + str(token.type) + ', ' + str(token.value) + ')')
+
