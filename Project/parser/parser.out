@@ -1,0 +1,216 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    BEGIN
+    BLINK
+    CALL
+    COMA
+    CORCHETEDER
+    CORCHETEIZQ
+    DEL
+    DELAY
+    DIVISION
+    DIVISIONENTERA
+    DOSPUNTOS
+    END
+    EXPONENTE
+    F
+    FOR
+    IF
+    IGUALES
+    IN
+    INSERT
+    LEN
+    LIST
+    MAIN
+    MAYORIGUAL
+    MAYORQUE
+    MENORIGUAL
+    MENORQUE
+    MIL
+    MIN
+    MODULO
+    MULTIPLICACION
+    NEG
+    PARENTESISDER
+    PARENTESISIZQ
+    PRINTLED
+    PRINTLEDX
+    PROCEDURE
+    PUNTO
+    PYC
+    RANGE
+    RESTA
+    SEG
+    SHAPEC
+    SHAPEF
+    STEP
+    STRING
+    SUMA
+    T
+    TYPE
+
+Grammar
+
+Rule 0     S' -> statements
+Rule 1     statements -> statements statement
+Rule 2     statements -> statement
+Rule 3     statement -> ID IGUAL value
+Rule 4     value -> INT
+Rule 5     value -> BOOLEAN
+Rule 6     value -> ID
+
+Terminals, with rules where they appear
+
+BEGIN                : 
+BLINK                : 
+BOOLEAN              : 5
+CALL                 : 
+COMA                 : 
+CORCHETEDER          : 
+CORCHETEIZQ          : 
+DEL                  : 
+DELAY                : 
+DIVISION             : 
+DIVISIONENTERA       : 
+DOSPUNTOS            : 
+END                  : 
+EXPONENTE            : 
+F                    : 
+FOR                  : 
+ID                   : 3 6
+IF                   : 
+IGUAL                : 3
+IGUALES              : 
+IN                   : 
+INSERT               : 
+INT                  : 4
+LEN                  : 
+LIST                 : 
+MAIN                 : 
+MAYORIGUAL           : 
+MAYORQUE             : 
+MENORIGUAL           : 
+MENORQUE             : 
+MIL                  : 
+MIN                  : 
+MODULO               : 
+MULTIPLICACION       : 
+NEG                  : 
+PARENTESISDER        : 
+PARENTESISIZQ        : 
+PRINTLED             : 
+PRINTLEDX            : 
+PROCEDURE            : 
+PUNTO                : 
+PYC                  : 
+RANGE                : 
+RESTA                : 
+SEG                  : 
+SHAPEC               : 
+SHAPEF               : 
+STEP                 : 
+STRING               : 
+SUMA                 : 
+T                    : 
+TYPE                 : 
+error                : 
+
+Nonterminals, with rules where they appear
+
+statement            : 1 2
+statements           : 1 0
+value                : 3
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . statements
+    (1) statements -> . statements statement
+    (2) statements -> . statement
+    (3) statement -> . ID IGUAL value
+
+    ID              shift and go to state 3
+
+    statements                     shift and go to state 1
+    statement                      shift and go to state 2
+
+state 1
+
+    (0) S' -> statements .
+    (1) statements -> statements . statement
+    (3) statement -> . ID IGUAL value
+
+    ID              shift and go to state 3
+
+    statement                      shift and go to state 4
+
+state 2
+
+    (2) statements -> statement .
+
+    ID              reduce using rule 2 (statements -> statement .)
+    $end            reduce using rule 2 (statements -> statement .)
+
+
+state 3
+
+    (3) statement -> ID . IGUAL value
+
+    IGUAL           shift and go to state 5
+
+
+state 4
+
+    (1) statements -> statements statement .
+
+    ID              reduce using rule 1 (statements -> statements statement .)
+    $end            reduce using rule 1 (statements -> statements statement .)
+
+
+state 5
+
+    (3) statement -> ID IGUAL . value
+    (4) value -> . INT
+    (5) value -> . BOOLEAN
+    (6) value -> . ID
+
+    INT             shift and go to state 8
+    BOOLEAN         shift and go to state 9
+    ID              shift and go to state 6
+
+    value                          shift and go to state 7
+
+state 6
+
+    (6) value -> ID .
+
+    ID              reduce using rule 6 (value -> ID .)
+    $end            reduce using rule 6 (value -> ID .)
+
+
+state 7
+
+    (3) statement -> ID IGUAL value .
+
+    ID              reduce using rule 3 (statement -> ID IGUAL value .)
+    $end            reduce using rule 3 (statement -> ID IGUAL value .)
+
+
+state 8
+
+    (4) value -> INT .
+
+    ID              reduce using rule 4 (value -> INT .)
+    $end            reduce using rule 4 (value -> INT .)
+
+
+state 9
+
+    (5) value -> BOOLEAN .
+
+    ID              reduce using rule 5 (value -> BOOLEAN .)
+    $end            reduce using rule 5 (value -> BOOLEAN .)
+

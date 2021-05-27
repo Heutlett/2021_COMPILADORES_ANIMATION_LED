@@ -210,57 +210,57 @@ lexer = lex.lex()
 # Detecta palabras reservadas - Check
 # Recibe _, & y @ como caracteres aceptados para un string - Check
 
-lexer.input("""var47 = 3 * 4 - 5 * 6 + -2 ?
- ## COMENTARIO IGNORADO. 
-var4567890 = 3
-casa
-CASA
-var123456789 = 3
-+ - * ** / // %
-range
-type
-list
-LIST
-insert
-del
-T
-F
-Blink 
-Delay
-PrintLed
-PrintLedX
-"C"
-for var in x Step 3
-shapeF
-shapeC
-ShapeC
-If miVariable == 5
-< <= > >=
-Procedure rutina (True)
-Begin
-end;
-Main
-call
-x = 5 + 6; , True False type [ ] : .
-len
-Neg "asdadsadsads" 
-°
-miLista[2]
-True
-False
-miLista[True]
-""")
+# lexer.input("""var47 = 3 * 4 - 5 * 6 + -2 ?
+#  ## COMENTARIO IGNORADO.
+# var4567890 = 3
+# casa
+# CASA
+# var123456789 = 3
+# + - * ** / // %
+# range
+# type
+# list
+# LIST
+# insert
+# del
+# T
+# F
+# Blink
+# Delay
+# PrintLed
+# PrintLedX
+# "C"
+# for var in x Step 3
+# shapeF
+# shapeC
+# ShapeC
+# If miVariable == 5
+# < <= > >=
+# Procedure rutina (True)
+# Begin
+# end;
+# Main
+# call
+# x = 5 + 6; , True False type [ ] : .
+# len
+# Neg "asdadsadsads"
+# °
+# miLista[2]
+# True
+# False
+# miLista[True]
+# """)
 
-print("\n--------- Resultados del lexer: (Incluye errores que debe dar) ---------")
-# Mientras hayan tokens, los imprime en el respectivo par ordenado
-while True:
-    token = lexer.token()
-
-    # Si se acaban los tokens del input, se acaba
-    if not token:
-        break
-
-    # Imprime la línea y, en forma de par ordenado, el tipo de token y qué fue lo que catalogó de esa manera
-    print("En la linea " + str(token.lineno) + " se encontró el token: "
-          + '(' + str(token.type) + ', ' + str(token.value) + ')')
+# print("\n--------- Resultados del lexer: (Incluye errores que debe dar) ---------")
+# # Mientras hayan tokens, los imprime en el respectivo par ordenado
+# while True:
+#     token = lexer.token()
+#
+#     # Si se acaban los tokens del input, se acaba
+#     if not token:
+#         break
+#
+#     # Imprime la línea y, en forma de par ordenado, el tipo de token y qué fue lo que catalogó de esa manera
+#     print("En la linea " + str(token.lineno) + " se encontró el token: "
+#           + '(' + str(token.type) + ', ' + str(token.value) + ')')
 
