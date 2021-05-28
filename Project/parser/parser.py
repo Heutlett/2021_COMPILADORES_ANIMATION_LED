@@ -28,6 +28,10 @@ TODO:
 functions = {}  # Lista de funciones almacenadas del programa.
 variables = {"c": 15, "d": True, "e": False}  # Las variables almacenadas se guardarán como {ID: valor}.
 
+# Variables para multiple asignacion
+ids_list = []
+values_list = []
+
 # Orden para asignar a las operaciones.
 prioridad = (
     ('left', 'SUMA', 'RESTA'),
@@ -49,47 +53,105 @@ símbolo gramatical en la regla correspondiente. Los valores de p [i] se asignan
 # The rule name does not matter as long as it starts with "p_".
 
 
-# Define una recursion entre expresiones.
+# Expresion que define una recursion entre expresiones.
 def p_statments(p):
     """ statements : statements statement
                    | statement
     """
-
+    # NOTA: P[0] corresponde al valor que toma la variable.
+    # El conteo de indices para los datos empieza en 1.
     if len(p) == 2:
         p[0] = [p[1]]
     else:
         p[0] = p[1] + [p[2]]
 
-
-# def p_statement_assign_multiple_ids(p):
-#     """ IDs :  ID COMA IDs
-#             | ID IGUAL values
-#         values :  value COMA values
-#                | value
-#     """
-#
-#     print(p.type)
-#
-# def p_statement_assign_multiple_values(p):
-#     """
-#     """
-
+def p_printVariables(p):
+    """ statement : PUNTO
+    """
+    print(values_list)
 
 # Expresion para la declaracion de una variable.
 def p_statement_assign(p):
     """
-        statement : ID IGUAL value
+        statement : ids IGUAL values
+                  | ID IGUAL value
     """
-    # NOTA: P[0] corresponde al valor que toma la variable.
-    # Los indices empiezan en 1.
-    if p[1] in variables:
-        if equalsType(variables.get(p[1]), p[3]):
-            p[0] = getVariable(p[1], p[3])
-        else:
-            print("ERROR in line {2}! \"{0}\" is already type {1}.".format(p[1], type(p[3]), "LINE_NUMBER"))
+    print(len(p))
+    if len(p) > 4:  # p[0], p[1], p[2], ...
+        pass
     else:
-        p[0] = getVariable(p[1], p[3])
+        p[0] = assign_aux(p[1], p[3])
+
+    # ids_list.clear()
+    # values_list.clear()
+    print(variables)
+
+# def p_valuestest(p):
+#     """
+#     statement : values
+#     """
+#
+#     if len(p) == 2:  # p[0], p[1]
+#         print(p[0])
+#         print(p[1])
+#         values_list.append(p[1])
+#
+#     else:
+#         print(p[0])
+#         print(p[1])
+#         print(p[2])
+#         values_list.append(p[3])
+#     p[0] = values_list
+#     print(values_list)
+
+def assign_aux(id, value):
+    if id in variables:
+        if equalsType(variables.get(id), value):
+            return getVariable(id, value)
+        else:
+            print("ERROR in line {2}! \"{0}\" is already type {1}.".format(id, type(value), "LINE_NUMBER"))
+    else:
+        return getVariable(id, value)
     print(" ▶ variables: ", variables)
+
+
+def p_ids(p):
+    """ ids : ID COMA ids
+            | ID
+    """
+    print("\n")
+
+    if len(p) == 2:  # p[0], p[1]
+        print(p[0])
+        print(p[1])
+        ids_list.append(p[1])
+    else:
+        print(p[0])
+        print(p[1])
+        print(p[2])
+        ids_list.append(p[3])
+        p[0] = ids_list
+    p[0] = ids_list
+    print(ids_list)
+
+
+def p_values(p):
+    """
+    values : value COMA values
+           | value
+    """
+
+    if len(p) == 2:  # p[0], p[1]
+        # print(p[0])
+        # print(p[1])
+        p[0] = p[1]
+
+    else:
+        # print(p[0])
+        # print(p[1])
+        # print(p[2])
+        p[0] = p[3]
+    print(p[0])
 
 
 # Expresion para la determinar el valor de una variable.
@@ -102,6 +164,21 @@ def p_value(p):
         p[0] = variables.get(p[1])
     else:
         p[0] = p[1]
+
+
+# Expresion para consultar el tipo de una variable.
+def p_type(p):
+    """
+        statement : TYPE PARENTESISIZQ ID PARENTESISDER
+    """
+    if isVariable(p[3], "LINE_NUMBER"):
+        var = variables.get(p[3])
+        if isinstance(var, bool):
+            p[0] = 'bool'
+        elif isinstance(var, int):
+            p[0] = 'int'
+        else:
+            print("ERROR in type!")
 
 
 # Valida si dos variables son del mismo tipo.
@@ -119,6 +196,16 @@ def isVariable(var, line):
         print("ERROR in line {1}! \"{0}\" is not yet defined.".format(var, line))
         return False
     return True
+
+
+# Verifica si el dato es un valor y no un ID.
+def isValue(data):
+    if isinstance(data, int):
+        return True
+    elif isinstance(data, bool):
+        return True
+    else:
+        return False
 
 
 # Guarda la variable en el diccionario.
@@ -139,8 +226,8 @@ def getVariable(id, value):
 
 # Error rule for syntax errors.
 def p_error(p):
-    print(p)
-    print("\nSyntax error in input: ", p.type)
+    # print(p)
+    print("Syntax error in input: ", p.type)
     parser.errok()
     # Reinicia el parser
     parser.restart()

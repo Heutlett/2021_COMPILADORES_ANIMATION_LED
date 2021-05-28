@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'BEGIN BLINK BOOLEAN CALL COMA CORCHETEDER CORCHETEIZQ DEL DELAY DIVISION DIVISIONENTERA DOSPUNTOS END EXPONENTE F FOR ID IF IGUAL IGUALES IN INSERT INT LEN LIST MAIN MAYORIGUAL MAYORQUE MENORIGUAL MENORQUE MIL MIN MODULO MULTIPLICACION NEG PARENTESISDER PARENTESISIZQ PRINTLED PRINTLEDX PROCEDURE PUNTO PYC RANGE RESTA SEG SHAPEC SHAPEF STEP STRING SUMA T TYPE statements : statements statement\n                   | statement\n    \n        statement : ID IGUAL value\n     value : INT\n              | BOOLEAN\n              | ID\n   '
+_lr_signature = 'BEGIN BLINK BOOLEAN CALL COMA CORCHETEDER CORCHETEIZQ DEL DELAY DIVISION DIVISIONENTERA DOSPUNTOS END EXPONENTE F FOR ID IF IGUAL IGUALES IN INSERT INT LEN LIST MAIN MAYORIGUAL MAYORQUE MENORIGUAL MENORQUE MIL MIN MODULO MULTIPLICACION NEG PARENTESISDER PARENTESISIZQ PRINTLED PRINTLEDX PROCEDURE PUNTO PYC RANGE RESTA SEG SHAPEC SHAPEF STEP STRING SUMA T TYPE statements : statements statement\n                   | statement\n     statement : PUNTO\n    \n        statement : ids IGUAL values\n                  | ID IGUAL value\n     ids : ID COMA ids\n            | ID\n    \n    values : value COMA values\n           | value\n     value : INT\n              | BOOLEAN\n              | ID\n   \n        statement : TYPE PARENTESISIZQ ID PARENTESISDER\n    '
     
-_lr_action_items = {'ID':([0,1,2,4,5,6,7,8,9,],[3,3,-2,-1,6,-6,-3,-4,-5,]),'$end':([1,2,4,6,7,8,9,],[0,-2,-1,-6,-3,-4,-5,]),'IGUAL':([3,],[5,]),'INT':([5,],[8,]),'BOOLEAN':([5,],[9,]),}
+_lr_action_items = {'PUNTO':([0,1,2,3,7,12,13,14,15,16,17,22,23,],[3,3,-2,-3,-1,-4,-9,-10,-11,-12,-5,-13,-8,]),'ID':([0,1,2,3,7,8,9,10,11,12,13,14,15,16,17,21,22,23,],[5,5,-2,-3,-1,16,16,18,20,-4,-9,-10,-11,-12,-5,16,-13,-8,]),'TYPE':([0,1,2,3,7,12,13,14,15,16,17,22,23,],[6,6,-2,-3,-1,-4,-9,-10,-11,-12,-5,-13,-8,]),'$end':([1,2,3,7,12,13,14,15,16,17,22,23,],[0,-2,-3,-1,-4,-9,-10,-11,-12,-5,-13,-8,]),'IGUAL':([4,5,18,19,],[8,9,-7,-6,]),'COMA':([5,13,14,15,16,18,],[10,21,-10,-11,-12,10,]),'PARENTESISIZQ':([6,],[11,]),'INT':([8,9,21,],[14,14,14,]),'BOOLEAN':([8,9,21,],[15,15,15,]),'PARENTESISDER':([20,],[22,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'statements':([0,],[1,]),'statement':([0,1,],[2,4,]),'value':([5,],[7,]),}
+_lr_goto_items = {'statements':([0,],[1,]),'statement':([0,1,],[2,7,]),'ids':([0,1,10,],[4,4,19,]),'values':([8,21,],[12,23,]),'value':([8,9,21,],[13,17,13,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,10 +27,17 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> statements","S'",1,None,None,None),
-  ('statements -> statements statement','statements',2,'p_statments','parser.py',55),
-  ('statements -> statement','statements',1,'p_statments','parser.py',56),
-  ('statement -> ID IGUAL value','statement',3,'p_statement_assign','parser.py',81),
-  ('value -> INT','value',1,'p_value','parser.py',102),
-  ('value -> BOOLEAN','value',1,'p_value','parser.py',103),
-  ('value -> ID','value',1,'p_value','parser.py',104),
+  ('statements -> statements statement','statements',2,'p_statments','parser.py',58),
+  ('statements -> statement','statements',1,'p_statments','parser.py',59),
+  ('statement -> PUNTO','statement',1,'p_printVariables','parser.py',69),
+  ('statement -> ids IGUAL values','statement',3,'p_statement_assign','parser.py',76),
+  ('statement -> ID IGUAL value','statement',3,'p_statement_assign','parser.py',77),
+  ('ids -> ID COMA ids','ids',3,'p_ids','parser.py',119),
+  ('ids -> ID','ids',1,'p_ids','parser.py',120),
+  ('values -> value COMA values','values',3,'p_values','parser.py',140),
+  ('values -> value','values',1,'p_values','parser.py',141),
+  ('value -> INT','value',1,'p_value','parser.py',159),
+  ('value -> BOOLEAN','value',1,'p_value','parser.py',160),
+  ('value -> ID','value',1,'p_value','parser.py',161),
+  ('statement -> TYPE PARENTESISIZQ ID PARENTESISDER','statement',4,'p_type','parser.py',172),
 ]
