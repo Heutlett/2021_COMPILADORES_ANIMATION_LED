@@ -42,12 +42,6 @@ prioridad = (
 
 ''' GRAMMARS '''
 
-'''Cada regla gramatical está definida por una función de Python donde la cadena de documentación 
-de esa función contiene la especificación gramatical libre de contexto apropiada.
-Los enunciados que componen el cuerpo de la función implementan las acciones semánticas de la regla. 
-Cada función acepta un solo argumento p que es una secuencia que contiene los valores de cada 
-símbolo gramatical en la regla correspondiente. Los valores de p [i] se asignan a símbolos gramaticales.'''
-
 
 # The parser grammar rules are defined.
 # The rule name does not matter as long as it starts with "p_".
@@ -65,93 +59,36 @@ def p_statments(p):
     else:
         p[0] = p[1] + [p[2]]
 
+# Definicion de una expresion como statement.
+def p_statement_assign(p):
+    """statement:expresion"""
+
+
+# Con el punto se imprimen las variables.
 def p_printVariables(p):
     """ statement : PUNTO
     """
     print(values_list)
 
+
 # Expresion para la declaracion de una variable.
 def p_statement_assign(p):
     """
-        statement : ids IGUAL values
-                  | ID IGUAL value
+        statement : ID IGUAL value
     """
-    print(len(p))
-    if len(p) > 4:  # p[0], p[1], p[2], ...
-        pass
-    else:
-        p[0] = assign_aux(p[1], p[3])
+    p[0] = assign_aux(p[1], p[3])
+    print("▶ variables: ", variables)
 
-    # ids_list.clear()
-    # values_list.clear()
-    print(variables)
 
-# def p_valuestest(p):
-#     """
-#     statement : values
-#     """
-#
-#     if len(p) == 2:  # p[0], p[1]
-#         print(p[0])
-#         print(p[1])
-#         values_list.append(p[1])
-#
-#     else:
-#         print(p[0])
-#         print(p[1])
-#         print(p[2])
-#         values_list.append(p[3])
-#     p[0] = values_list
-#     print(values_list)
-
+# Funcion en la que se asignan las variables.
 def assign_aux(id, value):
     if id in variables:
         if equalsType(variables.get(id), value):
             return getVariable(id, value)
         else:
-            print("ERROR in line {2}! \"{0}\" is already type {1}.".format(id, type(value), "LINE_NUMBER"))
+            print("ERROR in line {2}! \"{0}\" is already {1}.".format(id, type(value), "LINE_NUMBER"))
     else:
         return getVariable(id, value)
-    print(" ▶ variables: ", variables)
-
-
-def p_ids(p):
-    """ ids : ID COMA ids
-            | ID
-    """
-    print("\n")
-
-    if len(p) == 2:  # p[0], p[1]
-        print(p[0])
-        print(p[1])
-        ids_list.append(p[1])
-    else:
-        print(p[0])
-        print(p[1])
-        print(p[2])
-        ids_list.append(p[3])
-        p[0] = ids_list
-    p[0] = ids_list
-    print(ids_list)
-
-
-def p_values(p):
-    """
-    values : value COMA values
-           | value
-    """
-
-    if len(p) == 2:  # p[0], p[1]
-        # print(p[0])
-        # print(p[1])
-        p[0] = p[1]
-
-    else:
-        # print(p[0])
-        # print(p[1])
-        # print(p[2])
-        p[0] = p[3]
-    print(p[0])
 
 
 # Expresion para la determinar el valor de una variable.
@@ -213,6 +150,55 @@ def getVariable(id, value):
     if value is not None:
         variables[id] = value
         return value
+
+
+''' ARITMETICA '''
+# Expresion para las operación matemática.
+def p_expresion_op(p):
+    """expresion : expresion PLUS expresion
+               | expresion RESTA expresion
+               | expresion MULTIPLICACION expresion
+               | expresion DIVISION expresion
+               | expresion POTENCIA expresion
+   """
+
+    # Suma
+    if p[2] == '+':
+        p[0] = p[1] + p[3]
+
+    # Resta
+    elif p[2] == '-':
+        p[0] = p[1] - p[3]
+
+    # Multiplicación
+    elif p[2] == '*':
+        p[0] = p[1] * p[3]
+
+    # División
+    elif p[2] == '/':
+        p[0] = p[1] / p[3]
+
+    # Potencia
+    elif p[2] == '^':
+        p[0] = pow(p[1], p[3])
+
+
+# Expresion para número negativo
+def p_expresion_menos(p):
+    """expresion : RESTA expresion %prec UMENOS"""
+    p[0] = -p[2]
+
+
+# Expresion para definir un término.
+def p_expresion_num(p):
+    """expresion : INT"""
+    p[0] = p[1]
+
+
+# Expresiones entre paréntesis
+def p_factor_expr(p):
+    """expresion : PARENTESISIZQ expresion PARENTESISDER"""
+    p[0] = p[2]
 
 
 # # Define una una función
