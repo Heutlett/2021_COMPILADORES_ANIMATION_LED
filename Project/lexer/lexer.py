@@ -45,7 +45,7 @@ palabras_reservadas = {
     'Begin': 'BEGIN',
     'end': 'END',
     'Main': 'MAIN',
-    'call': 'CALL',
+    'call': 'CALL'
 
 }
 

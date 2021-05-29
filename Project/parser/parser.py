@@ -194,28 +194,18 @@ def p_parametros(p):
                              | value
                              | parametros COMA expression
                              | parametros COMA value
-                             | lista
-                             | parametrosRangoTiempo
-                             | parametros COMA parametrosRangoTiempo
                              | empty
     '''
 
     # Si es solo una expresion
     if len(p) == 2:
        p[0] = [p[1]]
+
     # Si son más de dos
     else:
        p[0] = p[1] + [p[3]]
 
 ############################# FUNCIONES RESERVADAS #########################################
-
-def p_parametros_rangoTiempo(p):
-    '''parametrosRangoTiempo :  MIN
-                    | MIL
-                    | SEG
-    '''
-
-    p[0] = p[1]
 
 def p_list(p):
     '''lista : CORCHETEIZQ CORCHETEDER
@@ -229,6 +219,14 @@ def p_list(p):
     # Si son más de dos
     else:
        p[0] = p[2]
+
+"""   
+Blink(Dato, Cantidad, RangoTiempo, Estado)
+Dato: Indice, Arreglo, etc
+Cantidad: Entero
+RangoTiempo: "Seg", "Mil", "Min"
+Estado: bool
+"""
 
 def p_blink(p):
     '''funcionreservada : BLINK PARENTESISIZQ parametros PARENTESISDER PYC
@@ -246,7 +244,7 @@ def p_blink(p):
 
             if type(p[3][3]) == bool:
 
-                if p[3][2] == "Seg" or p[3][2] == "Mil" or p[3][2] == "Min":
+                if p[3][2] == "\"Seg\"" or p[3][2] == "\"Mil\"" or p[3][2] == "\"Min\"":
 
                     if type(p[3][1]) == int:
 
@@ -272,37 +270,101 @@ def p_blink(p):
         errors_list.append("ERROR in line {0}! The number of params must be 4 "
                            "(Dato, Cantidad, RangoTiempo, Estado)".format(p.lineno(1)))
 
+"""   
+Delay(Cantidad, RangoTiempo)
+Cantidad: Entero
+RangoTiempo: "Seg", "Mil", "Min"
+"""
+
 def p_delay(p):
     '''funcionreservada : DELAY PARENTESISIZQ parametros PARENTESISDER PYC
 
     '''
 
     if len(p[3]) == 2:
-        p[0] = ['DELAY', p[3]]
+
+        if type(p[3][0]) == int:
+
+            if p[3][1] == "\"Seg\"" or p[3][1] == "\"Mil\"" or p[3][1] == "\"Min\"":
+
+                p[0] = ['DELAY', p[3]]
+            else:
+                errors_list.append("ERROR in line {0}! The second param must be a (Seg, Mil, Min)! "
+                                   "".format(p.lineno(1)))
+        else:
+            errors_list.append("ERROR in line {0}! The first param must be an integer".format(p.lineno(1)))
+
     else:
         errors_list.append("ERROR in line {0}! The number of params must be 2 "
                            "(Cantidad, RangoTiempo)".format(p.lineno(1)))
 
 
+"""   
+PrintLed(Col, Row, Valor)
+Col: Entero
+Row: Entero
+Valor: Bool
+"""
 def p_PrintLed(p):
     '''funcionreservada : PRINTLED PARENTESISIZQ parametros PARENTESISDER PYC
 
     '''
 
     if len(p[3]) == 3:
-        p[0] = ['PRINTLED', p[3]]
+
+        if type(p[3][0]) == int and type(p[3][1]) == int:
+
+            if type(p[3][2]) == bool:
+
+                p[0] = ['PRINTLED', p[3]]
+
+            else:
+                errors_list.append("ERROR in line {0}! The third param must be a boolean".format(p.lineno(1)))
+
+        else:
+            errors_list.append("ERROR in line {0}! The first and second param must be integers".format(p.lineno(1)))
+
     else:
         errors_list.append("ERROR in line {0}! The number of params must be 4 "
                            "(Col, Row, Value)".format(p.lineno(1)))
 
-
+"""   
+PrintLedX(TipoObjeto, Indice, Arreglo)
+TipoObjeto: "C", "F", "M"
+Indice: Entero
+Arreglo: arreglo
+"""
 def p_PrintLedX(p):
     '''funcionreservada : PRINTLEDX PARENTESISIZQ parametros PARENTESISDER PYC
 
     '''
 
     if len(p[3]) == 3:
-        p[0] = ['PRINTLEDX', p[3]]
+
+        if p[3][0] == "\"C\"" or p[3][0] == "\"F\"" or p[3][0] == "\"M\"":
+
+            if type(p[3][1]) == int:
+                print(p[3][2])
+                if p[3][2] == "[]":
+                    errors_list.append("ERROR in line {0}! The last param cant be a empty list! "
+                                       "".format(p.lineno(1)))
+                    return
+
+                if type(p[3][2]) == list:
+
+                    p[0] = ['PRINTLEDX', p[3]]
+
+                else:
+                    errors_list.append("ERROR in line {0}! The last param must be a list! "
+                                       "".format(p.lineno(1)))
+
+            else:
+                errors_list.append("ERROR in line {0}! The second param must be an integer! "
+                                   "".format(p.lineno(1)))
+
+        else:
+            errors_list.append("ERROR in line {0}! The first param must be a (Seg, Mil, Min)! "
+                               "".format(p.lineno(1)))
     else:
         errors_list.append("ERROR in line {0}! The number of params must be 3 "
                            "(TipoObjeto, Indice, Arreglo)".format(p.lineno(1)))
@@ -435,6 +497,8 @@ def p_value(p):
     """ value : INT
               | BOOLEAN
               | ID
+              | STRING
+              | lista
    """
     if isDeclared(p[1], "LINE_NUMBER"):
         p[0] = variables.get(p[1])
