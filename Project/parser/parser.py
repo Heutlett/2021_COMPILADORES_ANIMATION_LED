@@ -55,7 +55,7 @@ símbolo gramatical en la regla correspondiente. Los valores de p [i] se asignan
 
 
 # Expresion que define una recursion entre expresiones.
-def p_statments(p):
+def p_statements(p):
     """ statements : statements statement
                    | statement
     """
@@ -68,11 +68,257 @@ def p_statments(p):
 
 
 # Definición de posibles expresiones.
-def p_sentencia_expr(p):
+def p_statements_expr(p):
     ''' statement : expression
                     | print
+                    | funcionreservada
     '''
     p[0] = p[1]
+
+
+# Definición de if
+def p_if(p):
+    """ funcionreservada : IF condicion LLAVEIZQ ordenes LLAVEDER PYC
+    """
+    # Si se cumple la condición, devuelve las ordenes a ejecutar
+    if p[2] == True:
+        p[0] = ['IF', p[4]]
+    else:
+        print("No se cumple el if")
+
+
+# Ordenes (se dan en forma de una lista de listas)
+def p_ordenes(p):
+    '''ordenes : funcionreservada
+                       | statement
+                       | ordenes statement
+                       | ordenes funcionreservada
+   '''
+    # Revisa si hay alguna asignación de variable
+    for i in p:
+       if isinstance(i, list):
+          if i[0] != 'DEF' and i[1] not in (variables or variables):
+             variables[i[1]] = i[2]
+          elif i[0] != 'DEF' and i[1] in (variables or variables):
+             errors_list.append("ERROR: Se intentó redefinir la variable {0} ya definida en main".format(i[0]))
+
+   # Si es solo un elemento
+    if len(p) == 2:
+       p[0] = [p[1]]
+
+   # Si es más de una orden, se concatenan
+    else:
+       p[0] = p[1] + [p[2]]
+
+
+#################### CONDICIONES ####################
+
+
+# Condicion
+def p_condicion(p):
+    """ condicion : expression MAYORQUE expression
+                             | expression MENORQUE expression
+                             | expression MENORIGUAL expression
+                             | expression MAYORIGUAL expression
+                             | expression IGUALES expression
+                             | value IGUALES value
+                             | value  MAYORQUE value
+                             | value  MENORQUE value
+                             | value  MENORIGUAL value
+                             | value  MAYORIGUAL value
+    """
+    # Variables temporales para la evaluación
+    tempX = 0
+    tempY = 0
+
+    # Si son variables, las asigna
+    variable1 = revisar_variable(p[1])
+    variable2 = revisar_variable(p[3])
+
+    # Error
+    error = False
+
+    # Asigna los valores dependiendo si es ID o un int
+    if variable1 is not False and variable2 is not False:
+        tempX = variable1
+        tempY = variable2
+
+    # Revisa si la primera entrada es una variable y la segunda número
+    elif variable1 is not False and isinstance(p[3], int):
+        tempX = variable1
+        tempY = p[3]
+
+    # Revisa si la primera entrada es un número y la segunda variable
+    elif variable2 is not False and isinstance(p[1], int):
+        tempX = p[1]
+        tempY = variable2
+
+    # Revisa si la primera entrada es un número y la segunda número
+    elif isinstance(p[1], int) and isinstance(p[3], int):
+        tempX = p[1]
+        tempY = p[3]
+
+    # Si no es número y no existe
+    elif not isinstance(p[1], int) and variable1 is False:
+        errors_list.append(
+            "ERROR: No se puede comparar con el identificador indefinido {0} en la línea {1}".format(p[1], p.lineno(1)))
+
+    # Si no es número y no existe
+    elif not isinstance(p[3], int) and variable2 is False:
+        errors_list.append(
+            "ERROR: No se puede comparar con el identificador indefinido {0} en la línea {1}".format(p[3], p.lineno(3)))
+
+    # Mayorque
+    if p[2] == '>':
+        p[0] = (tempX > tempY)
+
+    # MayorOIgual
+    elif p[2] == '>=':
+        p[0] = tempX >= tempY
+
+    # MenorQue
+    elif p[2] == '<':
+        p[0] = tempX < tempY
+
+    # MenorOIgual
+    elif p[2] == '<=':
+        p[0] = tempX <= tempY
+
+    # Igual
+    elif p[2] == '==':
+        p[0] = tempX == tempY
+
+# Parametros (se dan en forma de una lista)
+def p_parametros(p):
+    '''parametros : expression
+                             | value
+                             | parametros COMA expression
+                             | parametros COMA value
+                             | lista
+                             | parametrosRangoTiempo
+                             | parametros COMA parametrosRangoTiempo
+                             | empty
+    '''
+
+    # Si es solo una expresion
+    if len(p) == 2:
+       p[0] = [p[1]]
+    # Si son más de dos
+    else:
+       p[0] = p[1] + [p[3]]
+
+############################# FUNCIONES RESERVADAS #########################################
+
+def p_parametros_rangoTiempo(p):
+    '''parametrosRangoTiempo :  MIN
+                    | MIL
+                    | SEG
+    '''
+
+    p[0] = p[1]
+
+def p_list(p):
+    '''lista : CORCHETEIZQ CORCHETEDER
+             | CORCHETEIZQ parametros CORCHETEDER
+    '''
+
+    # Si es solo una expresion
+    if len(p) == 3:
+       p[0] = "[]"
+
+    # Si son más de dos
+    else:
+       p[0] = p[2]
+
+def p_blink(p):
+    '''funcionreservada : BLINK PARENTESISIZQ parametros PARENTESISDER PYC
+
+    '''
+
+    if len(p[3]) == 4:
+
+        if p[3][0] == "[]":
+            errors_list.append("ERROR in line {0}! The first param cant be a empty list! "
+                               "".format(p.lineno(1)))
+            return
+
+        if type(p[3][0]) == list or type(p[3][0]) == int:
+
+            if type(p[3][3]) == bool:
+
+                if p[3][2] == "Seg" or p[3][2] == "Mil" or p[3][2] == "Min":
+
+                    if type(p[3][1]) == int:
+
+                        p[0] = ['BLINK', p[3]]
+
+                    else:
+                        errors_list.append("ERROR in line {0}! The second param must be a integer! "
+                                           "".format(p.lineno(1)))
+
+
+                else:
+                    errors_list.append("ERROR in line {0}! The third param must be a (Seg, Mil, Min)! "
+                                       "".format(p.lineno(1)))
+
+            else:
+                errors_list.append("ERROR in line {0}! The last param must be a bool! "
+                                   "".format(p.lineno(1)))
+
+        else:
+            errors_list.append("ERROR in line {0}! The first param must be a list "
+                               "".format(p.lineno(1)))
+    else:
+        errors_list.append("ERROR in line {0}! The number of params must be 4 "
+                           "(Dato, Cantidad, RangoTiempo, Estado)".format(p.lineno(1)))
+
+def p_delay(p):
+    '''funcionreservada : DELAY PARENTESISIZQ parametros PARENTESISDER PYC
+
+    '''
+
+    if len(p[3]) == 2:
+        p[0] = ['DELAY', p[3]]
+    else:
+        errors_list.append("ERROR in line {0}! The number of params must be 2 "
+                           "(Cantidad, RangoTiempo)".format(p.lineno(1)))
+
+
+def p_PrintLed(p):
+    '''funcionreservada : PRINTLED PARENTESISIZQ parametros PARENTESISDER PYC
+
+    '''
+
+    if len(p[3]) == 3:
+        p[0] = ['PRINTLED', p[3]]
+    else:
+        errors_list.append("ERROR in line {0}! The number of params must be 4 "
+                           "(Col, Row, Value)".format(p.lineno(1)))
+
+
+def p_PrintLedX(p):
+    '''funcionreservada : PRINTLEDX PARENTESISIZQ parametros PARENTESISDER PYC
+
+    '''
+
+    if len(p[3]) == 3:
+        p[0] = ['PRINTLEDX', p[3]]
+    else:
+        errors_list.append("ERROR in line {0}! The number of params must be 3 "
+                           "(TipoObjeto, Indice, Arreglo)".format(p.lineno(1)))
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Expresion vacia
@@ -420,10 +666,37 @@ def p_expression_num(p):
 # Error rule for syntax errors.
 def p_error(p):
     # print(p)
-    print("✘ Syntax error in input")
+    print("✘ Syntax error in input", p.type)
     parser.errok()
     # # Reinicia el parser
     # parser.restart()
+
+
+# Función para revisar si hay una variable
+def revisar_variable(a):
+    var_local = False
+    var_global = False
+
+    # Si la variable ya existe, le cambia el valor
+    if a in variables:
+        var_global = True
+
+    # Si la variable ya existe, le cambia el valor
+    elif a in variables:
+        var_local = True
+
+    # Si la variable no existe en ninguna lista
+    else:
+        return False
+
+    # Si se encontró en la lista de variables globales
+    if var_global == True:
+        return variables[a]
+
+    # Si se encontró en la lista de variables locales
+    if var_local == True:
+        return variables[a]
+
 
 
 # Build the parser.
@@ -441,3 +714,6 @@ while True:
             print("Result: ", answer[0])
 
     ################################## MAIN #################################
+
+
+
