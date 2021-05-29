@@ -7,16 +7,13 @@ Unused terminals:
     CALL
     DEL
     DELAY
-    DOSPUNTOS
     END
     F
     FOR
     IF
     IGUALES
     IN
-    INSERT
     LEN
-    LIST
     MAIN
     MAYORIGUAL
     MAYORQUE
@@ -29,7 +26,6 @@ Unused terminals:
     PRINTLEDX
     PROCEDURE
     PYC
-    RANGE
     SEG
     SHAPEC
     SHAPEF
@@ -49,31 +45,38 @@ Rule 7     statement -> var_assign
 Rule 8     primitive -> BOOLEAN
 Rule 9     primitive -> INT
 Rule 10    primitive -> STRING
-Rule 11    primitive -> listed
+Rule 11    primitive -> list
 Rule 12    print -> PUNTO
-Rule 13    equals -> ID IGUAL
-Rule 14    ids -> ID
-Rule 15    ids -> ids COMA ids
+Rule 13    ids -> ID
+Rule 14    ids -> ids COMA ids
+Rule 15    params -> primitive
 Rule 16    params -> expression
-Rule 17    params -> primitive
-Rule 18    params -> params COMA params
-Rule 19    params -> empty
-Rule 20    var_assign -> equals expression
-Rule 21    var_assign -> equals primitive
-Rule 22    var_assign -> ids IGUAL params
+Rule 17    params -> params COMA params
+Rule 18    params -> empty
+Rule 19    var_assign -> ID IGUAL expression
+Rule 20    var_assign -> ID IGUAL primitive
+Rule 21    var_assign -> ids IGUAL params
+Rule 22    var_assign -> sublist IGUAL params
 Rule 23    statement -> TYPE PARENTESISIZQ ID PARENTESISDER
-Rule 24    listed -> CORCHETEIZQ params CORCHETEDER
-Rule 25    expression -> expression EXPONENTE expression
-Rule 26    expression -> expression MODULO expression
-Rule 27    expression -> expression MULTIPLICACION expression
-Rule 28    expression -> expression DIVISIONENTERA expression
-Rule 29    expression -> expression DIVISION expression
-Rule 30    expression -> expression SUMA expression
-Rule 31    expression -> expression RESTA expression
-Rule 32    expression -> PARENTESISIZQ expression PARENTESISDER
-Rule 33    expression -> ID
-Rule 34    expression -> RESTA expression
-Rule 35    empty -> <empty>
+Rule 24    list -> CORCHETEIZQ params CORCHETEDER
+Rule 25    statement -> sublist
+Rule 26    sublist -> ID index
+Rule 27    index -> CORCHETEIZQ expression CORCHETEDER
+Rule 28    index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER
+Rule 29    var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER
+Rule 30    statement -> ID PUNTO INSERT PARENTESISIZQ expression COMA params PARENTESISDER
+Rule 31    expression -> expression EXPONENTE expression
+Rule 32    expression -> expression MODULO expression
+Rule 33    expression -> expression MULTIPLICACION expression
+Rule 34    expression -> expression DIVISIONENTERA expression
+Rule 35    expression -> expression DIVISION expression
+Rule 36    expression -> expression SUMA expression
+Rule 37    expression -> expression RESTA expression
+Rule 38    expression -> PARENTESISIZQ expression PARENTESISDER
+Rule 39    expression -> ID
+Rule 40    expression -> INT
+Rule 41    expression -> RESTA expression
+Rule 42    empty -> <empty>
 
 Terminals, with rules where they appear
 
@@ -81,27 +84,27 @@ BEGIN                :
 BLINK                : 
 BOOLEAN              : 8
 CALL                 : 
-COMA                 : 15 18
-CORCHETEDER          : 24
-CORCHETEIZQ          : 24
+COMA                 : 14 17 29 30
+CORCHETEDER          : 24 27 28
+CORCHETEIZQ          : 24 27 28
 DEL                  : 
 DELAY                : 
-DIVISION             : 29
-DIVISIONENTERA       : 28
-DOSPUNTOS            : 
+DIVISION             : 35
+DIVISIONENTERA       : 34
+DOSPUNTOS            : 28
 END                  : 
-EXPONENTE            : 25
+EXPONENTE            : 31
 F                    : 
 FOR                  : 
-ID                   : 13 14 23 33
+ID                   : 13 19 20 23 26 29 30 39
 IF                   : 
-IGUAL                : 13 22
+IGUAL                : 19 20 21 22 29
 IGUALES              : 
 IN                   : 
-INSERT               : 
-INT                  : 9
+INSERT               : 30
+INT                  : 9 40
 LEN                  : 
-LIST                 : 
+LIST                 : 29
 MAIN                 : 
 MAYORIGUAL           : 
 MAYORQUE             : 
@@ -109,40 +112,41 @@ MENORIGUAL           :
 MENORQUE             : 
 MIL                  : 
 MIN                  : 
-MODULO               : 26
-MULTIPLICACION       : 27
+MODULO               : 32
+MULTIPLICACION       : 33
 NEG                  : 
-PARENTESISDER        : 23 32
-PARENTESISIZQ        : 23 32
+PARENTESISDER        : 23 29 29 30 38
+PARENTESISIZQ        : 23 29 29 30 38
 PRINTLED             : 
 PRINTLEDX            : 
 PROCEDURE            : 
-PUNTO                : 12
+PUNTO                : 12 30
 PYC                  : 
-RANGE                : 
-RESTA                : 31 34
+RANGE                : 29
+RESTA                : 37 41
 SEG                  : 
 SHAPEC               : 
 SHAPEF               : 
 STEP                 : 
 STRING               : 10
-SUMA                 : 30
+SUMA                 : 36
 T                    : 
 TYPE                 : 23
 error                : 
 
 Nonterminals, with rules where they appear
 
-empty                : 4 19
-equals               : 20 21
-expression           : 6 16 20 25 25 26 26 27 27 28 28 29 29 30 30 31 31 32 34
-ids                  : 15 15 22
-listed               : 11
-params               : 18 18 22 24
-primitive            : 3 17 21
+empty                : 4 18
+expression           : 6 16 19 27 28 28 29 30 31 31 32 32 33 33 34 34 35 35 36 36 37 37 38 41
+ids                  : 14 14 21
+index                : 26
+list                 : 11
+params               : 17 17 21 22 24 29 30
+primitive            : 3 15 20
 print                : 5
 statement            : 1 2
 statements           : 1 0
+sublist              : 22 25
 var_assign           : 7
 
 Parsing method: LALR
@@ -158,49 +162,56 @@ state 0
     (6) statement -> . expression
     (7) statement -> . var_assign
     (23) statement -> . TYPE PARENTESISIZQ ID PARENTESISDER
+    (25) statement -> . sublist
+    (30) statement -> . ID PUNTO INSERT PARENTESISIZQ expression COMA params PARENTESISDER
     (8) primitive -> . BOOLEAN
     (9) primitive -> . INT
     (10) primitive -> . STRING
-    (11) primitive -> . listed
-    (35) empty -> .
+    (11) primitive -> . list
+    (42) empty -> .
     (12) print -> . PUNTO
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
-    (20) var_assign -> . equals expression
-    (21) var_assign -> . equals primitive
-    (22) var_assign -> . ids IGUAL params
-    (24) listed -> . CORCHETEIZQ params CORCHETEDER
-    (13) equals -> . ID IGUAL
-    (14) ids -> . ID
-    (15) ids -> . ids COMA ids
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
+    (19) var_assign -> . ID IGUAL expression
+    (20) var_assign -> . ID IGUAL primitive
+    (21) var_assign -> . ids IGUAL params
+    (22) var_assign -> . sublist IGUAL params
+    (29) var_assign -> . ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER
+    (26) sublist -> . ID index
+    (24) list -> . CORCHETEIZQ params CORCHETEDER
+    (13) ids -> . ID
+    (14) ids -> . ids COMA ids
 
   ! shift/reduce conflict for TYPE resolved as shift
-  ! shift/reduce conflict for PARENTESISIZQ resolved as shift
   ! shift/reduce conflict for ID resolved as shift
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for PARENTESISIZQ resolved as shift
   ! shift/reduce conflict for RESTA resolved as shift
     TYPE            shift and go to state 8
-    BOOLEAN         shift and go to state 11
-    INT             shift and go to state 12
-    STRING          shift and go to state 13
-    $end            reduce using rule 35 (empty -> .)
-    PUNTO           shift and go to state 15
-    PARENTESISIZQ   shift and go to state 9
     ID              shift and go to state 10
-    RESTA           shift and go to state 16
+    BOOLEAN         shift and go to state 13
+    INT             shift and go to state 14
+    STRING          shift and go to state 15
+    $end            reduce using rule 42 (empty -> .)
+    PUNTO           shift and go to state 12
+    PARENTESISIZQ   shift and go to state 9
+    RESTA           shift and go to state 17
     CORCHETEIZQ     shift and go to state 19
 
-  ! TYPE            [ reduce using rule 35 (empty -> .) ]
-  ! PARENTESISIZQ   [ reduce using rule 35 (empty -> .) ]
-  ! ID              [ reduce using rule 35 (empty -> .) ]
-  ! RESTA           [ reduce using rule 35 (empty -> .) ]
+  ! TYPE            [ reduce using rule 42 (empty -> .) ]
+  ! ID              [ reduce using rule 42 (empty -> .) ]
+  ! PARENTESISIZQ   [ reduce using rule 42 (empty -> .) ]
+  ! INT             [ reduce using rule 42 (empty -> .) ]
+  ! RESTA           [ reduce using rule 42 (empty -> .) ]
 
     statements                     shift and go to state 1
     statement                      shift and go to state 2
@@ -209,8 +220,8 @@ state 0
     print                          shift and go to state 5
     expression                     shift and go to state 6
     var_assign                     shift and go to state 7
-    listed                         shift and go to state 14
-    equals                         shift and go to state 17
+    sublist                        shift and go to state 11
+    list                           shift and go to state 16
     ids                            shift and go to state 18
 
 state 1
@@ -220,32 +231,38 @@ state 1
     (6) statement -> . expression
     (7) statement -> . var_assign
     (23) statement -> . TYPE PARENTESISIZQ ID PARENTESISDER
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
-    (20) var_assign -> . equals expression
-    (21) var_assign -> . equals primitive
-    (22) var_assign -> . ids IGUAL params
-    (13) equals -> . ID IGUAL
-    (14) ids -> . ID
-    (15) ids -> . ids COMA ids
+    (25) statement -> . sublist
+    (30) statement -> . ID PUNTO INSERT PARENTESISIZQ expression COMA params PARENTESISDER
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
+    (19) var_assign -> . ID IGUAL expression
+    (20) var_assign -> . ID IGUAL primitive
+    (21) var_assign -> . ids IGUAL params
+    (22) var_assign -> . sublist IGUAL params
+    (29) var_assign -> . ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER
+    (26) sublist -> . ID index
+    (13) ids -> . ID
+    (14) ids -> . ids COMA ids
 
     TYPE            shift and go to state 8
-    PARENTESISIZQ   shift and go to state 9
     ID              shift and go to state 10
-    RESTA           shift and go to state 16
+    PARENTESISIZQ   shift and go to state 9
+    INT             shift and go to state 21
+    RESTA           shift and go to state 17
 
     statement                      shift and go to state 20
     expression                     shift and go to state 6
     var_assign                     shift and go to state 7
-    equals                         shift and go to state 17
+    sublist                        shift and go to state 11
     ids                            shift and go to state 18
 
 state 2
@@ -253,8 +270,9 @@ state 2
     (2) statements -> statement .
 
     TYPE            reduce using rule 2 (statements -> statement .)
-    PARENTESISIZQ   reduce using rule 2 (statements -> statement .)
     ID              reduce using rule 2 (statements -> statement .)
+    PARENTESISIZQ   reduce using rule 2 (statements -> statement .)
+    INT             reduce using rule 2 (statements -> statement .)
     RESTA           reduce using rule 2 (statements -> statement .)
     $end            reduce using rule 2 (statements -> statement .)
 
@@ -264,8 +282,9 @@ state 3
     (3) statements -> primitive .
 
     TYPE            reduce using rule 3 (statements -> primitive .)
-    PARENTESISIZQ   reduce using rule 3 (statements -> primitive .)
     ID              reduce using rule 3 (statements -> primitive .)
+    PARENTESISIZQ   reduce using rule 3 (statements -> primitive .)
+    INT             reduce using rule 3 (statements -> primitive .)
     RESTA           reduce using rule 3 (statements -> primitive .)
     $end            reduce using rule 3 (statements -> primitive .)
 
@@ -275,8 +294,9 @@ state 4
     (4) statements -> empty .
 
     TYPE            reduce using rule 4 (statements -> empty .)
-    PARENTESISIZQ   reduce using rule 4 (statements -> empty .)
     ID              reduce using rule 4 (statements -> empty .)
+    PARENTESISIZQ   reduce using rule 4 (statements -> empty .)
+    INT             reduce using rule 4 (statements -> empty .)
     RESTA           reduce using rule 4 (statements -> empty .)
     $end            reduce using rule 4 (statements -> empty .)
 
@@ -286,8 +306,9 @@ state 5
     (5) statements -> print .
 
     TYPE            reduce using rule 5 (statements -> print .)
-    PARENTESISIZQ   reduce using rule 5 (statements -> print .)
     ID              reduce using rule 5 (statements -> print .)
+    PARENTESISIZQ   reduce using rule 5 (statements -> print .)
+    INT             reduce using rule 5 (statements -> print .)
     RESTA           reduce using rule 5 (statements -> print .)
     $end            reduce using rule 5 (statements -> print .)
 
@@ -295,26 +316,27 @@ state 5
 state 6
 
     (6) statement -> expression .
-    (25) expression -> expression . EXPONENTE expression
-    (26) expression -> expression . MODULO expression
-    (27) expression -> expression . MULTIPLICACION expression
-    (28) expression -> expression . DIVISIONENTERA expression
-    (29) expression -> expression . DIVISION expression
-    (30) expression -> expression . SUMA expression
-    (31) expression -> expression . RESTA expression
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
 
   ! shift/reduce conflict for RESTA resolved as shift
     TYPE            reduce using rule 6 (statement -> expression .)
-    PARENTESISIZQ   reduce using rule 6 (statement -> expression .)
     ID              reduce using rule 6 (statement -> expression .)
+    PARENTESISIZQ   reduce using rule 6 (statement -> expression .)
+    INT             reduce using rule 6 (statement -> expression .)
     $end            reduce using rule 6 (statement -> expression .)
-    EXPONENTE       shift and go to state 21
-    MODULO          shift and go to state 22
-    MULTIPLICACION  shift and go to state 23
-    DIVISIONENTERA  shift and go to state 24
-    DIVISION        shift and go to state 25
-    SUMA            shift and go to state 26
-    RESTA           shift and go to state 27
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
+    MULTIPLICACION  shift and go to state 24
+    DIVISIONENTERA  shift and go to state 25
+    DIVISION        shift and go to state 26
+    SUMA            shift and go to state 27
+    RESTA           shift and go to state 28
 
   ! RESTA           [ reduce using rule 6 (statement -> expression .) ]
 
@@ -324,8 +346,9 @@ state 7
     (7) statement -> var_assign .
 
     TYPE            reduce using rule 7 (statement -> var_assign .)
-    PARENTESISIZQ   reduce using rule 7 (statement -> var_assign .)
     ID              reduce using rule 7 (statement -> var_assign .)
+    PARENTESISIZQ   reduce using rule 7 (statement -> var_assign .)
+    INT             reduce using rule 7 (statement -> var_assign .)
     RESTA           reduce using rule 7 (statement -> var_assign .)
     $end            reduce using rule 7 (statement -> var_assign .)
 
@@ -334,1034 +357,1654 @@ state 8
 
     (23) statement -> TYPE . PARENTESISIZQ ID PARENTESISDER
 
-    PARENTESISIZQ   shift and go to state 28
+    PARENTESISIZQ   shift and go to state 29
 
 
 state 9
 
-    (32) expression -> PARENTESISIZQ . expression PARENTESISDER
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
+    (38) expression -> PARENTESISIZQ . expression PARENTESISDER
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
 
     PARENTESISIZQ   shift and go to state 9
-    ID              shift and go to state 30
-    RESTA           shift and go to state 16
+    ID              shift and go to state 31
+    INT             shift and go to state 21
+    RESTA           shift and go to state 17
 
-    expression                     shift and go to state 29
+    expression                     shift and go to state 30
 
 state 10
 
-    (33) expression -> ID .
-    (13) equals -> ID . IGUAL
-    (14) ids -> ID .
+    (30) statement -> ID . PUNTO INSERT PARENTESISIZQ expression COMA params PARENTESISDER
+    (39) expression -> ID .
+    (19) var_assign -> ID . IGUAL expression
+    (20) var_assign -> ID . IGUAL primitive
+    (29) var_assign -> ID . IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER
+    (26) sublist -> ID . index
+    (13) ids -> ID .
+    (27) index -> . CORCHETEIZQ expression CORCHETEDER
+    (28) index -> . CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER
 
   ! shift/reduce conflict for IGUAL resolved as shift
-    EXPONENTE       reduce using rule 33 (expression -> ID .)
-    MODULO          reduce using rule 33 (expression -> ID .)
-    MULTIPLICACION  reduce using rule 33 (expression -> ID .)
-    DIVISIONENTERA  reduce using rule 33 (expression -> ID .)
-    DIVISION        reduce using rule 33 (expression -> ID .)
-    SUMA            reduce using rule 33 (expression -> ID .)
-    RESTA           reduce using rule 33 (expression -> ID .)
-    TYPE            reduce using rule 33 (expression -> ID .)
-    PARENTESISIZQ   reduce using rule 33 (expression -> ID .)
-    ID              reduce using rule 33 (expression -> ID .)
-    $end            reduce using rule 33 (expression -> ID .)
-    IGUAL           shift and go to state 31
-    COMA            reduce using rule 14 (ids -> ID .)
+    PUNTO           shift and go to state 32
+    EXPONENTE       reduce using rule 39 (expression -> ID .)
+    MODULO          reduce using rule 39 (expression -> ID .)
+    MULTIPLICACION  reduce using rule 39 (expression -> ID .)
+    DIVISIONENTERA  reduce using rule 39 (expression -> ID .)
+    DIVISION        reduce using rule 39 (expression -> ID .)
+    SUMA            reduce using rule 39 (expression -> ID .)
+    RESTA           reduce using rule 39 (expression -> ID .)
+    TYPE            reduce using rule 39 (expression -> ID .)
+    ID              reduce using rule 39 (expression -> ID .)
+    PARENTESISIZQ   reduce using rule 39 (expression -> ID .)
+    INT             reduce using rule 39 (expression -> ID .)
+    $end            reduce using rule 39 (expression -> ID .)
+    IGUAL           shift and go to state 33
+    COMA            reduce using rule 13 (ids -> ID .)
+    CORCHETEIZQ     shift and go to state 35
 
-  ! IGUAL           [ reduce using rule 14 (ids -> ID .) ]
+  ! IGUAL           [ reduce using rule 13 (ids -> ID .) ]
 
+    index                          shift and go to state 34
 
 state 11
 
-    (8) primitive -> BOOLEAN .
+    (25) statement -> sublist .
+    (22) var_assign -> sublist . IGUAL params
 
-    TYPE            reduce using rule 8 (primitive -> BOOLEAN .)
-    PARENTESISIZQ   reduce using rule 8 (primitive -> BOOLEAN .)
-    ID              reduce using rule 8 (primitive -> BOOLEAN .)
-    RESTA           reduce using rule 8 (primitive -> BOOLEAN .)
-    $end            reduce using rule 8 (primitive -> BOOLEAN .)
-    CORCHETEDER     reduce using rule 8 (primitive -> BOOLEAN .)
-    COMA            reduce using rule 8 (primitive -> BOOLEAN .)
+    TYPE            reduce using rule 25 (statement -> sublist .)
+    ID              reduce using rule 25 (statement -> sublist .)
+    PARENTESISIZQ   reduce using rule 25 (statement -> sublist .)
+    INT             reduce using rule 25 (statement -> sublist .)
+    RESTA           reduce using rule 25 (statement -> sublist .)
+    $end            reduce using rule 25 (statement -> sublist .)
+    IGUAL           shift and go to state 36
 
 
 state 12
 
-    (9) primitive -> INT .
-
-    TYPE            reduce using rule 9 (primitive -> INT .)
-    PARENTESISIZQ   reduce using rule 9 (primitive -> INT .)
-    ID              reduce using rule 9 (primitive -> INT .)
-    RESTA           reduce using rule 9 (primitive -> INT .)
-    $end            reduce using rule 9 (primitive -> INT .)
-    CORCHETEDER     reduce using rule 9 (primitive -> INT .)
-    COMA            reduce using rule 9 (primitive -> INT .)
-
-
-state 13
-
-    (10) primitive -> STRING .
-
-    TYPE            reduce using rule 10 (primitive -> STRING .)
-    PARENTESISIZQ   reduce using rule 10 (primitive -> STRING .)
-    ID              reduce using rule 10 (primitive -> STRING .)
-    RESTA           reduce using rule 10 (primitive -> STRING .)
-    $end            reduce using rule 10 (primitive -> STRING .)
-    CORCHETEDER     reduce using rule 10 (primitive -> STRING .)
-    COMA            reduce using rule 10 (primitive -> STRING .)
-
-
-state 14
-
-    (11) primitive -> listed .
-
-    TYPE            reduce using rule 11 (primitive -> listed .)
-    PARENTESISIZQ   reduce using rule 11 (primitive -> listed .)
-    ID              reduce using rule 11 (primitive -> listed .)
-    RESTA           reduce using rule 11 (primitive -> listed .)
-    $end            reduce using rule 11 (primitive -> listed .)
-    CORCHETEDER     reduce using rule 11 (primitive -> listed .)
-    COMA            reduce using rule 11 (primitive -> listed .)
-
-
-state 15
-
     (12) print -> PUNTO .
 
     TYPE            reduce using rule 12 (print -> PUNTO .)
-    PARENTESISIZQ   reduce using rule 12 (print -> PUNTO .)
     ID              reduce using rule 12 (print -> PUNTO .)
+    PARENTESISIZQ   reduce using rule 12 (print -> PUNTO .)
+    INT             reduce using rule 12 (print -> PUNTO .)
     RESTA           reduce using rule 12 (print -> PUNTO .)
     $end            reduce using rule 12 (print -> PUNTO .)
 
 
+state 13
+
+    (8) primitive -> BOOLEAN .
+
+    TYPE            reduce using rule 8 (primitive -> BOOLEAN .)
+    ID              reduce using rule 8 (primitive -> BOOLEAN .)
+    PARENTESISIZQ   reduce using rule 8 (primitive -> BOOLEAN .)
+    INT             reduce using rule 8 (primitive -> BOOLEAN .)
+    RESTA           reduce using rule 8 (primitive -> BOOLEAN .)
+    $end            reduce using rule 8 (primitive -> BOOLEAN .)
+    CORCHETEDER     reduce using rule 8 (primitive -> BOOLEAN .)
+    COMA            reduce using rule 8 (primitive -> BOOLEAN .)
+    PARENTESISDER   reduce using rule 8 (primitive -> BOOLEAN .)
+
+
+state 14
+
+    (9) primitive -> INT .
+    (40) expression -> INT .
+
+  ! reduce/reduce conflict for RESTA resolved using rule 9 (primitive -> INT .)
+  ! reduce/reduce conflict for TYPE resolved using rule 9 (primitive -> INT .)
+  ! reduce/reduce conflict for ID resolved using rule 9 (primitive -> INT .)
+  ! reduce/reduce conflict for PARENTESISIZQ resolved using rule 9 (primitive -> INT .)
+  ! reduce/reduce conflict for INT resolved using rule 9 (primitive -> INT .)
+  ! reduce/reduce conflict for $end resolved using rule 9 (primitive -> INT .)
+  ! reduce/reduce conflict for CORCHETEDER resolved using rule 9 (primitive -> INT .)
+  ! reduce/reduce conflict for COMA resolved using rule 9 (primitive -> INT .)
+  ! reduce/reduce conflict for PARENTESISDER resolved using rule 9 (primitive -> INT .)
+    TYPE            reduce using rule 9 (primitive -> INT .)
+    ID              reduce using rule 9 (primitive -> INT .)
+    PARENTESISIZQ   reduce using rule 9 (primitive -> INT .)
+    INT             reduce using rule 9 (primitive -> INT .)
+    RESTA           reduce using rule 9 (primitive -> INT .)
+    $end            reduce using rule 9 (primitive -> INT .)
+    CORCHETEDER     reduce using rule 9 (primitive -> INT .)
+    COMA            reduce using rule 9 (primitive -> INT .)
+    PARENTESISDER   reduce using rule 9 (primitive -> INT .)
+    EXPONENTE       reduce using rule 40 (expression -> INT .)
+    MODULO          reduce using rule 40 (expression -> INT .)
+    MULTIPLICACION  reduce using rule 40 (expression -> INT .)
+    DIVISIONENTERA  reduce using rule 40 (expression -> INT .)
+    DIVISION        reduce using rule 40 (expression -> INT .)
+    SUMA            reduce using rule 40 (expression -> INT .)
+
+  ! RESTA           [ reduce using rule 40 (expression -> INT .) ]
+  ! TYPE            [ reduce using rule 40 (expression -> INT .) ]
+  ! ID              [ reduce using rule 40 (expression -> INT .) ]
+  ! PARENTESISIZQ   [ reduce using rule 40 (expression -> INT .) ]
+  ! INT             [ reduce using rule 40 (expression -> INT .) ]
+  ! $end            [ reduce using rule 40 (expression -> INT .) ]
+  ! CORCHETEDER     [ reduce using rule 40 (expression -> INT .) ]
+  ! COMA            [ reduce using rule 40 (expression -> INT .) ]
+  ! PARENTESISDER   [ reduce using rule 40 (expression -> INT .) ]
+
+
+state 15
+
+    (10) primitive -> STRING .
+
+    TYPE            reduce using rule 10 (primitive -> STRING .)
+    ID              reduce using rule 10 (primitive -> STRING .)
+    PARENTESISIZQ   reduce using rule 10 (primitive -> STRING .)
+    INT             reduce using rule 10 (primitive -> STRING .)
+    RESTA           reduce using rule 10 (primitive -> STRING .)
+    $end            reduce using rule 10 (primitive -> STRING .)
+    CORCHETEDER     reduce using rule 10 (primitive -> STRING .)
+    COMA            reduce using rule 10 (primitive -> STRING .)
+    PARENTESISDER   reduce using rule 10 (primitive -> STRING .)
+
+
 state 16
 
-    (34) expression -> RESTA . expression
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
+    (11) primitive -> list .
 
-    PARENTESISIZQ   shift and go to state 9
-    ID              shift and go to state 30
-    RESTA           shift and go to state 16
+    TYPE            reduce using rule 11 (primitive -> list .)
+    ID              reduce using rule 11 (primitive -> list .)
+    PARENTESISIZQ   reduce using rule 11 (primitive -> list .)
+    INT             reduce using rule 11 (primitive -> list .)
+    RESTA           reduce using rule 11 (primitive -> list .)
+    $end            reduce using rule 11 (primitive -> list .)
+    CORCHETEDER     reduce using rule 11 (primitive -> list .)
+    COMA            reduce using rule 11 (primitive -> list .)
+    PARENTESISDER   reduce using rule 11 (primitive -> list .)
 
-    expression                     shift and go to state 32
 
 state 17
 
-    (20) var_assign -> equals . expression
-    (21) var_assign -> equals . primitive
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
-    (8) primitive -> . BOOLEAN
-    (9) primitive -> . INT
-    (10) primitive -> . STRING
-    (11) primitive -> . listed
-    (24) listed -> . CORCHETEIZQ params CORCHETEDER
+    (41) expression -> RESTA . expression
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
 
     PARENTESISIZQ   shift and go to state 9
-    ID              shift and go to state 30
-    RESTA           shift and go to state 16
-    BOOLEAN         shift and go to state 11
-    INT             shift and go to state 12
-    STRING          shift and go to state 13
-    CORCHETEIZQ     shift and go to state 19
+    ID              shift and go to state 31
+    INT             shift and go to state 21
+    RESTA           shift and go to state 17
 
-    expression                     shift and go to state 33
-    primitive                      shift and go to state 34
-    listed                         shift and go to state 14
+    expression                     shift and go to state 37
 
 state 18
 
-    (22) var_assign -> ids . IGUAL params
-    (15) ids -> ids . COMA ids
+    (21) var_assign -> ids . IGUAL params
+    (14) ids -> ids . COMA ids
 
-    IGUAL           shift and go to state 35
-    COMA            shift and go to state 36
+    IGUAL           shift and go to state 38
+    COMA            shift and go to state 39
 
 
 state 19
 
-    (24) listed -> CORCHETEIZQ . params CORCHETEDER
+    (24) list -> CORCHETEIZQ . params CORCHETEDER
+    (15) params -> . primitive
     (16) params -> . expression
-    (17) params -> . primitive
-    (18) params -> . params COMA params
-    (19) params -> . empty
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
+    (17) params -> . params COMA params
+    (18) params -> . empty
     (8) primitive -> . BOOLEAN
     (9) primitive -> . INT
     (10) primitive -> . STRING
-    (11) primitive -> . listed
-    (35) empty -> .
-    (24) listed -> . CORCHETEIZQ params CORCHETEDER
+    (11) primitive -> . list
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
+    (42) empty -> .
+    (24) list -> . CORCHETEIZQ params CORCHETEDER
 
+    BOOLEAN         shift and go to state 13
+    INT             shift and go to state 14
+    STRING          shift and go to state 15
     PARENTESISIZQ   shift and go to state 9
-    ID              shift and go to state 30
-    RESTA           shift and go to state 16
-    BOOLEAN         shift and go to state 11
-    INT             shift and go to state 12
-    STRING          shift and go to state 13
-    CORCHETEDER     reduce using rule 35 (empty -> .)
-    COMA            reduce using rule 35 (empty -> .)
+    ID              shift and go to state 31
+    RESTA           shift and go to state 17
+    CORCHETEDER     reduce using rule 42 (empty -> .)
+    COMA            reduce using rule 42 (empty -> .)
     CORCHETEIZQ     shift and go to state 19
 
-    params                         shift and go to state 37
-    expression                     shift and go to state 38
-    primitive                      shift and go to state 39
-    empty                          shift and go to state 40
-    listed                         shift and go to state 14
+    params                         shift and go to state 40
+    primitive                      shift and go to state 41
+    expression                     shift and go to state 42
+    empty                          shift and go to state 43
+    list                           shift and go to state 16
 
 state 20
 
     (1) statements -> statements statement .
 
     TYPE            reduce using rule 1 (statements -> statements statement .)
-    PARENTESISIZQ   reduce using rule 1 (statements -> statements statement .)
     ID              reduce using rule 1 (statements -> statements statement .)
+    PARENTESISIZQ   reduce using rule 1 (statements -> statements statement .)
+    INT             reduce using rule 1 (statements -> statements statement .)
     RESTA           reduce using rule 1 (statements -> statements statement .)
     $end            reduce using rule 1 (statements -> statements statement .)
 
 
 state 21
 
-    (25) expression -> expression EXPONENTE . expression
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
+    (40) expression -> INT .
 
-    PARENTESISIZQ   shift and go to state 9
-    ID              shift and go to state 30
-    RESTA           shift and go to state 16
+    EXPONENTE       reduce using rule 40 (expression -> INT .)
+    MODULO          reduce using rule 40 (expression -> INT .)
+    MULTIPLICACION  reduce using rule 40 (expression -> INT .)
+    DIVISIONENTERA  reduce using rule 40 (expression -> INT .)
+    DIVISION        reduce using rule 40 (expression -> INT .)
+    SUMA            reduce using rule 40 (expression -> INT .)
+    RESTA           reduce using rule 40 (expression -> INT .)
+    TYPE            reduce using rule 40 (expression -> INT .)
+    ID              reduce using rule 40 (expression -> INT .)
+    PARENTESISIZQ   reduce using rule 40 (expression -> INT .)
+    INT             reduce using rule 40 (expression -> INT .)
+    $end            reduce using rule 40 (expression -> INT .)
+    PARENTESISDER   reduce using rule 40 (expression -> INT .)
+    CORCHETEDER     reduce using rule 40 (expression -> INT .)
+    COMA            reduce using rule 40 (expression -> INT .)
+    DOSPUNTOS       reduce using rule 40 (expression -> INT .)
 
-    expression                     shift and go to state 41
 
 state 22
 
-    (26) expression -> expression MODULO . expression
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
+    (31) expression -> expression EXPONENTE . expression
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
 
     PARENTESISIZQ   shift and go to state 9
-    ID              shift and go to state 30
-    RESTA           shift and go to state 16
-
-    expression                     shift and go to state 42
-
-state 23
-
-    (27) expression -> expression MULTIPLICACION . expression
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
-
-    PARENTESISIZQ   shift and go to state 9
-    ID              shift and go to state 30
-    RESTA           shift and go to state 16
-
-    expression                     shift and go to state 43
-
-state 24
-
-    (28) expression -> expression DIVISIONENTERA . expression
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
-
-    PARENTESISIZQ   shift and go to state 9
-    ID              shift and go to state 30
-    RESTA           shift and go to state 16
+    ID              shift and go to state 31
+    INT             shift and go to state 21
+    RESTA           shift and go to state 17
 
     expression                     shift and go to state 44
 
-state 25
+state 23
 
-    (29) expression -> expression DIVISION . expression
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
+    (32) expression -> expression MODULO . expression
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
 
     PARENTESISIZQ   shift and go to state 9
-    ID              shift and go to state 30
-    RESTA           shift and go to state 16
+    ID              shift and go to state 31
+    INT             shift and go to state 21
+    RESTA           shift and go to state 17
 
     expression                     shift and go to state 45
 
-state 26
+state 24
 
-    (30) expression -> expression SUMA . expression
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
+    (33) expression -> expression MULTIPLICACION . expression
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
 
     PARENTESISIZQ   shift and go to state 9
-    ID              shift and go to state 30
-    RESTA           shift and go to state 16
+    ID              shift and go to state 31
+    INT             shift and go to state 21
+    RESTA           shift and go to state 17
 
     expression                     shift and go to state 46
 
-state 27
+state 25
 
-    (31) expression -> expression RESTA . expression
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
+    (34) expression -> expression DIVISIONENTERA . expression
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
 
     PARENTESISIZQ   shift and go to state 9
-    ID              shift and go to state 30
-    RESTA           shift and go to state 16
+    ID              shift and go to state 31
+    INT             shift and go to state 21
+    RESTA           shift and go to state 17
 
     expression                     shift and go to state 47
 
+state 26
+
+    (35) expression -> expression DIVISION . expression
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
+
+    PARENTESISIZQ   shift and go to state 9
+    ID              shift and go to state 31
+    INT             shift and go to state 21
+    RESTA           shift and go to state 17
+
+    expression                     shift and go to state 48
+
+state 27
+
+    (36) expression -> expression SUMA . expression
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
+
+    PARENTESISIZQ   shift and go to state 9
+    ID              shift and go to state 31
+    INT             shift and go to state 21
+    RESTA           shift and go to state 17
+
+    expression                     shift and go to state 49
+
 state 28
 
-    (23) statement -> TYPE PARENTESISIZQ . ID PARENTESISDER
+    (37) expression -> expression RESTA . expression
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
 
-    ID              shift and go to state 48
+    PARENTESISIZQ   shift and go to state 9
+    ID              shift and go to state 31
+    INT             shift and go to state 21
+    RESTA           shift and go to state 17
 
+    expression                     shift and go to state 50
 
 state 29
 
-    (32) expression -> PARENTESISIZQ expression . PARENTESISDER
-    (25) expression -> expression . EXPONENTE expression
-    (26) expression -> expression . MODULO expression
-    (27) expression -> expression . MULTIPLICACION expression
-    (28) expression -> expression . DIVISIONENTERA expression
-    (29) expression -> expression . DIVISION expression
-    (30) expression -> expression . SUMA expression
-    (31) expression -> expression . RESTA expression
+    (23) statement -> TYPE PARENTESISIZQ . ID PARENTESISDER
 
-    PARENTESISDER   shift and go to state 49
-    EXPONENTE       shift and go to state 21
-    MODULO          shift and go to state 22
-    MULTIPLICACION  shift and go to state 23
-    DIVISIONENTERA  shift and go to state 24
-    DIVISION        shift and go to state 25
-    SUMA            shift and go to state 26
-    RESTA           shift and go to state 27
+    ID              shift and go to state 51
 
 
 state 30
 
-    (33) expression -> ID .
+    (38) expression -> PARENTESISIZQ expression . PARENTESISDER
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
 
-    PARENTESISDER   reduce using rule 33 (expression -> ID .)
-    EXPONENTE       reduce using rule 33 (expression -> ID .)
-    MODULO          reduce using rule 33 (expression -> ID .)
-    MULTIPLICACION  reduce using rule 33 (expression -> ID .)
-    DIVISIONENTERA  reduce using rule 33 (expression -> ID .)
-    DIVISION        reduce using rule 33 (expression -> ID .)
-    SUMA            reduce using rule 33 (expression -> ID .)
-    RESTA           reduce using rule 33 (expression -> ID .)
-    TYPE            reduce using rule 33 (expression -> ID .)
-    PARENTESISIZQ   reduce using rule 33 (expression -> ID .)
-    ID              reduce using rule 33 (expression -> ID .)
-    $end            reduce using rule 33 (expression -> ID .)
-    CORCHETEDER     reduce using rule 33 (expression -> ID .)
-    COMA            reduce using rule 33 (expression -> ID .)
+    PARENTESISDER   shift and go to state 52
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
+    MULTIPLICACION  shift and go to state 24
+    DIVISIONENTERA  shift and go to state 25
+    DIVISION        shift and go to state 26
+    SUMA            shift and go to state 27
+    RESTA           shift and go to state 28
 
 
 state 31
 
-    (13) equals -> ID IGUAL .
+    (39) expression -> ID .
 
-    PARENTESISIZQ   reduce using rule 13 (equals -> ID IGUAL .)
-    ID              reduce using rule 13 (equals -> ID IGUAL .)
-    RESTA           reduce using rule 13 (equals -> ID IGUAL .)
-    BOOLEAN         reduce using rule 13 (equals -> ID IGUAL .)
-    INT             reduce using rule 13 (equals -> ID IGUAL .)
-    STRING          reduce using rule 13 (equals -> ID IGUAL .)
-    CORCHETEIZQ     reduce using rule 13 (equals -> ID IGUAL .)
+    PARENTESISDER   reduce using rule 39 (expression -> ID .)
+    EXPONENTE       reduce using rule 39 (expression -> ID .)
+    MODULO          reduce using rule 39 (expression -> ID .)
+    MULTIPLICACION  reduce using rule 39 (expression -> ID .)
+    DIVISIONENTERA  reduce using rule 39 (expression -> ID .)
+    DIVISION        reduce using rule 39 (expression -> ID .)
+    SUMA            reduce using rule 39 (expression -> ID .)
+    RESTA           reduce using rule 39 (expression -> ID .)
+    TYPE            reduce using rule 39 (expression -> ID .)
+    ID              reduce using rule 39 (expression -> ID .)
+    PARENTESISIZQ   reduce using rule 39 (expression -> ID .)
+    INT             reduce using rule 39 (expression -> ID .)
+    $end            reduce using rule 39 (expression -> ID .)
+    CORCHETEDER     reduce using rule 39 (expression -> ID .)
+    COMA            reduce using rule 39 (expression -> ID .)
+    DOSPUNTOS       reduce using rule 39 (expression -> ID .)
 
 
 state 32
 
-    (34) expression -> RESTA expression .
-    (25) expression -> expression . EXPONENTE expression
-    (26) expression -> expression . MODULO expression
-    (27) expression -> expression . MULTIPLICACION expression
-    (28) expression -> expression . DIVISIONENTERA expression
-    (29) expression -> expression . DIVISION expression
-    (30) expression -> expression . SUMA expression
-    (31) expression -> expression . RESTA expression
+    (30) statement -> ID PUNTO . INSERT PARENTESISIZQ expression COMA params PARENTESISDER
 
-    MULTIPLICACION  reduce using rule 34 (expression -> RESTA expression .)
-    DIVISIONENTERA  reduce using rule 34 (expression -> RESTA expression .)
-    DIVISION        reduce using rule 34 (expression -> RESTA expression .)
-    SUMA            reduce using rule 34 (expression -> RESTA expression .)
-    RESTA           reduce using rule 34 (expression -> RESTA expression .)
-    TYPE            reduce using rule 34 (expression -> RESTA expression .)
-    PARENTESISIZQ   reduce using rule 34 (expression -> RESTA expression .)
-    ID              reduce using rule 34 (expression -> RESTA expression .)
-    $end            reduce using rule 34 (expression -> RESTA expression .)
-    PARENTESISDER   reduce using rule 34 (expression -> RESTA expression .)
-    CORCHETEDER     reduce using rule 34 (expression -> RESTA expression .)
-    COMA            reduce using rule 34 (expression -> RESTA expression .)
-    EXPONENTE       shift and go to state 21
-    MODULO          shift and go to state 22
-
-  ! EXPONENTE       [ reduce using rule 34 (expression -> RESTA expression .) ]
-  ! MODULO          [ reduce using rule 34 (expression -> RESTA expression .) ]
-  ! MULTIPLICACION  [ shift and go to state 23 ]
-  ! DIVISIONENTERA  [ shift and go to state 24 ]
-  ! DIVISION        [ shift and go to state 25 ]
-  ! SUMA            [ shift and go to state 26 ]
-  ! RESTA           [ shift and go to state 27 ]
+    INSERT          shift and go to state 53
 
 
 state 33
 
-    (20) var_assign -> equals expression .
-    (25) expression -> expression . EXPONENTE expression
-    (26) expression -> expression . MODULO expression
-    (27) expression -> expression . MULTIPLICACION expression
-    (28) expression -> expression . DIVISIONENTERA expression
-    (29) expression -> expression . DIVISION expression
-    (30) expression -> expression . SUMA expression
-    (31) expression -> expression . RESTA expression
+    (19) var_assign -> ID IGUAL . expression
+    (20) var_assign -> ID IGUAL . primitive
+    (29) var_assign -> ID IGUAL . LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
+    (8) primitive -> . BOOLEAN
+    (9) primitive -> . INT
+    (10) primitive -> . STRING
+    (11) primitive -> . list
+    (24) list -> . CORCHETEIZQ params CORCHETEDER
 
-  ! shift/reduce conflict for RESTA resolved as shift
-    TYPE            reduce using rule 20 (var_assign -> equals expression .)
-    PARENTESISIZQ   reduce using rule 20 (var_assign -> equals expression .)
-    ID              reduce using rule 20 (var_assign -> equals expression .)
-    $end            reduce using rule 20 (var_assign -> equals expression .)
-    EXPONENTE       shift and go to state 21
-    MODULO          shift and go to state 22
-    MULTIPLICACION  shift and go to state 23
-    DIVISIONENTERA  shift and go to state 24
-    DIVISION        shift and go to state 25
-    SUMA            shift and go to state 26
-    RESTA           shift and go to state 27
+    LIST            shift and go to state 56
+    PARENTESISIZQ   shift and go to state 9
+    ID              shift and go to state 31
+    INT             shift and go to state 57
+    RESTA           shift and go to state 17
+    BOOLEAN         shift and go to state 13
+    STRING          shift and go to state 15
+    CORCHETEIZQ     shift and go to state 19
 
-  ! RESTA           [ reduce using rule 20 (var_assign -> equals expression .) ]
-
+    expression                     shift and go to state 54
+    primitive                      shift and go to state 55
+    list                           shift and go to state 16
 
 state 34
 
-    (21) var_assign -> equals primitive .
+    (26) sublist -> ID index .
 
-    TYPE            reduce using rule 21 (var_assign -> equals primitive .)
-    PARENTESISIZQ   reduce using rule 21 (var_assign -> equals primitive .)
-    ID              reduce using rule 21 (var_assign -> equals primitive .)
-    RESTA           reduce using rule 21 (var_assign -> equals primitive .)
-    $end            reduce using rule 21 (var_assign -> equals primitive .)
+    IGUAL           reduce using rule 26 (sublist -> ID index .)
+    TYPE            reduce using rule 26 (sublist -> ID index .)
+    ID              reduce using rule 26 (sublist -> ID index .)
+    PARENTESISIZQ   reduce using rule 26 (sublist -> ID index .)
+    INT             reduce using rule 26 (sublist -> ID index .)
+    RESTA           reduce using rule 26 (sublist -> ID index .)
+    $end            reduce using rule 26 (sublist -> ID index .)
 
 
 state 35
 
-    (22) var_assign -> ids IGUAL . params
-    (16) params -> . expression
-    (17) params -> . primitive
-    (18) params -> . params COMA params
-    (19) params -> . empty
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
-    (8) primitive -> . BOOLEAN
-    (9) primitive -> . INT
-    (10) primitive -> . STRING
-    (11) primitive -> . listed
-    (35) empty -> .
-    (24) listed -> . CORCHETEIZQ params CORCHETEDER
+    (27) index -> CORCHETEIZQ . expression CORCHETEDER
+    (28) index -> CORCHETEIZQ . expression DOSPUNTOS expression CORCHETEDER
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
 
-  ! shift/reduce conflict for PARENTESISIZQ resolved as shift
-  ! shift/reduce conflict for ID resolved as shift
-  ! shift/reduce conflict for RESTA resolved as shift
     PARENTESISIZQ   shift and go to state 9
-    ID              shift and go to state 30
-    RESTA           shift and go to state 16
-    BOOLEAN         shift and go to state 11
-    INT             shift and go to state 12
-    STRING          shift and go to state 13
-    COMA            reduce using rule 35 (empty -> .)
-    TYPE            reduce using rule 35 (empty -> .)
-    $end            reduce using rule 35 (empty -> .)
-    CORCHETEIZQ     shift and go to state 19
+    ID              shift and go to state 31
+    INT             shift and go to state 21
+    RESTA           shift and go to state 17
 
-  ! PARENTESISIZQ   [ reduce using rule 35 (empty -> .) ]
-  ! ID              [ reduce using rule 35 (empty -> .) ]
-  ! RESTA           [ reduce using rule 35 (empty -> .) ]
-
-    params                         shift and go to state 50
-    expression                     shift and go to state 38
-    primitive                      shift and go to state 39
-    empty                          shift and go to state 40
-    listed                         shift and go to state 14
+    expression                     shift and go to state 58
 
 state 36
 
-    (15) ids -> ids COMA . ids
-    (14) ids -> . ID
-    (15) ids -> . ids COMA ids
+    (22) var_assign -> sublist IGUAL . params
+    (15) params -> . primitive
+    (16) params -> . expression
+    (17) params -> . params COMA params
+    (18) params -> . empty
+    (8) primitive -> . BOOLEAN
+    (9) primitive -> . INT
+    (10) primitive -> . STRING
+    (11) primitive -> . list
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
+    (42) empty -> .
+    (24) list -> . CORCHETEIZQ params CORCHETEDER
 
-    ID              shift and go to state 52
+  ! shift/reduce conflict for ID resolved as shift
+  ! shift/reduce conflict for PARENTESISIZQ resolved as shift
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for RESTA resolved as shift
+    BOOLEAN         shift and go to state 13
+    INT             shift and go to state 14
+    STRING          shift and go to state 15
+    PARENTESISIZQ   shift and go to state 9
+    ID              shift and go to state 31
+    RESTA           shift and go to state 17
+    COMA            reduce using rule 42 (empty -> .)
+    TYPE            reduce using rule 42 (empty -> .)
+    $end            reduce using rule 42 (empty -> .)
+    CORCHETEIZQ     shift and go to state 19
 
-    ids                            shift and go to state 51
+  ! ID              [ reduce using rule 42 (empty -> .) ]
+  ! PARENTESISIZQ   [ reduce using rule 42 (empty -> .) ]
+  ! INT             [ reduce using rule 42 (empty -> .) ]
+  ! RESTA           [ reduce using rule 42 (empty -> .) ]
+
+    params                         shift and go to state 59
+    primitive                      shift and go to state 41
+    expression                     shift and go to state 42
+    empty                          shift and go to state 43
+    list                           shift and go to state 16
 
 state 37
 
-    (24) listed -> CORCHETEIZQ params . CORCHETEDER
-    (18) params -> params . COMA params
+    (41) expression -> RESTA expression .
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
 
-    CORCHETEDER     shift and go to state 53
-    COMA            shift and go to state 54
+    MULTIPLICACION  reduce using rule 41 (expression -> RESTA expression .)
+    DIVISIONENTERA  reduce using rule 41 (expression -> RESTA expression .)
+    DIVISION        reduce using rule 41 (expression -> RESTA expression .)
+    SUMA            reduce using rule 41 (expression -> RESTA expression .)
+    RESTA           reduce using rule 41 (expression -> RESTA expression .)
+    TYPE            reduce using rule 41 (expression -> RESTA expression .)
+    ID              reduce using rule 41 (expression -> RESTA expression .)
+    PARENTESISIZQ   reduce using rule 41 (expression -> RESTA expression .)
+    INT             reduce using rule 41 (expression -> RESTA expression .)
+    $end            reduce using rule 41 (expression -> RESTA expression .)
+    PARENTESISDER   reduce using rule 41 (expression -> RESTA expression .)
+    CORCHETEDER     reduce using rule 41 (expression -> RESTA expression .)
+    COMA            reduce using rule 41 (expression -> RESTA expression .)
+    DOSPUNTOS       reduce using rule 41 (expression -> RESTA expression .)
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
+
+  ! EXPONENTE       [ reduce using rule 41 (expression -> RESTA expression .) ]
+  ! MODULO          [ reduce using rule 41 (expression -> RESTA expression .) ]
+  ! MULTIPLICACION  [ shift and go to state 24 ]
+  ! DIVISIONENTERA  [ shift and go to state 25 ]
+  ! DIVISION        [ shift and go to state 26 ]
+  ! SUMA            [ shift and go to state 27 ]
+  ! RESTA           [ shift and go to state 28 ]
 
 
 state 38
 
+    (21) var_assign -> ids IGUAL . params
+    (15) params -> . primitive
+    (16) params -> . expression
+    (17) params -> . params COMA params
+    (18) params -> . empty
+    (8) primitive -> . BOOLEAN
+    (9) primitive -> . INT
+    (10) primitive -> . STRING
+    (11) primitive -> . list
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
+    (42) empty -> .
+    (24) list -> . CORCHETEIZQ params CORCHETEDER
+
+  ! shift/reduce conflict for ID resolved as shift
+  ! shift/reduce conflict for PARENTESISIZQ resolved as shift
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for RESTA resolved as shift
+    BOOLEAN         shift and go to state 13
+    INT             shift and go to state 14
+    STRING          shift and go to state 15
+    PARENTESISIZQ   shift and go to state 9
+    ID              shift and go to state 31
+    RESTA           shift and go to state 17
+    COMA            reduce using rule 42 (empty -> .)
+    TYPE            reduce using rule 42 (empty -> .)
+    $end            reduce using rule 42 (empty -> .)
+    CORCHETEIZQ     shift and go to state 19
+
+  ! ID              [ reduce using rule 42 (empty -> .) ]
+  ! PARENTESISIZQ   [ reduce using rule 42 (empty -> .) ]
+  ! INT             [ reduce using rule 42 (empty -> .) ]
+  ! RESTA           [ reduce using rule 42 (empty -> .) ]
+
+    params                         shift and go to state 60
+    primitive                      shift and go to state 41
+    expression                     shift and go to state 42
+    empty                          shift and go to state 43
+    list                           shift and go to state 16
+
+state 39
+
+    (14) ids -> ids COMA . ids
+    (13) ids -> . ID
+    (14) ids -> . ids COMA ids
+
+    ID              shift and go to state 62
+
+    ids                            shift and go to state 61
+
+state 40
+
+    (24) list -> CORCHETEIZQ params . CORCHETEDER
+    (17) params -> params . COMA params
+
+    CORCHETEDER     shift and go to state 63
+    COMA            shift and go to state 64
+
+
+state 41
+
+    (15) params -> primitive .
+
+    CORCHETEDER     reduce using rule 15 (params -> primitive .)
+    COMA            reduce using rule 15 (params -> primitive .)
+    TYPE            reduce using rule 15 (params -> primitive .)
+    ID              reduce using rule 15 (params -> primitive .)
+    PARENTESISIZQ   reduce using rule 15 (params -> primitive .)
+    INT             reduce using rule 15 (params -> primitive .)
+    RESTA           reduce using rule 15 (params -> primitive .)
+    $end            reduce using rule 15 (params -> primitive .)
+    PARENTESISDER   reduce using rule 15 (params -> primitive .)
+
+
+state 42
+
     (16) params -> expression .
-    (25) expression -> expression . EXPONENTE expression
-    (26) expression -> expression . MODULO expression
-    (27) expression -> expression . MULTIPLICACION expression
-    (28) expression -> expression . DIVISIONENTERA expression
-    (29) expression -> expression . DIVISION expression
-    (30) expression -> expression . SUMA expression
-    (31) expression -> expression . RESTA expression
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
 
   ! shift/reduce conflict for RESTA resolved as shift
     CORCHETEDER     reduce using rule 16 (params -> expression .)
     COMA            reduce using rule 16 (params -> expression .)
     TYPE            reduce using rule 16 (params -> expression .)
-    PARENTESISIZQ   reduce using rule 16 (params -> expression .)
     ID              reduce using rule 16 (params -> expression .)
+    PARENTESISIZQ   reduce using rule 16 (params -> expression .)
+    INT             reduce using rule 16 (params -> expression .)
     $end            reduce using rule 16 (params -> expression .)
-    EXPONENTE       shift and go to state 21
-    MODULO          shift and go to state 22
-    MULTIPLICACION  shift and go to state 23
-    DIVISIONENTERA  shift and go to state 24
-    DIVISION        shift and go to state 25
-    SUMA            shift and go to state 26
-    RESTA           shift and go to state 27
+    PARENTESISDER   reduce using rule 16 (params -> expression .)
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
+    MULTIPLICACION  shift and go to state 24
+    DIVISIONENTERA  shift and go to state 25
+    DIVISION        shift and go to state 26
+    SUMA            shift and go to state 27
+    RESTA           shift and go to state 28
 
   ! RESTA           [ reduce using rule 16 (params -> expression .) ]
 
 
-state 39
-
-    (17) params -> primitive .
-
-    CORCHETEDER     reduce using rule 17 (params -> primitive .)
-    COMA            reduce using rule 17 (params -> primitive .)
-    TYPE            reduce using rule 17 (params -> primitive .)
-    PARENTESISIZQ   reduce using rule 17 (params -> primitive .)
-    ID              reduce using rule 17 (params -> primitive .)
-    RESTA           reduce using rule 17 (params -> primitive .)
-    $end            reduce using rule 17 (params -> primitive .)
-
-
-state 40
-
-    (19) params -> empty .
-
-    CORCHETEDER     reduce using rule 19 (params -> empty .)
-    COMA            reduce using rule 19 (params -> empty .)
-    TYPE            reduce using rule 19 (params -> empty .)
-    PARENTESISIZQ   reduce using rule 19 (params -> empty .)
-    ID              reduce using rule 19 (params -> empty .)
-    RESTA           reduce using rule 19 (params -> empty .)
-    $end            reduce using rule 19 (params -> empty .)
-
-
-state 41
-
-    (25) expression -> expression EXPONENTE expression .
-    (25) expression -> expression . EXPONENTE expression
-    (26) expression -> expression . MODULO expression
-    (27) expression -> expression . MULTIPLICACION expression
-    (28) expression -> expression . DIVISIONENTERA expression
-    (29) expression -> expression . DIVISION expression
-    (30) expression -> expression . SUMA expression
-    (31) expression -> expression . RESTA expression
-
-    MODULO          reduce using rule 25 (expression -> expression EXPONENTE expression .)
-    MULTIPLICACION  reduce using rule 25 (expression -> expression EXPONENTE expression .)
-    DIVISIONENTERA  reduce using rule 25 (expression -> expression EXPONENTE expression .)
-    DIVISION        reduce using rule 25 (expression -> expression EXPONENTE expression .)
-    SUMA            reduce using rule 25 (expression -> expression EXPONENTE expression .)
-    RESTA           reduce using rule 25 (expression -> expression EXPONENTE expression .)
-    TYPE            reduce using rule 25 (expression -> expression EXPONENTE expression .)
-    PARENTESISIZQ   reduce using rule 25 (expression -> expression EXPONENTE expression .)
-    ID              reduce using rule 25 (expression -> expression EXPONENTE expression .)
-    $end            reduce using rule 25 (expression -> expression EXPONENTE expression .)
-    PARENTESISDER   reduce using rule 25 (expression -> expression EXPONENTE expression .)
-    CORCHETEDER     reduce using rule 25 (expression -> expression EXPONENTE expression .)
-    COMA            reduce using rule 25 (expression -> expression EXPONENTE expression .)
-    EXPONENTE       shift and go to state 21
-
-  ! EXPONENTE       [ reduce using rule 25 (expression -> expression EXPONENTE expression .) ]
-  ! MODULO          [ shift and go to state 22 ]
-  ! MULTIPLICACION  [ shift and go to state 23 ]
-  ! DIVISIONENTERA  [ shift and go to state 24 ]
-  ! DIVISION        [ shift and go to state 25 ]
-  ! SUMA            [ shift and go to state 26 ]
-  ! RESTA           [ shift and go to state 27 ]
-
-
-state 42
-
-    (26) expression -> expression MODULO expression .
-    (25) expression -> expression . EXPONENTE expression
-    (26) expression -> expression . MODULO expression
-    (27) expression -> expression . MULTIPLICACION expression
-    (28) expression -> expression . DIVISIONENTERA expression
-    (29) expression -> expression . DIVISION expression
-    (30) expression -> expression . SUMA expression
-    (31) expression -> expression . RESTA expression
-
-    MULTIPLICACION  reduce using rule 26 (expression -> expression MODULO expression .)
-    DIVISIONENTERA  reduce using rule 26 (expression -> expression MODULO expression .)
-    DIVISION        reduce using rule 26 (expression -> expression MODULO expression .)
-    SUMA            reduce using rule 26 (expression -> expression MODULO expression .)
-    RESTA           reduce using rule 26 (expression -> expression MODULO expression .)
-    TYPE            reduce using rule 26 (expression -> expression MODULO expression .)
-    PARENTESISIZQ   reduce using rule 26 (expression -> expression MODULO expression .)
-    ID              reduce using rule 26 (expression -> expression MODULO expression .)
-    $end            reduce using rule 26 (expression -> expression MODULO expression .)
-    PARENTESISDER   reduce using rule 26 (expression -> expression MODULO expression .)
-    CORCHETEDER     reduce using rule 26 (expression -> expression MODULO expression .)
-    COMA            reduce using rule 26 (expression -> expression MODULO expression .)
-    EXPONENTE       shift and go to state 21
-    MODULO          shift and go to state 22
-
-  ! EXPONENTE       [ reduce using rule 26 (expression -> expression MODULO expression .) ]
-  ! MODULO          [ reduce using rule 26 (expression -> expression MODULO expression .) ]
-  ! MULTIPLICACION  [ shift and go to state 23 ]
-  ! DIVISIONENTERA  [ shift and go to state 24 ]
-  ! DIVISION        [ shift and go to state 25 ]
-  ! SUMA            [ shift and go to state 26 ]
-  ! RESTA           [ shift and go to state 27 ]
-
-
 state 43
 
-    (27) expression -> expression MULTIPLICACION expression .
-    (25) expression -> expression . EXPONENTE expression
-    (26) expression -> expression . MODULO expression
-    (27) expression -> expression . MULTIPLICACION expression
-    (28) expression -> expression . DIVISIONENTERA expression
-    (29) expression -> expression . DIVISION expression
-    (30) expression -> expression . SUMA expression
-    (31) expression -> expression . RESTA expression
+    (18) params -> empty .
 
-    MULTIPLICACION  reduce using rule 27 (expression -> expression MULTIPLICACION expression .)
-    DIVISIONENTERA  reduce using rule 27 (expression -> expression MULTIPLICACION expression .)
-    DIVISION        reduce using rule 27 (expression -> expression MULTIPLICACION expression .)
-    SUMA            reduce using rule 27 (expression -> expression MULTIPLICACION expression .)
-    RESTA           reduce using rule 27 (expression -> expression MULTIPLICACION expression .)
-    TYPE            reduce using rule 27 (expression -> expression MULTIPLICACION expression .)
-    PARENTESISIZQ   reduce using rule 27 (expression -> expression MULTIPLICACION expression .)
-    ID              reduce using rule 27 (expression -> expression MULTIPLICACION expression .)
-    $end            reduce using rule 27 (expression -> expression MULTIPLICACION expression .)
-    PARENTESISDER   reduce using rule 27 (expression -> expression MULTIPLICACION expression .)
-    CORCHETEDER     reduce using rule 27 (expression -> expression MULTIPLICACION expression .)
-    COMA            reduce using rule 27 (expression -> expression MULTIPLICACION expression .)
-    EXPONENTE       shift and go to state 21
-    MODULO          shift and go to state 22
-
-  ! EXPONENTE       [ reduce using rule 27 (expression -> expression MULTIPLICACION expression .) ]
-  ! MODULO          [ reduce using rule 27 (expression -> expression MULTIPLICACION expression .) ]
-  ! MULTIPLICACION  [ shift and go to state 23 ]
-  ! DIVISIONENTERA  [ shift and go to state 24 ]
-  ! DIVISION        [ shift and go to state 25 ]
-  ! SUMA            [ shift and go to state 26 ]
-  ! RESTA           [ shift and go to state 27 ]
+    CORCHETEDER     reduce using rule 18 (params -> empty .)
+    COMA            reduce using rule 18 (params -> empty .)
+    TYPE            reduce using rule 18 (params -> empty .)
+    ID              reduce using rule 18 (params -> empty .)
+    PARENTESISIZQ   reduce using rule 18 (params -> empty .)
+    INT             reduce using rule 18 (params -> empty .)
+    RESTA           reduce using rule 18 (params -> empty .)
+    $end            reduce using rule 18 (params -> empty .)
+    PARENTESISDER   reduce using rule 18 (params -> empty .)
 
 
 state 44
 
-    (28) expression -> expression DIVISIONENTERA expression .
-    (25) expression -> expression . EXPONENTE expression
-    (26) expression -> expression . MODULO expression
-    (27) expression -> expression . MULTIPLICACION expression
-    (28) expression -> expression . DIVISIONENTERA expression
-    (29) expression -> expression . DIVISION expression
-    (30) expression -> expression . SUMA expression
-    (31) expression -> expression . RESTA expression
+    (31) expression -> expression EXPONENTE expression .
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
 
-    MULTIPLICACION  reduce using rule 28 (expression -> expression DIVISIONENTERA expression .)
-    DIVISIONENTERA  reduce using rule 28 (expression -> expression DIVISIONENTERA expression .)
-    DIVISION        reduce using rule 28 (expression -> expression DIVISIONENTERA expression .)
-    SUMA            reduce using rule 28 (expression -> expression DIVISIONENTERA expression .)
-    RESTA           reduce using rule 28 (expression -> expression DIVISIONENTERA expression .)
-    TYPE            reduce using rule 28 (expression -> expression DIVISIONENTERA expression .)
-    PARENTESISIZQ   reduce using rule 28 (expression -> expression DIVISIONENTERA expression .)
-    ID              reduce using rule 28 (expression -> expression DIVISIONENTERA expression .)
-    $end            reduce using rule 28 (expression -> expression DIVISIONENTERA expression .)
-    PARENTESISDER   reduce using rule 28 (expression -> expression DIVISIONENTERA expression .)
-    CORCHETEDER     reduce using rule 28 (expression -> expression DIVISIONENTERA expression .)
-    COMA            reduce using rule 28 (expression -> expression DIVISIONENTERA expression .)
-    EXPONENTE       shift and go to state 21
-    MODULO          shift and go to state 22
+    MODULO          reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    MULTIPLICACION  reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    DIVISIONENTERA  reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    DIVISION        reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    SUMA            reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    RESTA           reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    TYPE            reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    ID              reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    PARENTESISIZQ   reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    INT             reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    $end            reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    PARENTESISDER   reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    CORCHETEDER     reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    COMA            reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    DOSPUNTOS       reduce using rule 31 (expression -> expression EXPONENTE expression .)
+    EXPONENTE       shift and go to state 22
 
-  ! EXPONENTE       [ reduce using rule 28 (expression -> expression DIVISIONENTERA expression .) ]
-  ! MODULO          [ reduce using rule 28 (expression -> expression DIVISIONENTERA expression .) ]
-  ! MULTIPLICACION  [ shift and go to state 23 ]
-  ! DIVISIONENTERA  [ shift and go to state 24 ]
-  ! DIVISION        [ shift and go to state 25 ]
-  ! SUMA            [ shift and go to state 26 ]
-  ! RESTA           [ shift and go to state 27 ]
+  ! EXPONENTE       [ reduce using rule 31 (expression -> expression EXPONENTE expression .) ]
+  ! MODULO          [ shift and go to state 23 ]
+  ! MULTIPLICACION  [ shift and go to state 24 ]
+  ! DIVISIONENTERA  [ shift and go to state 25 ]
+  ! DIVISION        [ shift and go to state 26 ]
+  ! SUMA            [ shift and go to state 27 ]
+  ! RESTA           [ shift and go to state 28 ]
 
 
 state 45
 
-    (29) expression -> expression DIVISION expression .
-    (25) expression -> expression . EXPONENTE expression
-    (26) expression -> expression . MODULO expression
-    (27) expression -> expression . MULTIPLICACION expression
-    (28) expression -> expression . DIVISIONENTERA expression
-    (29) expression -> expression . DIVISION expression
-    (30) expression -> expression . SUMA expression
-    (31) expression -> expression . RESTA expression
+    (32) expression -> expression MODULO expression .
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
 
-    MULTIPLICACION  reduce using rule 29 (expression -> expression DIVISION expression .)
-    DIVISIONENTERA  reduce using rule 29 (expression -> expression DIVISION expression .)
-    DIVISION        reduce using rule 29 (expression -> expression DIVISION expression .)
-    SUMA            reduce using rule 29 (expression -> expression DIVISION expression .)
-    RESTA           reduce using rule 29 (expression -> expression DIVISION expression .)
-    TYPE            reduce using rule 29 (expression -> expression DIVISION expression .)
-    PARENTESISIZQ   reduce using rule 29 (expression -> expression DIVISION expression .)
-    ID              reduce using rule 29 (expression -> expression DIVISION expression .)
-    $end            reduce using rule 29 (expression -> expression DIVISION expression .)
-    PARENTESISDER   reduce using rule 29 (expression -> expression DIVISION expression .)
-    CORCHETEDER     reduce using rule 29 (expression -> expression DIVISION expression .)
-    COMA            reduce using rule 29 (expression -> expression DIVISION expression .)
-    EXPONENTE       shift and go to state 21
-    MODULO          shift and go to state 22
+    MULTIPLICACION  reduce using rule 32 (expression -> expression MODULO expression .)
+    DIVISIONENTERA  reduce using rule 32 (expression -> expression MODULO expression .)
+    DIVISION        reduce using rule 32 (expression -> expression MODULO expression .)
+    SUMA            reduce using rule 32 (expression -> expression MODULO expression .)
+    RESTA           reduce using rule 32 (expression -> expression MODULO expression .)
+    TYPE            reduce using rule 32 (expression -> expression MODULO expression .)
+    ID              reduce using rule 32 (expression -> expression MODULO expression .)
+    PARENTESISIZQ   reduce using rule 32 (expression -> expression MODULO expression .)
+    INT             reduce using rule 32 (expression -> expression MODULO expression .)
+    $end            reduce using rule 32 (expression -> expression MODULO expression .)
+    PARENTESISDER   reduce using rule 32 (expression -> expression MODULO expression .)
+    CORCHETEDER     reduce using rule 32 (expression -> expression MODULO expression .)
+    COMA            reduce using rule 32 (expression -> expression MODULO expression .)
+    DOSPUNTOS       reduce using rule 32 (expression -> expression MODULO expression .)
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
 
-  ! EXPONENTE       [ reduce using rule 29 (expression -> expression DIVISION expression .) ]
-  ! MODULO          [ reduce using rule 29 (expression -> expression DIVISION expression .) ]
-  ! MULTIPLICACION  [ shift and go to state 23 ]
-  ! DIVISIONENTERA  [ shift and go to state 24 ]
-  ! DIVISION        [ shift and go to state 25 ]
-  ! SUMA            [ shift and go to state 26 ]
-  ! RESTA           [ shift and go to state 27 ]
+  ! EXPONENTE       [ reduce using rule 32 (expression -> expression MODULO expression .) ]
+  ! MODULO          [ reduce using rule 32 (expression -> expression MODULO expression .) ]
+  ! MULTIPLICACION  [ shift and go to state 24 ]
+  ! DIVISIONENTERA  [ shift and go to state 25 ]
+  ! DIVISION        [ shift and go to state 26 ]
+  ! SUMA            [ shift and go to state 27 ]
+  ! RESTA           [ shift and go to state 28 ]
 
 
 state 46
 
-    (30) expression -> expression SUMA expression .
-    (25) expression -> expression . EXPONENTE expression
-    (26) expression -> expression . MODULO expression
-    (27) expression -> expression . MULTIPLICACION expression
-    (28) expression -> expression . DIVISIONENTERA expression
-    (29) expression -> expression . DIVISION expression
-    (30) expression -> expression . SUMA expression
-    (31) expression -> expression . RESTA expression
+    (33) expression -> expression MULTIPLICACION expression .
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
 
-    SUMA            reduce using rule 30 (expression -> expression SUMA expression .)
-    RESTA           reduce using rule 30 (expression -> expression SUMA expression .)
-    TYPE            reduce using rule 30 (expression -> expression SUMA expression .)
-    PARENTESISIZQ   reduce using rule 30 (expression -> expression SUMA expression .)
-    ID              reduce using rule 30 (expression -> expression SUMA expression .)
-    $end            reduce using rule 30 (expression -> expression SUMA expression .)
-    PARENTESISDER   reduce using rule 30 (expression -> expression SUMA expression .)
-    CORCHETEDER     reduce using rule 30 (expression -> expression SUMA expression .)
-    COMA            reduce using rule 30 (expression -> expression SUMA expression .)
-    EXPONENTE       shift and go to state 21
-    MODULO          shift and go to state 22
-    MULTIPLICACION  shift and go to state 23
-    DIVISIONENTERA  shift and go to state 24
-    DIVISION        shift and go to state 25
+    MULTIPLICACION  reduce using rule 33 (expression -> expression MULTIPLICACION expression .)
+    DIVISIONENTERA  reduce using rule 33 (expression -> expression MULTIPLICACION expression .)
+    DIVISION        reduce using rule 33 (expression -> expression MULTIPLICACION expression .)
+    SUMA            reduce using rule 33 (expression -> expression MULTIPLICACION expression .)
+    RESTA           reduce using rule 33 (expression -> expression MULTIPLICACION expression .)
+    TYPE            reduce using rule 33 (expression -> expression MULTIPLICACION expression .)
+    ID              reduce using rule 33 (expression -> expression MULTIPLICACION expression .)
+    PARENTESISIZQ   reduce using rule 33 (expression -> expression MULTIPLICACION expression .)
+    INT             reduce using rule 33 (expression -> expression MULTIPLICACION expression .)
+    $end            reduce using rule 33 (expression -> expression MULTIPLICACION expression .)
+    PARENTESISDER   reduce using rule 33 (expression -> expression MULTIPLICACION expression .)
+    CORCHETEDER     reduce using rule 33 (expression -> expression MULTIPLICACION expression .)
+    COMA            reduce using rule 33 (expression -> expression MULTIPLICACION expression .)
+    DOSPUNTOS       reduce using rule 33 (expression -> expression MULTIPLICACION expression .)
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
 
-  ! EXPONENTE       [ reduce using rule 30 (expression -> expression SUMA expression .) ]
-  ! MODULO          [ reduce using rule 30 (expression -> expression SUMA expression .) ]
-  ! MULTIPLICACION  [ reduce using rule 30 (expression -> expression SUMA expression .) ]
-  ! DIVISIONENTERA  [ reduce using rule 30 (expression -> expression SUMA expression .) ]
-  ! DIVISION        [ reduce using rule 30 (expression -> expression SUMA expression .) ]
-  ! SUMA            [ shift and go to state 26 ]
-  ! RESTA           [ shift and go to state 27 ]
+  ! EXPONENTE       [ reduce using rule 33 (expression -> expression MULTIPLICACION expression .) ]
+  ! MODULO          [ reduce using rule 33 (expression -> expression MULTIPLICACION expression .) ]
+  ! MULTIPLICACION  [ shift and go to state 24 ]
+  ! DIVISIONENTERA  [ shift and go to state 25 ]
+  ! DIVISION        [ shift and go to state 26 ]
+  ! SUMA            [ shift and go to state 27 ]
+  ! RESTA           [ shift and go to state 28 ]
 
 
 state 47
 
-    (31) expression -> expression RESTA expression .
-    (25) expression -> expression . EXPONENTE expression
-    (26) expression -> expression . MODULO expression
-    (27) expression -> expression . MULTIPLICACION expression
-    (28) expression -> expression . DIVISIONENTERA expression
-    (29) expression -> expression . DIVISION expression
-    (30) expression -> expression . SUMA expression
-    (31) expression -> expression . RESTA expression
+    (34) expression -> expression DIVISIONENTERA expression .
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
 
-    SUMA            reduce using rule 31 (expression -> expression RESTA expression .)
-    RESTA           reduce using rule 31 (expression -> expression RESTA expression .)
-    TYPE            reduce using rule 31 (expression -> expression RESTA expression .)
-    PARENTESISIZQ   reduce using rule 31 (expression -> expression RESTA expression .)
-    ID              reduce using rule 31 (expression -> expression RESTA expression .)
-    $end            reduce using rule 31 (expression -> expression RESTA expression .)
-    PARENTESISDER   reduce using rule 31 (expression -> expression RESTA expression .)
-    CORCHETEDER     reduce using rule 31 (expression -> expression RESTA expression .)
-    COMA            reduce using rule 31 (expression -> expression RESTA expression .)
-    EXPONENTE       shift and go to state 21
-    MODULO          shift and go to state 22
-    MULTIPLICACION  shift and go to state 23
-    DIVISIONENTERA  shift and go to state 24
-    DIVISION        shift and go to state 25
+    MULTIPLICACION  reduce using rule 34 (expression -> expression DIVISIONENTERA expression .)
+    DIVISIONENTERA  reduce using rule 34 (expression -> expression DIVISIONENTERA expression .)
+    DIVISION        reduce using rule 34 (expression -> expression DIVISIONENTERA expression .)
+    SUMA            reduce using rule 34 (expression -> expression DIVISIONENTERA expression .)
+    RESTA           reduce using rule 34 (expression -> expression DIVISIONENTERA expression .)
+    TYPE            reduce using rule 34 (expression -> expression DIVISIONENTERA expression .)
+    ID              reduce using rule 34 (expression -> expression DIVISIONENTERA expression .)
+    PARENTESISIZQ   reduce using rule 34 (expression -> expression DIVISIONENTERA expression .)
+    INT             reduce using rule 34 (expression -> expression DIVISIONENTERA expression .)
+    $end            reduce using rule 34 (expression -> expression DIVISIONENTERA expression .)
+    PARENTESISDER   reduce using rule 34 (expression -> expression DIVISIONENTERA expression .)
+    CORCHETEDER     reduce using rule 34 (expression -> expression DIVISIONENTERA expression .)
+    COMA            reduce using rule 34 (expression -> expression DIVISIONENTERA expression .)
+    DOSPUNTOS       reduce using rule 34 (expression -> expression DIVISIONENTERA expression .)
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
 
-  ! EXPONENTE       [ reduce using rule 31 (expression -> expression RESTA expression .) ]
-  ! MODULO          [ reduce using rule 31 (expression -> expression RESTA expression .) ]
-  ! MULTIPLICACION  [ reduce using rule 31 (expression -> expression RESTA expression .) ]
-  ! DIVISIONENTERA  [ reduce using rule 31 (expression -> expression RESTA expression .) ]
-  ! DIVISION        [ reduce using rule 31 (expression -> expression RESTA expression .) ]
-  ! SUMA            [ shift and go to state 26 ]
-  ! RESTA           [ shift and go to state 27 ]
+  ! EXPONENTE       [ reduce using rule 34 (expression -> expression DIVISIONENTERA expression .) ]
+  ! MODULO          [ reduce using rule 34 (expression -> expression DIVISIONENTERA expression .) ]
+  ! MULTIPLICACION  [ shift and go to state 24 ]
+  ! DIVISIONENTERA  [ shift and go to state 25 ]
+  ! DIVISION        [ shift and go to state 26 ]
+  ! SUMA            [ shift and go to state 27 ]
+  ! RESTA           [ shift and go to state 28 ]
 
 
 state 48
 
-    (23) statement -> TYPE PARENTESISIZQ ID . PARENTESISDER
+    (35) expression -> expression DIVISION expression .
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
 
-    PARENTESISDER   shift and go to state 55
+    MULTIPLICACION  reduce using rule 35 (expression -> expression DIVISION expression .)
+    DIVISIONENTERA  reduce using rule 35 (expression -> expression DIVISION expression .)
+    DIVISION        reduce using rule 35 (expression -> expression DIVISION expression .)
+    SUMA            reduce using rule 35 (expression -> expression DIVISION expression .)
+    RESTA           reduce using rule 35 (expression -> expression DIVISION expression .)
+    TYPE            reduce using rule 35 (expression -> expression DIVISION expression .)
+    ID              reduce using rule 35 (expression -> expression DIVISION expression .)
+    PARENTESISIZQ   reduce using rule 35 (expression -> expression DIVISION expression .)
+    INT             reduce using rule 35 (expression -> expression DIVISION expression .)
+    $end            reduce using rule 35 (expression -> expression DIVISION expression .)
+    PARENTESISDER   reduce using rule 35 (expression -> expression DIVISION expression .)
+    CORCHETEDER     reduce using rule 35 (expression -> expression DIVISION expression .)
+    COMA            reduce using rule 35 (expression -> expression DIVISION expression .)
+    DOSPUNTOS       reduce using rule 35 (expression -> expression DIVISION expression .)
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
+
+  ! EXPONENTE       [ reduce using rule 35 (expression -> expression DIVISION expression .) ]
+  ! MODULO          [ reduce using rule 35 (expression -> expression DIVISION expression .) ]
+  ! MULTIPLICACION  [ shift and go to state 24 ]
+  ! DIVISIONENTERA  [ shift and go to state 25 ]
+  ! DIVISION        [ shift and go to state 26 ]
+  ! SUMA            [ shift and go to state 27 ]
+  ! RESTA           [ shift and go to state 28 ]
 
 
 state 49
 
-    (32) expression -> PARENTESISIZQ expression PARENTESISDER .
+    (36) expression -> expression SUMA expression .
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
 
-    EXPONENTE       reduce using rule 32 (expression -> PARENTESISIZQ expression PARENTESISDER .)
-    MODULO          reduce using rule 32 (expression -> PARENTESISIZQ expression PARENTESISDER .)
-    MULTIPLICACION  reduce using rule 32 (expression -> PARENTESISIZQ expression PARENTESISDER .)
-    DIVISIONENTERA  reduce using rule 32 (expression -> PARENTESISIZQ expression PARENTESISDER .)
-    DIVISION        reduce using rule 32 (expression -> PARENTESISIZQ expression PARENTESISDER .)
-    SUMA            reduce using rule 32 (expression -> PARENTESISIZQ expression PARENTESISDER .)
-    RESTA           reduce using rule 32 (expression -> PARENTESISIZQ expression PARENTESISDER .)
-    TYPE            reduce using rule 32 (expression -> PARENTESISIZQ expression PARENTESISDER .)
-    PARENTESISIZQ   reduce using rule 32 (expression -> PARENTESISIZQ expression PARENTESISDER .)
-    ID              reduce using rule 32 (expression -> PARENTESISIZQ expression PARENTESISDER .)
-    $end            reduce using rule 32 (expression -> PARENTESISIZQ expression PARENTESISDER .)
-    PARENTESISDER   reduce using rule 32 (expression -> PARENTESISIZQ expression PARENTESISDER .)
-    CORCHETEDER     reduce using rule 32 (expression -> PARENTESISIZQ expression PARENTESISDER .)
-    COMA            reduce using rule 32 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    SUMA            reduce using rule 36 (expression -> expression SUMA expression .)
+    RESTA           reduce using rule 36 (expression -> expression SUMA expression .)
+    TYPE            reduce using rule 36 (expression -> expression SUMA expression .)
+    ID              reduce using rule 36 (expression -> expression SUMA expression .)
+    PARENTESISIZQ   reduce using rule 36 (expression -> expression SUMA expression .)
+    INT             reduce using rule 36 (expression -> expression SUMA expression .)
+    $end            reduce using rule 36 (expression -> expression SUMA expression .)
+    PARENTESISDER   reduce using rule 36 (expression -> expression SUMA expression .)
+    CORCHETEDER     reduce using rule 36 (expression -> expression SUMA expression .)
+    COMA            reduce using rule 36 (expression -> expression SUMA expression .)
+    DOSPUNTOS       reduce using rule 36 (expression -> expression SUMA expression .)
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
+    MULTIPLICACION  shift and go to state 24
+    DIVISIONENTERA  shift and go to state 25
+    DIVISION        shift and go to state 26
+
+  ! EXPONENTE       [ reduce using rule 36 (expression -> expression SUMA expression .) ]
+  ! MODULO          [ reduce using rule 36 (expression -> expression SUMA expression .) ]
+  ! MULTIPLICACION  [ reduce using rule 36 (expression -> expression SUMA expression .) ]
+  ! DIVISIONENTERA  [ reduce using rule 36 (expression -> expression SUMA expression .) ]
+  ! DIVISION        [ reduce using rule 36 (expression -> expression SUMA expression .) ]
+  ! SUMA            [ shift and go to state 27 ]
+  ! RESTA           [ shift and go to state 28 ]
 
 
 state 50
 
-    (22) var_assign -> ids IGUAL params .
-    (18) params -> params . COMA params
+    (37) expression -> expression RESTA expression .
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
 
-    TYPE            reduce using rule 22 (var_assign -> ids IGUAL params .)
-    PARENTESISIZQ   reduce using rule 22 (var_assign -> ids IGUAL params .)
-    ID              reduce using rule 22 (var_assign -> ids IGUAL params .)
-    RESTA           reduce using rule 22 (var_assign -> ids IGUAL params .)
-    $end            reduce using rule 22 (var_assign -> ids IGUAL params .)
-    COMA            shift and go to state 54
+    SUMA            reduce using rule 37 (expression -> expression RESTA expression .)
+    RESTA           reduce using rule 37 (expression -> expression RESTA expression .)
+    TYPE            reduce using rule 37 (expression -> expression RESTA expression .)
+    ID              reduce using rule 37 (expression -> expression RESTA expression .)
+    PARENTESISIZQ   reduce using rule 37 (expression -> expression RESTA expression .)
+    INT             reduce using rule 37 (expression -> expression RESTA expression .)
+    $end            reduce using rule 37 (expression -> expression RESTA expression .)
+    PARENTESISDER   reduce using rule 37 (expression -> expression RESTA expression .)
+    CORCHETEDER     reduce using rule 37 (expression -> expression RESTA expression .)
+    COMA            reduce using rule 37 (expression -> expression RESTA expression .)
+    DOSPUNTOS       reduce using rule 37 (expression -> expression RESTA expression .)
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
+    MULTIPLICACION  shift and go to state 24
+    DIVISIONENTERA  shift and go to state 25
+    DIVISION        shift and go to state 26
+
+  ! EXPONENTE       [ reduce using rule 37 (expression -> expression RESTA expression .) ]
+  ! MODULO          [ reduce using rule 37 (expression -> expression RESTA expression .) ]
+  ! MULTIPLICACION  [ reduce using rule 37 (expression -> expression RESTA expression .) ]
+  ! DIVISIONENTERA  [ reduce using rule 37 (expression -> expression RESTA expression .) ]
+  ! DIVISION        [ reduce using rule 37 (expression -> expression RESTA expression .) ]
+  ! SUMA            [ shift and go to state 27 ]
+  ! RESTA           [ shift and go to state 28 ]
 
 
 state 51
 
-    (15) ids -> ids COMA ids .
-    (15) ids -> ids . COMA ids
+    (23) statement -> TYPE PARENTESISIZQ ID . PARENTESISDER
 
-  ! shift/reduce conflict for COMA resolved as shift
-    IGUAL           reduce using rule 15 (ids -> ids COMA ids .)
-    COMA            shift and go to state 36
-
-  ! COMA            [ reduce using rule 15 (ids -> ids COMA ids .) ]
+    PARENTESISDER   shift and go to state 65
 
 
 state 52
 
-    (14) ids -> ID .
+    (38) expression -> PARENTESISIZQ expression PARENTESISDER .
 
-    COMA            reduce using rule 14 (ids -> ID .)
-    IGUAL           reduce using rule 14 (ids -> ID .)
+    EXPONENTE       reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    MODULO          reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    MULTIPLICACION  reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    DIVISIONENTERA  reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    DIVISION        reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    SUMA            reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    RESTA           reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    TYPE            reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    ID              reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    PARENTESISIZQ   reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    INT             reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    $end            reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    PARENTESISDER   reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    CORCHETEDER     reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    COMA            reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
+    DOSPUNTOS       reduce using rule 38 (expression -> PARENTESISIZQ expression PARENTESISDER .)
 
 
 state 53
 
-    (24) listed -> CORCHETEIZQ params CORCHETEDER .
+    (30) statement -> ID PUNTO INSERT . PARENTESISIZQ expression COMA params PARENTESISDER
 
-    TYPE            reduce using rule 24 (listed -> CORCHETEIZQ params CORCHETEDER .)
-    PARENTESISIZQ   reduce using rule 24 (listed -> CORCHETEIZQ params CORCHETEDER .)
-    ID              reduce using rule 24 (listed -> CORCHETEIZQ params CORCHETEDER .)
-    RESTA           reduce using rule 24 (listed -> CORCHETEIZQ params CORCHETEDER .)
-    $end            reduce using rule 24 (listed -> CORCHETEIZQ params CORCHETEDER .)
-    CORCHETEDER     reduce using rule 24 (listed -> CORCHETEIZQ params CORCHETEDER .)
-    COMA            reduce using rule 24 (listed -> CORCHETEIZQ params CORCHETEDER .)
+    PARENTESISIZQ   shift and go to state 66
 
 
 state 54
 
-    (18) params -> params COMA . params
-    (16) params -> . expression
-    (17) params -> . primitive
-    (18) params -> . params COMA params
-    (19) params -> . empty
-    (25) expression -> . expression EXPONENTE expression
-    (26) expression -> . expression MODULO expression
-    (27) expression -> . expression MULTIPLICACION expression
-    (28) expression -> . expression DIVISIONENTERA expression
-    (29) expression -> . expression DIVISION expression
-    (30) expression -> . expression SUMA expression
-    (31) expression -> . expression RESTA expression
-    (32) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (33) expression -> . ID
-    (34) expression -> . RESTA expression
-    (8) primitive -> . BOOLEAN
-    (9) primitive -> . INT
-    (10) primitive -> . STRING
-    (11) primitive -> . listed
-    (35) empty -> .
-    (24) listed -> . CORCHETEIZQ params CORCHETEDER
+    (19) var_assign -> ID IGUAL expression .
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
 
-  ! shift/reduce conflict for PARENTESISIZQ resolved as shift
-  ! shift/reduce conflict for ID resolved as shift
   ! shift/reduce conflict for RESTA resolved as shift
-    PARENTESISIZQ   shift and go to state 9
-    ID              shift and go to state 30
-    RESTA           shift and go to state 16
-    BOOLEAN         shift and go to state 11
-    INT             shift and go to state 12
-    STRING          shift and go to state 13
-    COMA            reduce using rule 35 (empty -> .)
-    CORCHETEDER     reduce using rule 35 (empty -> .)
-    TYPE            reduce using rule 35 (empty -> .)
-    $end            reduce using rule 35 (empty -> .)
-    CORCHETEIZQ     shift and go to state 19
+    TYPE            reduce using rule 19 (var_assign -> ID IGUAL expression .)
+    ID              reduce using rule 19 (var_assign -> ID IGUAL expression .)
+    PARENTESISIZQ   reduce using rule 19 (var_assign -> ID IGUAL expression .)
+    INT             reduce using rule 19 (var_assign -> ID IGUAL expression .)
+    $end            reduce using rule 19 (var_assign -> ID IGUAL expression .)
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
+    MULTIPLICACION  shift and go to state 24
+    DIVISIONENTERA  shift and go to state 25
+    DIVISION        shift and go to state 26
+    SUMA            shift and go to state 27
+    RESTA           shift and go to state 28
 
-  ! PARENTESISIZQ   [ reduce using rule 35 (empty -> .) ]
-  ! ID              [ reduce using rule 35 (empty -> .) ]
-  ! RESTA           [ reduce using rule 35 (empty -> .) ]
+  ! RESTA           [ reduce using rule 19 (var_assign -> ID IGUAL expression .) ]
 
-    params                         shift and go to state 56
-    expression                     shift and go to state 38
-    primitive                      shift and go to state 39
-    empty                          shift and go to state 40
-    listed                         shift and go to state 14
 
 state 55
 
-    (23) statement -> TYPE PARENTESISIZQ ID PARENTESISDER .
+    (20) var_assign -> ID IGUAL primitive .
 
-    TYPE            reduce using rule 23 (statement -> TYPE PARENTESISIZQ ID PARENTESISDER .)
-    PARENTESISIZQ   reduce using rule 23 (statement -> TYPE PARENTESISIZQ ID PARENTESISDER .)
-    ID              reduce using rule 23 (statement -> TYPE PARENTESISIZQ ID PARENTESISDER .)
-    RESTA           reduce using rule 23 (statement -> TYPE PARENTESISIZQ ID PARENTESISDER .)
-    $end            reduce using rule 23 (statement -> TYPE PARENTESISIZQ ID PARENTESISDER .)
+    TYPE            reduce using rule 20 (var_assign -> ID IGUAL primitive .)
+    ID              reduce using rule 20 (var_assign -> ID IGUAL primitive .)
+    PARENTESISIZQ   reduce using rule 20 (var_assign -> ID IGUAL primitive .)
+    INT             reduce using rule 20 (var_assign -> ID IGUAL primitive .)
+    RESTA           reduce using rule 20 (var_assign -> ID IGUAL primitive .)
+    $end            reduce using rule 20 (var_assign -> ID IGUAL primitive .)
 
 
 state 56
 
-    (18) params -> params COMA params .
-    (18) params -> params . COMA params
+    (29) var_assign -> ID IGUAL LIST . PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER
+
+    PARENTESISIZQ   shift and go to state 67
+
+
+state 57
+
+    (40) expression -> INT .
+    (9) primitive -> INT .
+
+  ! reduce/reduce conflict for TYPE resolved using rule 9 (primitive -> INT .)
+  ! reduce/reduce conflict for ID resolved using rule 9 (primitive -> INT .)
+  ! reduce/reduce conflict for PARENTESISIZQ resolved using rule 9 (primitive -> INT .)
+  ! reduce/reduce conflict for INT resolved using rule 9 (primitive -> INT .)
+  ! reduce/reduce conflict for RESTA resolved using rule 9 (primitive -> INT .)
+  ! reduce/reduce conflict for $end resolved using rule 9 (primitive -> INT .)
+    EXPONENTE       reduce using rule 40 (expression -> INT .)
+    MODULO          reduce using rule 40 (expression -> INT .)
+    MULTIPLICACION  reduce using rule 40 (expression -> INT .)
+    DIVISIONENTERA  reduce using rule 40 (expression -> INT .)
+    DIVISION        reduce using rule 40 (expression -> INT .)
+    SUMA            reduce using rule 40 (expression -> INT .)
+    TYPE            reduce using rule 9 (primitive -> INT .)
+    ID              reduce using rule 9 (primitive -> INT .)
+    PARENTESISIZQ   reduce using rule 9 (primitive -> INT .)
+    INT             reduce using rule 9 (primitive -> INT .)
+    RESTA           reduce using rule 9 (primitive -> INT .)
+    $end            reduce using rule 9 (primitive -> INT .)
+
+  ! RESTA           [ reduce using rule 40 (expression -> INT .) ]
+  ! TYPE            [ reduce using rule 40 (expression -> INT .) ]
+  ! ID              [ reduce using rule 40 (expression -> INT .) ]
+  ! PARENTESISIZQ   [ reduce using rule 40 (expression -> INT .) ]
+  ! INT             [ reduce using rule 40 (expression -> INT .) ]
+  ! $end            [ reduce using rule 40 (expression -> INT .) ]
+
+
+state 58
+
+    (27) index -> CORCHETEIZQ expression . CORCHETEDER
+    (28) index -> CORCHETEIZQ expression . DOSPUNTOS expression CORCHETEDER
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
+
+    CORCHETEDER     shift and go to state 68
+    DOSPUNTOS       shift and go to state 69
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
+    MULTIPLICACION  shift and go to state 24
+    DIVISIONENTERA  shift and go to state 25
+    DIVISION        shift and go to state 26
+    SUMA            shift and go to state 27
+    RESTA           shift and go to state 28
+
+
+state 59
+
+    (22) var_assign -> sublist IGUAL params .
+    (17) params -> params . COMA params
+
+    TYPE            reduce using rule 22 (var_assign -> sublist IGUAL params .)
+    ID              reduce using rule 22 (var_assign -> sublist IGUAL params .)
+    PARENTESISIZQ   reduce using rule 22 (var_assign -> sublist IGUAL params .)
+    INT             reduce using rule 22 (var_assign -> sublist IGUAL params .)
+    RESTA           reduce using rule 22 (var_assign -> sublist IGUAL params .)
+    $end            reduce using rule 22 (var_assign -> sublist IGUAL params .)
+    COMA            shift and go to state 64
+
+
+state 60
+
+    (21) var_assign -> ids IGUAL params .
+    (17) params -> params . COMA params
+
+    TYPE            reduce using rule 21 (var_assign -> ids IGUAL params .)
+    ID              reduce using rule 21 (var_assign -> ids IGUAL params .)
+    PARENTESISIZQ   reduce using rule 21 (var_assign -> ids IGUAL params .)
+    INT             reduce using rule 21 (var_assign -> ids IGUAL params .)
+    RESTA           reduce using rule 21 (var_assign -> ids IGUAL params .)
+    $end            reduce using rule 21 (var_assign -> ids IGUAL params .)
+    COMA            shift and go to state 64
+
+
+state 61
+
+    (14) ids -> ids COMA ids .
+    (14) ids -> ids . COMA ids
 
   ! shift/reduce conflict for COMA resolved as shift
-    CORCHETEDER     reduce using rule 18 (params -> params COMA params .)
-    TYPE            reduce using rule 18 (params -> params COMA params .)
-    PARENTESISIZQ   reduce using rule 18 (params -> params COMA params .)
-    ID              reduce using rule 18 (params -> params COMA params .)
-    RESTA           reduce using rule 18 (params -> params COMA params .)
-    $end            reduce using rule 18 (params -> params COMA params .)
-    COMA            shift and go to state 54
+    IGUAL           reduce using rule 14 (ids -> ids COMA ids .)
+    COMA            shift and go to state 39
 
-  ! COMA            [ reduce using rule 18 (params -> params COMA params .) ]
+  ! COMA            [ reduce using rule 14 (ids -> ids COMA ids .) ]
+
+
+state 62
+
+    (13) ids -> ID .
+
+    COMA            reduce using rule 13 (ids -> ID .)
+    IGUAL           reduce using rule 13 (ids -> ID .)
+
+
+state 63
+
+    (24) list -> CORCHETEIZQ params CORCHETEDER .
+
+    TYPE            reduce using rule 24 (list -> CORCHETEIZQ params CORCHETEDER .)
+    ID              reduce using rule 24 (list -> CORCHETEIZQ params CORCHETEDER .)
+    PARENTESISIZQ   reduce using rule 24 (list -> CORCHETEIZQ params CORCHETEDER .)
+    INT             reduce using rule 24 (list -> CORCHETEIZQ params CORCHETEDER .)
+    RESTA           reduce using rule 24 (list -> CORCHETEIZQ params CORCHETEDER .)
+    $end            reduce using rule 24 (list -> CORCHETEIZQ params CORCHETEDER .)
+    CORCHETEDER     reduce using rule 24 (list -> CORCHETEIZQ params CORCHETEDER .)
+    COMA            reduce using rule 24 (list -> CORCHETEIZQ params CORCHETEDER .)
+    PARENTESISDER   reduce using rule 24 (list -> CORCHETEIZQ params CORCHETEDER .)
+
+
+state 64
+
+    (17) params -> params COMA . params
+    (15) params -> . primitive
+    (16) params -> . expression
+    (17) params -> . params COMA params
+    (18) params -> . empty
+    (8) primitive -> . BOOLEAN
+    (9) primitive -> . INT
+    (10) primitive -> . STRING
+    (11) primitive -> . list
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
+    (42) empty -> .
+    (24) list -> . CORCHETEIZQ params CORCHETEDER
+
+  ! shift/reduce conflict for ID resolved as shift
+  ! shift/reduce conflict for PARENTESISIZQ resolved as shift
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for RESTA resolved as shift
+    BOOLEAN         shift and go to state 13
+    INT             shift and go to state 14
+    STRING          shift and go to state 15
+    PARENTESISIZQ   shift and go to state 9
+    ID              shift and go to state 31
+    RESTA           shift and go to state 17
+    COMA            reduce using rule 42 (empty -> .)
+    CORCHETEDER     reduce using rule 42 (empty -> .)
+    TYPE            reduce using rule 42 (empty -> .)
+    $end            reduce using rule 42 (empty -> .)
+    PARENTESISDER   reduce using rule 42 (empty -> .)
+    CORCHETEIZQ     shift and go to state 19
+
+  ! ID              [ reduce using rule 42 (empty -> .) ]
+  ! PARENTESISIZQ   [ reduce using rule 42 (empty -> .) ]
+  ! INT             [ reduce using rule 42 (empty -> .) ]
+  ! RESTA           [ reduce using rule 42 (empty -> .) ]
+
+    params                         shift and go to state 70
+    primitive                      shift and go to state 41
+    expression                     shift and go to state 42
+    empty                          shift and go to state 43
+    list                           shift and go to state 16
+
+state 65
+
+    (23) statement -> TYPE PARENTESISIZQ ID PARENTESISDER .
+
+    TYPE            reduce using rule 23 (statement -> TYPE PARENTESISIZQ ID PARENTESISDER .)
+    ID              reduce using rule 23 (statement -> TYPE PARENTESISIZQ ID PARENTESISDER .)
+    PARENTESISIZQ   reduce using rule 23 (statement -> TYPE PARENTESISIZQ ID PARENTESISDER .)
+    INT             reduce using rule 23 (statement -> TYPE PARENTESISIZQ ID PARENTESISDER .)
+    RESTA           reduce using rule 23 (statement -> TYPE PARENTESISIZQ ID PARENTESISDER .)
+    $end            reduce using rule 23 (statement -> TYPE PARENTESISIZQ ID PARENTESISDER .)
+
+
+state 66
+
+    (30) statement -> ID PUNTO INSERT PARENTESISIZQ . expression COMA params PARENTESISDER
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
+
+    PARENTESISIZQ   shift and go to state 9
+    ID              shift and go to state 31
+    INT             shift and go to state 21
+    RESTA           shift and go to state 17
+
+    expression                     shift and go to state 71
+
+state 67
+
+    (29) var_assign -> ID IGUAL LIST PARENTESISIZQ . RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER
+
+    RANGE           shift and go to state 72
+
+
+state 68
+
+    (27) index -> CORCHETEIZQ expression CORCHETEDER .
+
+    IGUAL           reduce using rule 27 (index -> CORCHETEIZQ expression CORCHETEDER .)
+    TYPE            reduce using rule 27 (index -> CORCHETEIZQ expression CORCHETEDER .)
+    ID              reduce using rule 27 (index -> CORCHETEIZQ expression CORCHETEDER .)
+    PARENTESISIZQ   reduce using rule 27 (index -> CORCHETEIZQ expression CORCHETEDER .)
+    INT             reduce using rule 27 (index -> CORCHETEIZQ expression CORCHETEDER .)
+    RESTA           reduce using rule 27 (index -> CORCHETEIZQ expression CORCHETEDER .)
+    $end            reduce using rule 27 (index -> CORCHETEIZQ expression CORCHETEDER .)
+
+
+state 69
+
+    (28) index -> CORCHETEIZQ expression DOSPUNTOS . expression CORCHETEDER
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
+
+    PARENTESISIZQ   shift and go to state 9
+    ID              shift and go to state 31
+    INT             shift and go to state 21
+    RESTA           shift and go to state 17
+
+    expression                     shift and go to state 73
+
+state 70
+
+    (17) params -> params COMA params .
+    (17) params -> params . COMA params
+
+  ! shift/reduce conflict for COMA resolved as shift
+    CORCHETEDER     reduce using rule 17 (params -> params COMA params .)
+    TYPE            reduce using rule 17 (params -> params COMA params .)
+    ID              reduce using rule 17 (params -> params COMA params .)
+    PARENTESISIZQ   reduce using rule 17 (params -> params COMA params .)
+    INT             reduce using rule 17 (params -> params COMA params .)
+    RESTA           reduce using rule 17 (params -> params COMA params .)
+    $end            reduce using rule 17 (params -> params COMA params .)
+    PARENTESISDER   reduce using rule 17 (params -> params COMA params .)
+    COMA            shift and go to state 64
+
+  ! COMA            [ reduce using rule 17 (params -> params COMA params .) ]
+
+
+state 71
+
+    (30) statement -> ID PUNTO INSERT PARENTESISIZQ expression . COMA params PARENTESISDER
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
+
+    COMA            shift and go to state 74
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
+    MULTIPLICACION  shift and go to state 24
+    DIVISIONENTERA  shift and go to state 25
+    DIVISION        shift and go to state 26
+    SUMA            shift and go to state 27
+    RESTA           shift and go to state 28
+
+
+state 72
+
+    (29) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE . PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER
+
+    PARENTESISIZQ   shift and go to state 75
+
+
+state 73
+
+    (28) index -> CORCHETEIZQ expression DOSPUNTOS expression . CORCHETEDER
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
+
+    CORCHETEDER     shift and go to state 76
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
+    MULTIPLICACION  shift and go to state 24
+    DIVISIONENTERA  shift and go to state 25
+    DIVISION        shift and go to state 26
+    SUMA            shift and go to state 27
+    RESTA           shift and go to state 28
+
+
+state 74
+
+    (30) statement -> ID PUNTO INSERT PARENTESISIZQ expression COMA . params PARENTESISDER
+    (15) params -> . primitive
+    (16) params -> . expression
+    (17) params -> . params COMA params
+    (18) params -> . empty
+    (8) primitive -> . BOOLEAN
+    (9) primitive -> . INT
+    (10) primitive -> . STRING
+    (11) primitive -> . list
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
+    (42) empty -> .
+    (24) list -> . CORCHETEIZQ params CORCHETEDER
+
+    BOOLEAN         shift and go to state 13
+    INT             shift and go to state 14
+    STRING          shift and go to state 15
+    PARENTESISIZQ   shift and go to state 9
+    ID              shift and go to state 31
+    RESTA           shift and go to state 17
+    PARENTESISDER   reduce using rule 42 (empty -> .)
+    COMA            reduce using rule 42 (empty -> .)
+    CORCHETEIZQ     shift and go to state 19
+
+    expression                     shift and go to state 42
+    params                         shift and go to state 77
+    primitive                      shift and go to state 41
+    empty                          shift and go to state 43
+    list                           shift and go to state 16
+
+state 75
+
+    (29) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ . expression COMA params PARENTESISDER PARENTESISDER
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
+
+    PARENTESISIZQ   shift and go to state 9
+    ID              shift and go to state 31
+    INT             shift and go to state 21
+    RESTA           shift and go to state 17
+
+    expression                     shift and go to state 78
+
+state 76
+
+    (28) index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .
+
+    IGUAL           reduce using rule 28 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
+    TYPE            reduce using rule 28 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
+    ID              reduce using rule 28 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
+    PARENTESISIZQ   reduce using rule 28 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
+    INT             reduce using rule 28 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
+    RESTA           reduce using rule 28 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
+    $end            reduce using rule 28 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
+
+
+state 77
+
+    (30) statement -> ID PUNTO INSERT PARENTESISIZQ expression COMA params . PARENTESISDER
+    (17) params -> params . COMA params
+
+    PARENTESISDER   shift and go to state 79
+    COMA            shift and go to state 64
+
+
+state 78
+
+    (29) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression . COMA params PARENTESISDER PARENTESISDER
+    (31) expression -> expression . EXPONENTE expression
+    (32) expression -> expression . MODULO expression
+    (33) expression -> expression . MULTIPLICACION expression
+    (34) expression -> expression . DIVISIONENTERA expression
+    (35) expression -> expression . DIVISION expression
+    (36) expression -> expression . SUMA expression
+    (37) expression -> expression . RESTA expression
+
+    COMA            shift and go to state 80
+    EXPONENTE       shift and go to state 22
+    MODULO          shift and go to state 23
+    MULTIPLICACION  shift and go to state 24
+    DIVISIONENTERA  shift and go to state 25
+    DIVISION        shift and go to state 26
+    SUMA            shift and go to state 27
+    RESTA           shift and go to state 28
+
+
+state 79
+
+    (30) statement -> ID PUNTO INSERT PARENTESISIZQ expression COMA params PARENTESISDER .
+
+    TYPE            reduce using rule 30 (statement -> ID PUNTO INSERT PARENTESISIZQ expression COMA params PARENTESISDER .)
+    ID              reduce using rule 30 (statement -> ID PUNTO INSERT PARENTESISIZQ expression COMA params PARENTESISDER .)
+    PARENTESISIZQ   reduce using rule 30 (statement -> ID PUNTO INSERT PARENTESISIZQ expression COMA params PARENTESISDER .)
+    INT             reduce using rule 30 (statement -> ID PUNTO INSERT PARENTESISIZQ expression COMA params PARENTESISDER .)
+    RESTA           reduce using rule 30 (statement -> ID PUNTO INSERT PARENTESISIZQ expression COMA params PARENTESISDER .)
+    $end            reduce using rule 30 (statement -> ID PUNTO INSERT PARENTESISIZQ expression COMA params PARENTESISDER .)
+
+
+state 80
+
+    (29) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA . params PARENTESISDER PARENTESISDER
+    (15) params -> . primitive
+    (16) params -> . expression
+    (17) params -> . params COMA params
+    (18) params -> . empty
+    (8) primitive -> . BOOLEAN
+    (9) primitive -> . INT
+    (10) primitive -> . STRING
+    (11) primitive -> . list
+    (31) expression -> . expression EXPONENTE expression
+    (32) expression -> . expression MODULO expression
+    (33) expression -> . expression MULTIPLICACION expression
+    (34) expression -> . expression DIVISIONENTERA expression
+    (35) expression -> . expression DIVISION expression
+    (36) expression -> . expression SUMA expression
+    (37) expression -> . expression RESTA expression
+    (38) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (39) expression -> . ID
+    (40) expression -> . INT
+    (41) expression -> . RESTA expression
+    (42) empty -> .
+    (24) list -> . CORCHETEIZQ params CORCHETEDER
+
+    BOOLEAN         shift and go to state 13
+    INT             shift and go to state 14
+    STRING          shift and go to state 15
+    PARENTESISIZQ   shift and go to state 9
+    ID              shift and go to state 31
+    RESTA           shift and go to state 17
+    PARENTESISDER   reduce using rule 42 (empty -> .)
+    COMA            reduce using rule 42 (empty -> .)
+    CORCHETEIZQ     shift and go to state 19
+
+    expression                     shift and go to state 42
+    params                         shift and go to state 81
+    primitive                      shift and go to state 41
+    empty                          shift and go to state 43
+    list                           shift and go to state 16
+
+state 81
+
+    (29) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params . PARENTESISDER PARENTESISDER
+    (17) params -> params . COMA params
+
+    PARENTESISDER   shift and go to state 82
+    COMA            shift and go to state 64
+
+
+state 82
+
+    (29) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER . PARENTESISDER
+
+    PARENTESISDER   shift and go to state 83
+
+
+state 83
+
+    (29) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER .
+
+    TYPE            reduce using rule 29 (var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER .)
+    ID              reduce using rule 29 (var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER .)
+    PARENTESISIZQ   reduce using rule 29 (var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER .)
+    INT             reduce using rule 29 (var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER .)
+    RESTA           reduce using rule 29 (var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER .)
+    $end            reduce using rule 29 (var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER .)
 
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
 WARNING: shift/reduce conflict for TYPE in state 0 resolved as shift
-WARNING: shift/reduce conflict for PARENTESISIZQ in state 0 resolved as shift
 WARNING: shift/reduce conflict for ID in state 0 resolved as shift
+WARNING: shift/reduce conflict for INT in state 0 resolved as shift
+WARNING: shift/reduce conflict for PARENTESISIZQ in state 0 resolved as shift
 WARNING: shift/reduce conflict for RESTA in state 0 resolved as shift
 WARNING: shift/reduce conflict for RESTA in state 6 resolved as shift
 WARNING: shift/reduce conflict for IGUAL in state 10 resolved as shift
-WARNING: shift/reduce conflict for RESTA in state 33 resolved as shift
-WARNING: shift/reduce conflict for PARENTESISIZQ in state 35 resolved as shift
-WARNING: shift/reduce conflict for ID in state 35 resolved as shift
-WARNING: shift/reduce conflict for RESTA in state 35 resolved as shift
+WARNING: shift/reduce conflict for ID in state 36 resolved as shift
+WARNING: shift/reduce conflict for PARENTESISIZQ in state 36 resolved as shift
+WARNING: shift/reduce conflict for INT in state 36 resolved as shift
+WARNING: shift/reduce conflict for RESTA in state 36 resolved as shift
+WARNING: shift/reduce conflict for ID in state 38 resolved as shift
+WARNING: shift/reduce conflict for PARENTESISIZQ in state 38 resolved as shift
+WARNING: shift/reduce conflict for INT in state 38 resolved as shift
 WARNING: shift/reduce conflict for RESTA in state 38 resolved as shift
-WARNING: shift/reduce conflict for COMA in state 51 resolved as shift
-WARNING: shift/reduce conflict for PARENTESISIZQ in state 54 resolved as shift
-WARNING: shift/reduce conflict for ID in state 54 resolved as shift
+WARNING: shift/reduce conflict for RESTA in state 42 resolved as shift
 WARNING: shift/reduce conflict for RESTA in state 54 resolved as shift
-WARNING: shift/reduce conflict for COMA in state 56 resolved as shift
+WARNING: shift/reduce conflict for COMA in state 61 resolved as shift
+WARNING: shift/reduce conflict for ID in state 64 resolved as shift
+WARNING: shift/reduce conflict for PARENTESISIZQ in state 64 resolved as shift
+WARNING: shift/reduce conflict for INT in state 64 resolved as shift
+WARNING: shift/reduce conflict for RESTA in state 64 resolved as shift
+WARNING: shift/reduce conflict for COMA in state 70 resolved as shift
+WARNING: reduce/reduce conflict in state 14 resolved using rule (primitive -> INT)
+WARNING: rejected rule (expression -> INT) in state 14
+WARNING: reduce/reduce conflict in state 57 resolved using rule (primitive -> INT)
+WARNING: rejected rule (expression -> INT) in state 57
