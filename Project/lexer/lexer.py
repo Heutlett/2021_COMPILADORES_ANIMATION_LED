@@ -45,7 +45,7 @@ palabras_reservadas = {
     'Begin': 'BEGIN',
     'end': 'END',
     'Main': 'MAIN',
-    'call': 'CALL',
+    'call': 'CALL'
 
 }
 
@@ -86,6 +86,8 @@ tokens = [
     'IGUAL',
     'CORCHETEIZQ',
     'CORCHETEDER',
+    'LLAVEIZQ',
+    'LLAVEDER',
     'STRING',
     'ID',
 
@@ -117,6 +119,8 @@ t_MENORIGUAL = r'<='
 
 # Literales
 
+t_LLAVEIZQ = r'\{'
+t_LLAVEDER = r'\}'
 t_PARENTESISIZQ = r'\('
 t_PARENTESISDER = r'\)'
 t_PUNTO = r'\.'
