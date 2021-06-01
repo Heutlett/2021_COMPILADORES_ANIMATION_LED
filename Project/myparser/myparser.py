@@ -30,13 +30,14 @@ precedence = (
 
 # Expresion que define una recursion entre expresiones.
 def p_statements(p):
-    """ statements :
-                   | empty
+    """ statements : empty
                    | print
                    | primitive
                    | statement
                    | statements statement
     """
+    if p[1] is None:
+        pass
     # NOTA: p[0] corresponde al valor que toma la variable.
     # El conteo de indices para los datos empieza en 1.
     if len(p) == 2:
@@ -182,13 +183,14 @@ def p_sublist_assign(p):
     # Invalid sublist or params.
     if sublist is None or params is None:
         return None
+    if not list_insert_validation(p.lineno(1), sublist[1], params):
+        return None
 
     # Build our tree
     # Examples:
     # Test:  a[0:4]=[1,2,3,4]
     # ( '=' , (('[]', 'a', [0, 4]) , [1, 2, 3, 4]))
-
-    newTuple = ('[]*', sublist[1], sublist[2])
+    newTuple = (sublist[0] + '*', sublist[1], sublist[2])
     p[0] = ("=", (newTuple, p[3]))
 
     # NOTA: run() is called in p_operation
@@ -202,7 +204,7 @@ def var_assign_validation(ID, param, line):
     # If param its not a string.
     if equalsType(param, str) and not comillas in param:
 
-        # If ID is a param and it not exist.
+        # If ID is a param and it does not exist.
         if not isDefined(param, line):
             text = "ERROR in line {1}! \"{0}\" is not yet defined.".format(param, line)
             errors.append(text)
@@ -219,8 +221,7 @@ def var_assign_validation(ID, param, line):
             errors.append(text)
             return False
 
-    # Return true if its a new variable and
-    # param is not and undeclared variable.
+    # Return true if its a new variable and param is not and undeclared variable.
     return True
 
 
@@ -313,9 +314,11 @@ def p_callable(p):
 def p_sublist(p):
     '''
     sublist  : ID multi_index
+             | ID CORCHETEIZQ expression COMA expression CORCHETEDER
+             | ID CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER
     '''
+
     ID = p[1]
-    indexes = p[2]
 
     # If its not defined.
     if not isDefined(ID, p.lineno(1)):
@@ -328,19 +331,39 @@ def p_sublist(p):
         errors.append(text)
         return None
 
-    # If searching in list.
+    # If searching in list. L[0]
+    if len(p) == 3:
+        indexes = p[2]
+
+    # If searching for column. M[:,0]
+    elif p[3] == ":":
+        indexes = [":", p[5]]
+
+    # If searching in matrix. M[0][0]
+    else:
+        indexes = [[p[3], None], [p[5], None]]
+
+    # If searching in list. L[0]
     if len(indexes) == 1:
         if check_index_aux(p.lineno(1), getValue(ID), indexes[0][0], indexes[0][1]):
             # Build tree
             # Example ('[]', a, 1)
-            p[0] = ('[]', ID, p[2])
+            p[0] = ('[]', ID, indexes)
 
-    # If searching in matrix.
+    # If searching for column. M[:,0]
+    elif indexes[0] == ":":
+        row = getValue(ID)[0]
+        if check_index_aux(p.lineno(1), row, indexes[1]):
+            # Build tree
+            # Example (':', m, 4)
+            p[0] = ('[:,]', ID, indexes[1])
+
+    # If searching in matrix. M[0][0]
     else:
         if list_check_index_validation(p.lineno(1), ID, indexes):
             # Build tree
             # Example ('[]', a, [1,2,3])
-            p[0] = ('[]', ID, p[2])
+            p[0] = ('[]', ID, indexes)
 
 
 # Expresion para varios parámetros de index. Clausula de Klean.
@@ -366,6 +389,31 @@ def p_index_dospuntos(p):
     else:
         lst = [p[2]] + [p[4]]
     p[0] = lst
+
+
+# # Expresion para poder llamar a las matrices como M[1,1].
+# def p_matrix_column(p):
+#     '''
+#     sublist   :    ID CORCHETEIZQ PUNTO COMA expression CORCHETEDER
+#     '''
+#
+#     ID = p[1]
+#     indexes = [[p[5], None]]
+#
+#     # If its not defined.
+#     if not isDefined(ID, p.lineno(1)):
+#         return None
+#
+#     lst = getValue(ID)
+#     # If variable is not a list.
+#     if not equalsType(lst, list):
+#         text = "TypeError in line {1}: The type of \"{0}\" must be list.".format(ID, p.lineno(1))
+#         errors.append(text)
+#         return None
+#
+#
+#
+#     print(p[1], p[3], p[5])
 
 
 # Expresion para crear lista con range.
@@ -573,7 +621,7 @@ def list_insert_validation(line, ID, value):
     # If someone or both are not lists.
     if not (equalsType(var, list) and equalsType(value, list)):
         if type(var) != type(value):
-            text = "TypeError in line {2}: The type of \"{1}\" does not match the type of \"{0}\"." \
+            text = "TypeError in line {2}: \"{1}\" does not match the type of \"{0}\"." \
                 .format(ID, value, line)
             errors.append(text)
             return False
@@ -736,6 +784,7 @@ def list_check_param_and_range_concordance_validation(line, params, i, j):
 
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  FUNCTIONS GRAMMARS  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
 
+
 # # Definición de if
 # def p_if(p):
 #     """ funcionreservada : IF condicion LLAVEIZQ ordenes LLAVEDER PYC
@@ -757,19 +806,20 @@ def p_ordenes(p):
    '''
     # Revisa si hay alguna asignación de variable
     for i in p:
-       if isinstance(i, list):
-          if i[0] != 'DEF' and i[1] not in (env or env):
-             env[i[1]] = i[2]
-          elif i[0] != 'DEF' and i[1] in (env or env):
-             errors.append("ERROR: Se intentó redefinir la variable {0} ya definida en main".format(i[0]))
+        if isinstance(i, list):
+            if i[0] != 'DEF' and i[1] not in (env or env):
+                env[i[1]] = i[2]
+            elif i[0] != 'DEF' and i[1] in (env or env):
+                errors.append("ERROR: Se intentó redefinir la variable {0} ya definida en main".format(i[0]))
 
-   # Si es solo un elemento
+    # Si es solo un elemento
     if len(p) == 2:
-       p[0] = [p[1]]
+        p[0] = [p[1]]
 
-   # Si es más de una orden, se concatenan
+    # Si es más de una orden, se concatenan
     else:
-       p[0] = p[1] + [p[2]]
+        p[0] = p[1] + [p[2]]
+
 
 """   
 Blink(Dato, Cantidad, RangoTiempo, Estado)
@@ -940,7 +990,8 @@ def p_error(p):
 parser = yacc.yacc()
 # Create the environment upon which we will store and retrieve variables from.
 env = {"a": [100, 220, 335, 435, 595], "b": [[True, False, False, True, False], [False, True, True, True, True]],
-       "c": [[[1, 2], [3, 4], [5, 6]], [[7, 8], [9, 10], [11, 12]]]}
+       "c": [[[1, 2], [3, 4], [5, 6]], [[7, 8], [9, 10], [11, 12]]],
+       'd': [[True, True, True, True, False], [True, True, True, True, False]]}
 # Create the dictionary in which we will store and retrieve all errors we get.
 errors = []
 
@@ -953,7 +1004,7 @@ arithmetic_operators = ['+', '-', '*', '/', '//', '%', '^']
 def run(p):
     global env
     global arithmetic_operators
-    # print(p)
+    print(p)
     if equalsType(p, tuple):
 
         if p[0] in arithmetic_operators:  # OPERACIONES ARITMETICAS
@@ -974,6 +1025,12 @@ def run(p):
 
         elif p[0] == '[]*':
             return list_callable_operation(p[1], p[2], False)
+
+        elif p[0] == '[:,]':
+            return matrix_column_operation(p[1], p[2])
+
+        elif p[0] == '[:,]*':
+            return matrix_column_operation(p[1], p[2], False)
 
         elif p[0] == 'INSERT':
             return list_insert_operation(p[1], p[2], p[3])
@@ -1022,6 +1079,7 @@ def arithmetic_operation(operator, a, b):
 def var_assign_operation(struct):
     # ('=', (a, 1)) : un elemento, struct = tuple
     # ('=', [(a, 1), (b,2)]) : dos elementos, struct = list
+    # print ("Struct:", struct)
     if type(struct) == tuple:
         var_assign_operation_aux(run(struct[0]), run(struct[1]))
     else:
@@ -1036,7 +1094,12 @@ def var_assign_operation_aux(var, value):
         env[var] = run(value)
         print(var, ":", env[var])
 
-    # If its an assigment to a sublist.
+    # If its an assignment to a column.
+    elif var[0] == ':':
+        ID = var[1]
+        env[ID] = matrix_column_assign(getValue(ID), var[2], value)
+
+    # If its an assignment to a sublist.
     else:
         ID = var[0]
         i, j = var[1][0][0], var[1][0][1]
@@ -1099,6 +1162,30 @@ def list_len_operation(param):
     if equalsType(param, str):
         return len(getValue(param))
     return len(param)
+
+
+# Funcion para leer y realizar la funcion del arbol de mostrar la columna de una matriz.
+def matrix_column_operation(ID, col, result=True):
+    var = getValue(ID)
+    if not result:
+        return [":", ID, col]
+    return matrix_column_aux(var, col)
+
+
+def matrix_column_aux(var, col):
+    tmp = []
+    for row in var:
+        tmp.append(row[col])
+    return tmp
+
+
+# Funcion que asigna los valores de columna de una matriz a otra.
+def matrix_column_assign(var, col, new_val_list):
+    print(var, col, new_val_list)
+    for r in range(len(var)):
+        print(var[r][col], "|", new_val_list[r])
+        var[r][col] = new_val_list[r]
+    return var
 
 
 # Create a REPL to provide a way to interface with our calculator.
