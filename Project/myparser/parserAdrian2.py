@@ -3,6 +3,12 @@ import ply.yacc as yacc
 import sys
 from lexer.lexer import tokens
 
+# Pretty Printer
+import pprint
+
+# Define el archivo del programa
+program_file = "insumo.txt"
+
 """
 Writing Machine
 Parser: Genera el árbol de parseo. Imprime los resultados del parseo.
@@ -41,7 +47,7 @@ def p_statements(p):
     # NOTA: p[0] corresponde al valor que toma la variable.
     # El conteo de indices para los datos empieza en 1.
     if len(p) == 2:
-        p[0] = p[1]
+        p[0] = [p[1]]
     else:
         p[0] = p[1] + [p[2]]
 
@@ -52,10 +58,16 @@ def p_operation(p):
     statement : expression PYC
               | callable PYC
               | var_assign
-              | ordenes
+              | funcionreservada
+              | procedure
+
     '''
-    print("BNF:", p[1], " ~ (line 55)")
-    print(run(p[1]))
+    # print("BNF:", p[1], " ~ (line 57)")
+    run(p[1])
+    # print(p[1])
+    #print("callable", p[1])
+    p[0] = p[1]
+
 
 
 # Expresiones para variables primitivas.
@@ -228,6 +240,9 @@ def var_assign_validation(ID, param, line):
 # Funcion auxiliar para validar los ids y params recibidos si son varios ids.
 def vars_assign_validation(ids, params, line):
     # Number of params must match the numbers of ids.
+    print("*ids", ids)
+    print("*params", params)
+
     if len(ids) != len(params):
         text = "LenError in line {0}! The number of values does not match the number of IDs.".format(line)
         errors.append(text)
@@ -444,16 +459,16 @@ def p_statement_list_insert(p):
     if not isDefined(ID, p.lineno(1)):
         return None
     # Validation
-    print("param", params)
-    print("Insertion:", list_insert_validation(line, ID, params))
     if not list_insert_validation(line, ID, params):
         return None
 
     # Build tree
     # Example
     # ('INSERT', 'a', [True,False,True], 0, None) => a = [[True,False,True], [False, True], ...]
-    p[0] = ("INSERT", ID, num, params[0])
-    print(run(p[0]))
+    p[0] = ("INSERT", ID, num, params)
+    # print("BNF:", p[0])
+    # print(run(p[0]))
+    # print(p[0])
 
 
 # Expresion para crear lista con range.
@@ -491,6 +506,25 @@ def p_statement_list_len(p):
         # Example ('LEN', 'a')
         p[0] = ("LEN", p[3])
         print(run(p[0]))
+
+
+def p_neg(p):
+    """
+    statement : sublist PUNTO NEG PYC
+              | sublist PUNTO T PYC
+              | sublist PUNTO F PYC
+    """
+    sublist = p[1]
+    newTuple = (sublist[0] + '*', sublist[1], sublist[2])
+    p[0] = (p[3].upper(), newTuple)
+
+    # Build tree
+    # Example  ('NEG', ('[]', 'b', [[0, 2]]))
+    # Example  ('T', ('[]*', 'b', [[0, 2]]))
+    # Example  ('F', ('[]', 'b', [[0, 2]]))
+    # print("BNF:", p[0])
+    # print(run(p[0]))
+    # print(p[0])
 
 
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  ARITHMETIC OPERATIONS  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
@@ -578,14 +612,6 @@ def isDefined(var, line):
     return True
 
 
-# Funcion general para realizar todas las validaciones antes de la asignacion de una lista.
-def list_assign_validation(line, ID, params, indexes):
-    lst = getValue(ID)
-
-    # Then no problem.
-    return True
-
-
 # Función para revisar si hay una variable
 def revisar_variable(a):
     var_local = False
@@ -618,8 +644,23 @@ def revisar_variable(a):
 # Función auxiliar para comparar si un elemento nuevo puede ser insertado en una lista.
 def list_insert_validation(line, ID, value):
     var = getValue(ID)  # get variable
-    # If someone or both are not lists.
-    if not (equalsType(var, list) and equalsType(value, list)):
+
+    # If ID is not list and value is list.
+    if not equalsType(var, list) and equalsType(value, list):
+        text = "TypeError in line {2}: \"{1}\" does not match the type of \"{0}\"." \
+            .format(ID, value, line)
+        errors.append(text)
+        return False
+
+    # If ID is list and value is not.
+    elif equalsType(var, list) and not equalsType(value, list):
+        if type(var[0]) != type(value):
+            text = "TypeError in line {2}: \"{1}\" does not match the type of \"{0}\"." \
+                .format(ID, value, line)
+            errors.append(text)
+            return False
+
+    elif not (equalsType(var, list) and equalsType(value, list)):
         if type(var) != type(value):
             text = "TypeError in line {2}: \"{1}\" does not match the type of \"{0}\"." \
                 .format(ID, value, line)
@@ -784,49 +825,40 @@ def list_check_param_and_range_concordance_validation(line, params, i, j):
 
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  FUNCTIONS GRAMMARS  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
 
-
-# # Definición de if
-# def p_if(p):
-#     """ funcionreservada : IF condicion LLAVEIZQ ordenes LLAVEDER PYC
-#     """
-#     # Si se cumple la condición, devuelve las ordenes a ejecutar
-#     if p[2] == True:
-#         p[0] = ['IF', p[4]]
-#     else:
-#         print("No se cumple el if")
-#
-#
-
+def p_valorIf(p):
+    """ valorIf : BOOLEAN
+              | INT
+    """
+    p[0] = p[1]
 
 # Definición de if
 def p_if(p):
-   """ funcionreservada : IF PARENTESISIZQ condicion PARENTESISDER CORCHETEIZQ ordenes CORCHETEDER PYC
+   """ funcionreservada : IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
    """
    # Si se cumple la condición, devuelve las ordenes a ejecutar
-   if p[3] == True:
-      p[0] = ['IF', p[6]]
 
+   if p[3] == True:
+        p[0] = ['IF', p[6]]
 
 # Condicion
 def p_condicion(p):
-    """ condicion : expression MAYORQUE expression
-                             | expression MENORQUE expression
-                             | expression MENORIGUAL expression
-                             | expression MAYORIGUAL expression
-                             | expression IGUALES expression
-                             | value IGUALES value
-                             | value  MAYORQUE value
-                             | value  MENORQUE value
-                             | value  MENORIGUAL value
-                             | value  MAYORIGUAL value
+    """ condicion : expression IGUALES valorIf
+                             | expression  MAYORQUE valorIf
+                             | expression  MENORQUE valorIf
+                             | expression  MENORIGUAL valorIf
+                             | expression  MAYORIGUAL valorIf
     """
     # Variables temporales para la evaluación
     tempX = 0
     tempY = 0
 
+    variable1 = 0
+
     # Si son variables, las asigna
-    variable1 = revisar_variable(p[1])
-    variable2 = revisar_variable(p[3])
+    if isDefined(p[1][1],1):
+        variable1 = env[p[1][1]]
+
+    variable2 = p[3]
 
     # Error
     error = False
@@ -881,21 +913,32 @@ def p_condicion(p):
     elif p[2] == '==':
         p[0] = tempX == tempY
 
+
+def p_procedure(p):
+    '''
+    procedure : PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
+    '''
+
+    p[0] = ["PROCEDURE", p[2], p[4], p[7]]
+
+
+
 # Ordenes (se dan en forma de una lista de listas)
 def p_ordenes(p):
     '''
-    ordenes : funcionreservada
-                       | statement
+    ordenes : statement
                        | ordenes statement
                        | ordenes funcionreservada
+                       | funcionreservada
    '''
-    # Revisa si hay alguna asignación de variable
+
+    """    # Revisa si hay alguna asignación de variable
     for i in p:
         if isinstance(i, list):
             if i[0] != 'DEF' and i[1] not in (env or env):
                 env[i[1]] = i[2]
             elif i[0] != 'DEF' and i[1] in (env or env):
-                errors.append("ERROR: Se intentó redefinir la variable {0} ya definida en main".format(i[0]))
+                errors.append("ERROR: Se intentó redefinir la variable {0} ya definida en main".format(i[0]))"""
 
     # Si es solo un elemento
     if len(p) == 2:
@@ -937,7 +980,7 @@ def p_blink(p):
                     if type(p[3][1]) == int:
 
                         p[0] = ['BLINK', p[3]]
-                        print(run(p[0]))
+                        #print(run(p[0]))
 
                     else:
                         errors.append("ERROR in line {0}! The second param must be a integer! "
@@ -1074,9 +1117,7 @@ def p_error(p):
 # Build the parser
 parser = yacc.yacc()
 # Create the environment upon which we will store and retrieve variables from.
-env = {"a": [100, 220, 335, 435, 595], "b": [[True, False, False, True, False], [False, True, True, True, True]],
-       "c": [[[1, 2], [3, 4], [5, 6]], [[7, 8], [9, 10], [11, 12]]],
-       'd': [[True, True, True, True, False], [True, True, True, True, False]]}
+env = {}
 # Create the dictionary in which we will store and retrieve all errors we get.
 errors = []
 
@@ -1086,10 +1127,11 @@ arithmetic_operators = ['+', '-', '*', '/', '//', '%', '^']
 
 
 # The run function is our recursive function that 'walks' the tree generated by our parser.
+
 def run(p):
     global env
     global arithmetic_operators
-    print(p)
+    # print(p)
     if equalsType(p, tuple):
 
         if p[0] in arithmetic_operators:  # OPERACIONES ARITMETICAS
@@ -1126,6 +1168,15 @@ def run(p):
         elif p[0] == 'LEN':
             return list_len_operation(p[1])
 
+        elif p[0] == "NEG":
+            return neg_operation(p[1])
+
+        elif p[0] == "T":
+            return t_operation(p[1])
+
+        elif p[0] == "F":
+            return f_operation(p[1])
+
         elif p[0] == 'BLINK':
             return p[1]
 
@@ -1137,6 +1188,7 @@ def run(p):
 
         elif p[0] == 'PRINTLEDX':
             return p[1]
+
 
     else:
         return p
@@ -1174,10 +1226,11 @@ def var_assign_operation(struct):
 
 # Auxiliar para verificar la asignacion de las variables.
 def var_assign_operation_aux(var, value):
+    #print(var)
     # If variable is a primitive but not a list.
     if not equalsType(var, list):
         env[var] = run(value)
-        print(var, ":", env[var])
+        #print(var, ":", env[var])
 
     # If its an assignment to a column.
     elif var[0] == ':':
@@ -1192,7 +1245,7 @@ def var_assign_operation_aux(var, value):
             getValue(ID)[i:j] = value
         else:
             getValue(ID)[i] = value
-        print(ID, ":", env[ID])
+        #print(ID, ":", env[ID])
 
 
 # Funcion para leer y realizar la funcion del arbol de la llamada a una sublista.
@@ -1231,7 +1284,7 @@ def sublist_recursive_call(lst, indexes):
 # Funcion para leer y realizar la funcion del arbol de la insercion a una lista.
 def list_insert_operation(ID, amount, value):
     var = getValue(ID)
-    var.insert(amount, value)
+    var.insert(run(amount), value)
     return run(("var", ID))
 
 
@@ -1247,6 +1300,32 @@ def list_len_operation(param):
     if equalsType(param, str):
         return len(getValue(param))
     return len(param)
+
+
+# Funcion que hace switch del valor booleano de una lista, matriz o rango de las mismas.
+def neg_operation(param):
+    return bool_operation_aux("N", run(param))
+
+
+# Funcion que cambia el valor booleano a True de una lista, matriz o rango de las mismas.
+def t_operation(param):
+    return bool_operation_aux("T", run(param))
+
+
+# Funcion que cambia el valor booleano a False de una lista, matriz o rango de las mismas.
+def f_operation(param):
+    return bool_operation_aux("F", run(param))
+
+
+def bool_operation_aux(order, value):
+    # If value is not a list.
+    #print(order)
+    run()
+    #print(value)
+
+    # if not equalsType(value, list):
+
+    # if (equalsType(param))
 
 
 # Funcion para leer y realizar la funcion del arbol de mostrar la columna de una matriz.
@@ -1266,17 +1345,31 @@ def matrix_column_aux(var, col):
 
 # Funcion que asigna los valores de columna de una matriz a otra.
 def matrix_column_assign(var, col, new_val_list):
-    print(var, col, new_val_list)
+    # print(var, col, new_val_list)
     for r in range(len(var)):
-        print(var[r][col], "|", new_val_list[r])
+        # print(var[r][col], "|", new_val_list[r])
         var[r][col] = new_val_list[r]
     return var
 
 
+# # Create a REPL to provide a way to interface with our calculator.
+# while True:
+#     try:
+#         s = input('>> ')
+#     except EOFError:
+#         break
+#     parser.parse(s)
+
 # Create a REPL to provide a way to interface with our calculator.
-while True:
-    try:
-        s = input('>> ')
-    except EOFError:
-        break
-    parser.parse(s)
+print("\n--------- RESULTS ---------")
+
+# Crea el printer para poder imprimir tanto en el Shell de Python como en CMD
+pp = pprint.PrettyPrinter(indent=2)
+
+# Implementación para leer un archivo que será el insumo del parser
+with open(program_file, 'r') as file:
+    insumo = file.read()
+    result = parser.parse(insumo)
+    pp.pprint(result)
+    print(env)
+
