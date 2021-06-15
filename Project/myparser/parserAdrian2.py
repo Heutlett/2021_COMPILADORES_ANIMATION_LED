@@ -7,7 +7,7 @@ from lexer.lexer import tokens
 import pprint
 
 # Define el archivo del programa
-program_file = "insumo.txt"
+program_file = "insumoAdrian.txt"
 
 """
 Writing Machine
