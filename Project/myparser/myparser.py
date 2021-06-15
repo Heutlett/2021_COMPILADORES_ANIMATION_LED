@@ -58,8 +58,11 @@ def p_operation(p):
     statement : expression PYC
               | callable PYC
               | var_assign
-              | ordenes
+              | funcionreservada
+              | procedure
+
     '''
+    run(p[1])
     p[0] = p[1]
 
 
@@ -873,6 +876,15 @@ def p_condicion(p):
         p[0] = tempX == tempY
 
 
+
+def p_procedure(p):
+    '''
+    procedure : PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
+    '''
+
+    p[0] = ["PROCEDURE", p[2], p[4], p[7]]
+
+
 # Ordenes (se dan en forma de una lista de listas)
 def p_ordenes(p):
     '''
@@ -892,11 +904,11 @@ def p_ordenes(p):
 
     # Si es solo un elemento
     if len(p) == 2:
-        p[0] = [p[1]]
+        p[0] = p[1]
 
     # Si es más de una orden, se concatenan
     else:
-        p[0] = p[1] + [p[2]]
+        p[0] = [p[1]] + [p[2]]
 
 
 """   

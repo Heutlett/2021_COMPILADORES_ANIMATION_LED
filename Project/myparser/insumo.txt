@@ -21,7 +21,26 @@ mi_list.insert(0,False);
 nums.del(1);
 len(nums);
 
-b=4;
+a = [100, 220, 335, 435, 595];
+b = 2;
+c = False;
+a[1]=21;
+
 If(b<=2){
-    d = 5+w;
+    d = 5;
 }
+If(b<=2){
+    g = 5;
+    If(b<=3){
+    h = 5;
+}
+}
+
+
+Procedure abc (){
+
+    j = 3;
+    If(b<=3){
+        h = 5;
+    }
+};
