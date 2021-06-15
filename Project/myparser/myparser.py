@@ -295,6 +295,8 @@ def var_type(var):
         return 'list'
     elif equalsType(var, str):
         return 'str'
+    elif var is None:
+        return 'NoneType'
     else:
         print("ERROR in type!")
 
@@ -496,6 +498,7 @@ def p_neg(p):
     """
     sublist = p[1]
     newTuple = (sublist[0] + '*', sublist[1], sublist[2])
+    print(newTuple)
     p[0] = (p[3].upper(), newTuple)
 
     # Build tree
@@ -520,7 +523,12 @@ def p_expression(p):
     '''
     # Build our tree.
     tree = (p[2], p[1], p[3])
+    if p[1] is None or p[3] is None:
+        errors.append("TypeError in line {3}! Unsupported operand type(s) for {0}: {1} and {2}"
+                      .format(p[2], var_type(p[1]), var_type(p[3]), p.lineno(1)))
+        return None
     p[0] = run(tree)
+
 
 # Expresiones entre paréntesis.
 def p_expression_parentesis(p):
@@ -558,12 +566,12 @@ def p_expression_uminus(p):
     tree = -p[2]
     p[0] = run(tree)
 
+
 # Expresion vacia
 def p_empty(p):
     '''
     empty :
     '''
-    print("expresion vacia")
     p[0] = None
 
 
@@ -590,7 +598,6 @@ def isDefined(var):
     if getValue(var) is None:
         return False
     return True
-
 
 
 ' ###### Validation of insertion in a list ###### '
@@ -876,7 +883,6 @@ def p_condicion(p):
         p[0] = tempX == tempY
 
 
-
 def p_procedure(p):
     '''
     procedure : PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
@@ -1157,7 +1163,9 @@ def run(p):
 
 # Funcion auxiliar para operar los calculos aritmeticos por aparte.
 def arithmetic_operation(operator, a, b):
-    if operator == '+':
+    if a is None or b is None:
+        return None
+    elif operator == '+':
         return run(a) + run(b)
     elif operator == '-':
         return run(a) - run(b)
@@ -1280,7 +1288,6 @@ def f_operation(param):
 def bool_operation_aux(order, value):
     # If value is not a list.
     print(order)
-    run()
     print(value)
 
     # if not equalsType(value, list):
