@@ -1,46 +1,45 @@
-w = 5+6;
-x,y=20,15;
-mi_bool1 = True;
-mi_bool2 = False;
-variable1 = 5;
-type(variable1);
+## w = 5+6;
+## x,y=20,15;
+## mi_bool1 = True;
+## mi_bool2 = False;
+## variable1 = 5;
+## type(variable1);
+## 1-5;
+## x + y * 10 / 4;
+## x + ((y * 10) / 4);
+## ((x + y) * 10) / 4;
+## mi_list=[];
+## nums=[1,2,3,4,5];
 
-1-5;
-x + y * 10 / 4;
-x + ((y * 10) / 4);
-((x + y) * 10) / 4;
-mi_list=[];
+## nums[0]=10;
+## nums.del(1);
+## len(nums);
+## a = [100, 220, 335, 435, 595];
+## b = 2;
+## c = False;
+## a[1]=21;
+## If(b<=2){
+##     d = 5;
+## }
+## If(b<=2){
+##     g = 5;
+##     If(b<=3){
+##     h = 5;
+## }
+## }
+## Procedure abc (){
+##     j = 3;
+##     If(b<=3){
+##         h = 5;
+##     }
+## };
+
+
 mi_list=[True,True,True,True,True];
-nums=[1,2,3,4,5];
 mi_list[0];
 mi_list[0:4];
-lrange = list(range(5,True));
-nums[0]=10;
 mi_list[1:3]=[False,False];
 mi_list.insert(0,False);
-nums.del(1);
-len(nums);
+lrange = list(range(5,True));
 
-a = [100, 220, 335, 435, 595];
-b = 2;
-c = False;
-a[1]=21;
-
-If(b<=2){
-    d = 5;
-}
-If(b<=2){
-    g = 5;
-    If(b<=3){
-    h = 5;
-}
-}
-
-
-Procedure abc (){
-
-    j = 3;
-    If(b<=3){
-        h = 5;
-    }
-};
+mi_list[0].Neg;
