@@ -379,7 +379,6 @@ def p_PrintLedX(p):
     '''
 
     params = p[3]
-    print(params)
     objeto = params[0].lower()[1:-1]  # De '"C"' a "c"
 
     global tipoObjeto
