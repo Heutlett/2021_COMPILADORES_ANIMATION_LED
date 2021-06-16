@@ -12,7 +12,7 @@ Aún no hace nada, se deben agregar las evaluaciones de todo y escribir al Ardui
 Para correr el programa:
    1. En CMD "pip install ply" y luego "pip install pyhcl" 
    2. Luego igual en CMD a la ubicación del archivo (cd Documentos o Descargas o c://Users/nombre...) y
-   correr "python ejecutar.py" El archivo de lexer.py, parser.py y entrada.txt tiene que estar en la misma carpeta
+   correr "python ejecutar.py" El archivo de lexer.py, myparser2.py y entrada.txt tiene que estar en la misma carpeta
 
 """
 
