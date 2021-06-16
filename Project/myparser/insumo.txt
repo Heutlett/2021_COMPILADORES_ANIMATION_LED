@@ -5,6 +5,10 @@
 ##x,y,z=1,2,3;
 ##v,j=[2,3],[1,5];
 ##f,g,h=[3,4],True,False;
+##a[1]=True;
+g[1,2]=False;
+gram[1,2]=[1];
+
 ##Blink(f,c, 5,"Seg",False);
 ##Delay(10,"Mil");
 ##PrintLed(1,1,True);
@@ -15,7 +19,7 @@ Procedure abc (){
     If(b<=3){
         h = 5;
         If(b<=3){
-            k = 5;
+            a[1] = True;
         }
     }
 };
@@ -27,6 +31,9 @@ Procedure Main (){
     }
     for linea in lista{
         h = 5;
+        Blink(f,c, 5,"Seg",False);
+        g = "Si";
+
     }
     for linea in lista Step 2{
         h = 5;
