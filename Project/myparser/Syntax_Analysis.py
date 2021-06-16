@@ -340,7 +340,7 @@ def p_blink(p):
                       "".format(p.lineno(1)))
         return
     # ['BLINK', f, c, int, rangotiempo, bool]
-    p[0] = ["blink", params[0], params[1], params[2], rango, params[4]]
+    p[0] = [p.lineno(1), "BLINK", params[0], params[1], params[2], rango, params[4]]
 
 
 """   
@@ -365,7 +365,7 @@ def p_delay(p):
         return "Error in Delay, line {0}.".format(p.lineno(5))
 
     # ['DELAY', 10, 'mil']
-    p[0] = ["delay", params[0], rango]
+    p[0] = [p.lineno(1), "DELAY", params[0], rango]
 
 
 """   
@@ -383,7 +383,7 @@ def p_PrintLed(p):
     params = p[3]
 
     # ['PRINTLED', row, column, valor]
-    p[0] = ["printled", params[0], params[1], params[2]]
+    p[0] = [p.lineno(1), "PRINTLED", params[0], params[1], params[2]]
 
 """   
 PrintLedX(TipoObjeto, Indice, Arreglo)
@@ -407,7 +407,7 @@ def p_PrintLedX(p):
         return "Error in PrintLedX, line {0}.".format(p.lineno(5))
 
     # ['DELAY', 10, 'mil']
-    p[0] = ["printledx", objeto, params[1], params[2]]
+    p[0] = [p.lineno(1), "PRINTLEDX", objeto, params[1], params[2]]
 
 
 
