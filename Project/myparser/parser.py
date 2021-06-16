@@ -95,12 +95,17 @@ def p_params(p):
     """
     params  : input
     """
-    # If param is None
-    if p[1][0] is None:
-        p[0] = None
-    # If only one param
-    else:
-        p[0] = p[1]
+
+    # # If param is None
+    # if p[1][0] is None:
+    #     p[0] = "No params"
+    #
+    # # If only one param
+    # elif len(p[1]) == 1:
+    #     p[0] = p[1][0]
+
+    # else:
+    p[0] = p[1]
 
 
 # Expresion para obtener params.
@@ -115,7 +120,11 @@ def p_input(p):
 
     # Si es solo un parametro
     if len(p) == 2:
+        # Si el parametro es una lista.
+        # if type(p[1]) == list:
         p[0] = [p[1]]
+        # else:
+        #     p[0] = [p[1]].append(p[3])
 
     # Si son más de dos input
     else:
@@ -130,7 +139,6 @@ def p_var_assign(p):
                | ids IGUAL params PYC
                | sublist IGUAL params PYC
     """
-
     # Build our tree
     # Examples:
     # [line, '=', ID, value]
@@ -140,7 +148,7 @@ def p_var_assign(p):
     # print("ID:", p[1])
     # print("Val:", p[3])
     values = p[3]
-    p[0] = [p.lineno(1), '=', p[1], values]
+    p[0] = [p.lineno(4), '=', p[1], values]
 
 
 # Expresion para consultar el tipo de una variable.
@@ -149,7 +157,7 @@ def p_var_type(p):
         statement : TYPE PARENTESISIZQ ID PARENTESISDER PYC
     """
     # [line, TYPE, ID]
-    p[0] = [p.lineno(1), 'TYPE', p[3]]
+    p[0] = [p.lineno(5), 'TYPE', p[3]]
 
 
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  LIST  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
@@ -176,17 +184,46 @@ def p_callable(p):
     p[0] = p[1]
 
 
-# Expresion para obtener un indice dentro de corchetes.
-def p_index_1(p):
+# Expresion para varios parámetros de index. Clausula de Klean.
+def p_multiple_index(p):
+    """
+    multi_index : index
+                | index multi_index
+    """
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = [p[1]] + p[2]
+
+
+# Expresion para obtener un indice de una fila.
+def p_index_f(p):
     """
     index  : CORCHETEIZQ expression CORCHETEDER
     """
     # [1]
-    p[0] = ['f', p[2]]
+    p[0] = ['row', p[2]]
 
 
-# Expresion para obtener un indice dentro de corchetes.
-def p_index_2(p):
+# Expresion para obtener un indice de las columnas en una matriz.
+def p_index_c(p):
+    """
+    index  : CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER
+    """
+    # [:, 1]
+    p[0] = ['col', p[4]]
+
+
+def p_index_sublist(p):
+    """
+    index  : CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER
+    """
+    # [1:2]
+    p[0] = ["sublist", p[2], p[4]]
+
+
+# Expresion para obtener indices equivalentes en matrices.
+def p_index_matrix(p):
     """
     index  : CORCHETEIZQ expression COMA expression CORCHETEDER
            | CORCHETEIZQ expression CORCHETEDER CORCHETEIZQ expression CORCHETEDER
@@ -194,108 +231,17 @@ def p_index_2(p):
     # [1][2]
     # [1,2]
     if len(p) == 6:
-        p[0] = ["f,c", p[2], p[4]]
+        p[0] = ["row,col", p[2], p[4]]
     else:
-        p[0] = ["f,c", p[2], p[5]]
-
-
-# Expresion para obtener un indice dentro de corchetes con dos puntos.
-def p_index_3(p):
-    """
-    index  : CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER
-           | CORCHETEIZQ expression CORCHETEDER CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER
-
-           | CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER CORCHETEIZQ expression CORCHETEDER
-           | CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER
-           | CORCHETEIZQ expression COMA expression CORCHETEDER CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER
-    """
-    # [1:3]
-    if len(p) == 6:
-        p[0] = ["sublist", p[2], p[4]]
-
-    # [1:3][2]
-    elif len(p) == 9:
-        p[0] = [["sublist", p[2], p[4]]] + ['f', p[7]]
-
-
-    elif len(p) == 11:
-
-        # [1:3][2:5]
-        if p[3] == ":":
-            p[0] = [["sublist", p[2], p[4]]] + [["sublist", p[2], p[4]]]
-
-        # [1][2:5]
-        else:
-            p[0] = [["f", p[2]]] + [["sublist", p[2], p[4]]]
+        p[0] = ["row,col", p[2], p[5]]
 
 
 # Expresion para obtener una sublista de una lista.
 def p_sublist(p):
     '''
-    sublist  : ID index
-             | ID CORCHETEIZQ expression COMA expression CORCHETEDER
+    sublist  : ID multi_index
     '''
-
-    ID = p[1]
-    print(p[2])
-
-    if len(p) == 1:
-        # ['[]', ID, INDICES]
-        p[0] = ['[]', ID, p[1]]
-
-    # p[0] = [ID, [p1]]
-
-    # # If searching in list. L[0]
-    # if len(p) == 3:
-    #     indexes = p[2]
-    #
-    # # If searching for column. M[:,0]
-    # elif p[3] == ":":
-    #     indexes = [":", p[5]]
-    #
-    # # If searching in matrix. M[0][0]
-    # else:
-    #     indexes = [[p[3], None], [p[5], None]]
-    #
-    # # If searching in list. L[0]
-    # if len(indexes) == 1:
-    #     if check_index_aux(p.lineno(1), getValue(ID), indexes[0][0], indexes[0][1]):
-    #         # Build tree
-    #         # Example ('[]', a, 1)
-    #         tree = ('[]', ID, indexes)
-    #         p[0] = tree
-    #         # run(tree)
-    #
-    # # If searching for column. M[:,0]
-    # elif indexes[0] == ":":
-    #     row = getValue(ID)[0]
-    #     if check_index_aux(p.lineno(1), row, indexes[1]):
-    #         # Build tree
-    #         # Example (':', m, 4)
-    #         tree = ('[:,]', ID, indexes[1])
-    #         p[0] = tree
-    #         # run(tree)
-    #
-    # # If searching in matrix. M[0][0]
-    # else:
-    #     if list_check_index_validation(p.lineno(1), ID, indexes):
-    #         # Build tree
-    #         # Example ('[]', a, [1,2,3])
-    #         tree = ('[]', ID, indexes)
-    #         p[0] = tree
-    #         # run(tree)
-
-
-# # Expresion para obtener limite inicial y final de los indices dentro de corchetes.
-# def p_indexes(p):
-#     """
-#     index  : CORCHETEIZQ expression COMA expression CORCHETEDER
-#            | CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER
-#            | CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER
-#     """
-#     # [1, ',', 3]
-#     # [1, ':', 2]
-#     p[0] = [p[2], p[3], p[4]]
+    p[0] = [p.lineno(1), p[1], p[2]]
 
 
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  ARITHMETIC OPERATIONS  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
@@ -345,6 +291,108 @@ def p_empty(p):
     empty :
     '''
     p[0] = None
+
+
+''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  DEFAULT FUNCTIONS  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
+
+rangoTiempo = ["seg", "mil", "min"]
+tipoObjeto = ["c", "f", "m"]
+
+"""   
+Blink(Dato, Cantidad, RangoTiempo, Estado)
+Dato: Indice, Arreglo, etc
+Cantidad: Entero
+RangoTiempo: "Seg", "Mil", "Min"
+Estado: bool
+"""
+
+def p_blink(p):
+    '''
+    funcionreservada : BLINK PARENTESISIZQ params PARENTESISDER PYC
+    '''
+    params = p[3]
+    rango = params[3].lower()[1:-1]  # De '"seg"' a "seg"
+
+    global rangoTiempo
+    if not rango in rangoTiempo:
+        errors.append("ERROR in line {0}! The forth param must be a (Seg, Mil, Min)! "
+                      "".format(p.lineno(1)))
+        return "Error in Blink, line {0}.".format(p.lineno(5))
+
+    # ['BLINK', f, c, int, rangotiempo, bool]
+    p[0] = ["blink", params[0], params[1], params[2], rango, params[4]]
+
+
+"""   
+Delay(Cantidad, RangoTiempo)
+Cantidad: Entero
+RangoTiempo: "Seg", "Mil", "Min"
+"""
+
+
+def p_delay(p):
+    '''
+    funcionreservada : DELAY PARENTESISIZQ params PARENTESISDER PYC
+    '''
+
+    params = p[3]
+    rango = params[1].lower()[1:-1]  # De '"seg"' a "seg"
+
+    global rangoTiempo
+    if not rango in rangoTiempo:
+        errors.append("ERROR in line {0}! The third param must be a (Seg, Mil, Min)! "
+                      "".format(p.lineno(1)))
+        return "Error in Delay, line {0}.".format(p.lineno(5))
+
+    # ['DELAY', 10, 'mil']
+    p[0] = ["delay", params[0], rango]
+
+
+"""   
+PrintLed(Col, Row, Valor)
+Col: Entero
+Row: Entero
+Valor: Bool
+"""
+
+
+def p_PrintLed(p):
+    '''
+    funcionreservada : PRINTLED PARENTESISIZQ params PARENTESISDER PYC
+    '''
+    params = p[3]
+
+    # ['PRINTLED', col, row, valor]
+    p[0] = ["printled", params[0], params[1], params[2]]
+
+"""   
+PrintLedX(TipoObjeto, Indice, Arreglo)
+TipoObjeto: "C", "F", "M"
+Indice: Entero
+Arreglo: arreglo
+"""
+
+
+def p_PrintLedX(p):
+    '''
+    funcionreservada : PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC
+    '''
+
+    params = p[3]
+    objeto = params[0].lower()[1:-1]  # De '"C"' a "c"
+
+    global tipoObjeto
+    if not objeto in tipoObjeto:
+        errors.append("ERROR in line {0}! The number of params must be 3 "
+                      "(TipoObjeto, Indice, Arreglo)".format(p.lineno(1)))
+        return "Error in PrintLedX, line {0}.".format(p.lineno(5))
+
+    # ['DELAY', 10, 'mil']
+    p[0] = ["printledx", objeto, params[1], params[2]]
+
+
+
+''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  ADRIAN  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
 
 
 # Condicion
@@ -418,166 +466,6 @@ def p_ordenes(p):
         p[0] = p[1] + [p[2]]
 
 
-"""   
-Blink(Dato, Cantidad, RangoTiempo, Estado)
-Dato: Indice, Arreglo, etc
-Cantidad: Entero
-RangoTiempo: "Seg", "Mil", "Min"
-Estado: bool
-"""
-
-
-def p_blink(p):
-    '''
-    funcionreservada : BLINK PARENTESISIZQ params PARENTESISDER PYC
-    '''
-    params = p[3][0]
-
-    if len(params) == 4:
-
-        if params[0] == "[]":
-            errors.append("ERROR in line {0}! The first param cant be a empty list! "
-                          "".format(p.lineno(1)))
-            return
-
-        if type(params[0]) == list or type(params[0]) == int:
-
-            if type(params[3]) == bool:
-
-                if params[2] == "\"Seg\"" or params[2] == "\"Mil\"" or params[2] == "\"Min\"":
-
-                    if type(params[1]) == int:
-
-                        p[0] = [p.lineno(1), 'BLINK', p[3]]
-
-                    else:
-                        errors.append("ERROR in line {0}! The second param must be a integer! "
-                                      "".format(p.lineno(1)))
-
-
-                else:
-                    errors.append("ERROR in line {0}! The third param must be a (Seg, Mil, Min)! "
-                                  "".format(p.lineno(1)))
-
-            else:
-                errors.append("ERROR in line {0}! The last param must be a bool! "
-                              "".format(p.lineno(1)))
-
-        else:
-            errors.append("ERROR in line {0}! The first param must be a list "
-                          "".format(p.lineno(1)))
-    else:
-        errors.append("ERROR in line {0}! The number of params must be 4 "
-                      "(Dato, Cantidad, RangoTiempo, Estado)".format(p.lineno(1)))
-
-
-"""   
-Delay(Cantidad, RangoTiempo)
-Cantidad: Entero
-RangoTiempo: "Seg", "Mil", "Min"
-"""
-
-
-def p_delay(p):
-    '''
-    funcionreservada : DELAY PARENTESISIZQ params PARENTESISDER PYC
-    '''
-    params = p[3][0]
-
-    if len(params) == 2:
-
-        if type(params[0]) == int:
-
-            if params[1] == "\"Seg\"" or params[1] == "\"Mil\"" or params[1] == "\"Min\"":
-                p[0] = [p.lineno(1), 'DELAY', p[3]]
-
-            else:
-                errors.append("ERROR in line {0}! The second param must be a (Seg, Mil, Min)! "
-                              "".format(p.lineno(1)))
-        else:
-            errors.append("ERROR in line {0}! The first param must be an integer".format(p.lineno(1)))
-
-    else:
-        errors.append("ERROR in line {0}! The number of params must be 2 "
-                      "(Cantidad, RangoTiempo)".format(p.lineno(1)))
-
-
-"""   
-PrintLed(Col, Row, Valor)
-Col: Entero
-Row: Entero
-Valor: Bool
-"""
-
-
-def p_PrintLed(p):
-    '''
-    funcionreservada : PRINTLED PARENTESISIZQ params PARENTESISDER PYC
-    '''
-    params = p[3][0]
-
-    if len(params) == 3:
-
-        if type(params[0]) == int and type(params[1]) == int:
-            print(params)
-            if type(params[2]) == bool:
-                p[0] = [p.lineno(1), 'PRINTLED', p[3]]
-
-            else:
-                errors.append("ERROR in line {0}! The third param must be a boolean".format(p.lineno(1)))
-
-        else:
-            errors.append("ERROR in line {0}! The first and second param must be integers".format(p.lineno(1)))
-
-    else:
-        errors.append("ERROR in line {0}! The number of params must be 4 "
-                      "(Col, Row, Value)".format(p.lineno(1)))
-
-
-"""   
-PrintLedX(TipoObjeto, Indice, Arreglo)
-TipoObjeto: "C", "F", "M"
-Indice: Entero
-Arreglo: arreglo
-"""
-
-
-def p_PrintLedX(p):
-    '''
-    funcionreservada : PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC
-    '''
-    params = p[3][0]
-    if len(params) == 3:
-
-        if params[0] == "\"C\"" or params[0] == "\"F\"" or params[0] == "\"M\"":
-
-            if type(params[1]) == int:
-
-                if params[2] == "[]":
-                    errors.append("ERROR in line {0}! The last param cant be a empty list! "
-                                  "".format(p.lineno(1)))
-                    return
-
-                # val = getValue(params[2][1])
-                # if type(val) == list:
-                #     p[0] = [p.lineno(1), 'PRINTLEDX', p[3]]
-
-                else:
-                    errors.append("ERROR in line {0}! The last param must be a list! "
-                                  "".format(p.lineno(1)))
-
-            else:
-                errors.append("ERROR in line {0}! The second param must be an integer! "
-                              "".format(p.lineno(1)))
-
-        else:
-            errors.append("ERROR in line {0}! The first param must be a (Seg, Mil, Min)! "
-                          "".format(p.lineno(1)))
-    else:
-        errors.append("ERROR in line {0}! The number of params must be 3 "
-                      "(TipoObjeto, Indice, Arreglo)".format(p.lineno(1)))
-
-
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  OUTPUT  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
 # Create the dictionary in which we will store and retrieve all errors we get.
 errors = []
@@ -589,11 +477,10 @@ parser = yacc.yacc()
 print("\n--------- RESULTS ---------")
 
 # Crea el printer para poder imprimir tanto en el Shell de Python como en CMD
-pp = pprint.PrettyPrinter(indent=1, width=40, sort_dicts=False)
+pp = pprint.PrettyPrinter(indent=1, sort_dicts=False)
 
 # Implementación para leer un archivo que será el insumo del parser
 with open(program_file, 'r') as file:
-    print("\n")
     insumo = file.read()
     result = parser.parse(insumo)
     pp.pprint(result)
