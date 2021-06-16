@@ -7,7 +7,7 @@ from lexer.lexer import tokens
 import pprint
 
 # Define el archivo del programa
-program_file = "insumo.txt"
+program_file = "myparser/insumo.txt"
 
 """
 Writing Machine
@@ -15,7 +15,7 @@ Parser: Genera el árbol de parseo. Imprime los resultados del parseo.
 Para correr el programa:
    1. En CMD "pip install ply" y luego "pip install pyhcl" 
    2. Luego igual en CMD a la ubicación del archivo (cd Documentos o Descargas o c://Users/nombre...) y
-   correr "python parser.py [nombre_archivo].txt" El archivo de lexer.py tiene que estar en la misma carpeta
+   correr "python myparser2.py [nombre_archivo].txt" El archivo de lexer.py tiene que estar en la misma carpeta
 TODO:
 1. Generar los errores para cada error de sintaxis
 2. Generar las reglas para todo a partir de las reglas de POS
