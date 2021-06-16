@@ -1,12 +1,14 @@
-a[1];
-b[1][2];
-c[5,7];
-##c[1:3][4];
-##d[3:4][5:6];
-
-
-##f[0,1][:,0];
-
+##a=21;
+##b=[231];
 ##mi_bool1 = True;
 ##nums=[1,2,3,4,5];
+##x,y,z=1,2,3;
+##v,j=[2,3],[1,5];
+##f,g,h=[3,4],True,False;
+Blink(f,c, 5,"Seg",False);
+Delay(10,"Mil");
+PrintLed(1,1,True);
+PrintLedX("F",1,listaX);
+
+
 
