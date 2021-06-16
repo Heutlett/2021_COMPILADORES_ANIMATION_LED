@@ -7,19 +7,8 @@ from lexer.lexer import tokens
 import pprint
 
 # Define el archivo del programa
-program_file = "myparser/insumoAdrian.txt"
+program_file = "insumoAdrian.txt"
 
-"""
-Writing Machine
-Parser: Genera el árbol de parseo. Imprime los resultados del parseo.
-Para correr el programa:
-   1. En CMD "pip install ply" y luego "pip install pyhcl" 
-   2. Luego igual en CMD a la ubicación del archivo (cd Documentos o Descargas o c://Users/nombre...) y
-   correr "python myparser2.py [nombre_archivo].txt" El archivo de lexer.py tiene que estar en la misma carpeta
-TODO:
-1. Generar los errores para cada error de sintaxis
-2. Generar las reglas para todo a partir de las reglas de POS
-"""
 
 # Ensure our parser understands the correct order of operations.
 # The precedence variable is a special Ply variable.
@@ -833,94 +822,7 @@ def p_condicion(p):
                              | expression  MENORIGUAL valorIf
                              | expression  MAYORIGUAL valorIf
     """
-
-    # Mayorque
-    if p[2] == '>':
-        p[0] = [p[1], '>', p[3]]
-
-    # MayorOIgual
-    elif p[2] == '>=':
-        p[0] = [p[1], '>=', p[3]]
-
-    # MenorQue
-    elif p[2] == '<':
-        p[0] = [p[1], '<', p[3]]
-
-    # MenorOIgual
-    elif p[2] == '<=':
-        p[0] = [p[1], '<=', p[3]]
-
-    # Igual
-    elif p[2] == '==':
-        p[0] = [p[1], '==', p[3]]
-
-
-    """
-    # Variables temporales para la evaluación
-    tempX = 0
-    tempY = 0
-
-    variable1 = 0
-
-    # Si son variables, las asigna
-    if isDefined(p[1][1],1):
-        variable1 = env[p[1][1]]
-
-    variable2 = p[3]
-
-    # Error
-    error = False
-
-    # Asigna los valores dependiendo si es ID o un int
-    if variable1 is not False and variable2 is not False:
-        tempX = variable1
-        tempY = variable2
-
-    # Revisa si la primera entrada es una variable y la segunda número
-    elif variable1 is not False and isinstance(p[3], int):
-        tempX = variable1
-        tempY = p[3]
-
-    # Revisa si la primera entrada es un número y la segunda variable
-    elif variable2 is not False and isinstance(p[1], int):
-        tempX = p[1]
-        tempY = variable2
-
-    # Revisa si la primera entrada es un número y la segunda número
-    elif isinstance(p[1], int) and isinstance(p[3], int):
-        tempX = p[1]
-        tempY = p[3]
-
-    # Si no es número y no existe
-    elif not isinstance(p[1], int) and variable1 is False:
-        errors.append(
-            "ERROR: No se puede comparar con el identificador indefinido {0} en la línea {1}".format(p[1], p.lineno(1)))
-
-    # Si no es número y no existe
-    elif not isinstance(p[3], int) and variable2 is False:
-        errors.append(
-            "ERROR: No se puede comparar con el identificador indefinido {0} en la línea {1}".format(p[3], p.lineno(3)))
-
-    # Mayorque
-    if p[2] == '>':
-        p[0] = (tempX > tempY)
-
-    # MayorOIgual
-    elif p[2] == '>=':
-        p[0] = tempX >= tempY
-
-    # MenorQue
-    elif p[2] == '<':
-        p[0] = tempX < tempY
-
-    # MenorOIgual
-    elif p[2] == '<=':
-        p[0] = tempX <= tempY
-
-    # Igual
-    elif p[2] == '==':
-        p[0] = tempX == tempY
-    """
+    p[0] = [p[1], p[2], p[3]]
 
 
 def p_valorIf(p):
@@ -934,11 +836,8 @@ def p_valorIf(p):
 def p_if(p):
    """ funcionreservada : IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
    """
-   # Si se cumple la condición, devuelve las ordenes a ejecutar
 
-   #if p[3] == True:
-   #     p[0] = ['IF', p[6]]
-   p[0] = ['IF', p[3] ,p[6]]
+   p[0] = [p.lineno(1), 'IF', p[3] ,p[6]]
 
 
 def p_procedure(p):
@@ -947,7 +846,7 @@ def p_procedure(p):
                 | PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
     '''
 
-    p[0] = ['PROCEDURE', p[2], p[4], p[7]]
+    p[0] = [p.lineno(1), 'PROCEDURE', p[2], p[4], p[7]]
 
 
 def p_call(p):
@@ -955,7 +854,7 @@ def p_call(p):
     funcionreservada : CALL ID PARENTESISIZQ params PARENTESISDER PYC
     '''
 
-    p[0] = ['CALL', p[2], p[4]]
+    p[0] = [p.lineno(1), 'CALL', p[2], p[4]]
 
 
 def p_for(p):
@@ -964,7 +863,7 @@ def p_for(p):
                         | FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
     '''
 
-    p[0] = ['FOR', p[2], p[4], p[6]]
+    p[0] = [p.lineno(1), 'FOR', p[2], p[4], p[6]]
 
 
 # Ordenes (se dan en forma de una lista de listas)
@@ -976,14 +875,6 @@ def p_ordenes(p):
                        | funcionreservada
 
    '''
-
-    """    # Revisa si hay alguna asignación de variable
-    for i in p:
-        if isinstance(i, list):
-            if i[0] != 'DEF' and i[1] not in (env or env):
-                env[i[1]] = i[2]
-            elif i[0] != 'DEF' and i[1] in (env or env):
-                errors.append("ERROR: Se intentó redefinir la variable {0} ya definida en main".format(i[0]))"""
 
     # Si es solo un elemento
     if len(p) == 2:
@@ -1024,7 +915,7 @@ def p_blink(p):
 
                     if type(p[3][1]) == int:
 
-                        p[0] = ['BLINK', p[3]]
+                        p[0] = [p.lineno(1), 'BLINK', p[3]]
                         #print(run(p[0]))
 
                     else:
@@ -1065,7 +956,7 @@ def p_delay(p):
         if type(p[3][0]) == int:
 
             if p[3][1] == "\"Seg\"" or p[3][1] == "\"Mil\"" or p[3][1] == "\"Min\"":
-                p[0] = ['DELAY', p[3]]
+                p[0] = [p.lineno(1), 'DELAY', p[3]]
 
             else:
                 errors.append("ERROR in line {0}! The second param must be a (Seg, Mil, Min)! "
@@ -1096,7 +987,7 @@ def p_PrintLed(p):
         if type(p[3][0]) == int and type(p[3][1]) == int:
             print(p[3])
             if type(p[3][2]) == bool:
-                p[0] = ['PRINTLED', p[3]]
+                p[0] = [p.lineno(1), 'PRINTLED', p[3]]
 
             else:
                 errors.append("ERROR in line {0}! The third param must be a boolean".format(p.lineno(1)))
@@ -1135,7 +1026,7 @@ def p_PrintLedX(p):
 
                 val = getValue(p[3][2][1])
                 if type(val) == list:
-                    p[0] = ['PRINTLEDX', p[3]]
+                    p[0] = [p.lineno(1), 'PRINTLEDX', p[3]]
 
                 else:
                     errors.append("ERROR in line {0}! The last param must be a list! "
