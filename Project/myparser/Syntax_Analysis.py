@@ -474,7 +474,7 @@ errors = []
 parser = yacc.yacc()
 
 # Create a REPL to provide a way to interface with our calculator.
-print("\n--------- RESULTS ---------")
+#print("\n--------- RESULTS ---------")
 
 # Crea el printer para poder imprimir tanto en el Shell de Python como en CMD
 pp = pprint.PrettyPrinter(indent=1, sort_dicts=False)
@@ -483,4 +483,4 @@ pp = pprint.PrettyPrinter(indent=1, sort_dicts=False)
 with open(program_file, 'r') as file:
     insumo = file.read()
     result = parser.parse(insumo)
-    pp.pprint(result)
+    #pp.pprint(result)

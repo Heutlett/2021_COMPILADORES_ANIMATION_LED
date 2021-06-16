@@ -5,10 +5,30 @@
 ##x,y,z=1,2,3;
 ##v,j=[2,3],[1,5];
 ##f,g,h=[3,4],True,False;
-Blink(f,c, 5,"Seg",False);
-Delay(10,"Mil");
-PrintLed(1,1,True);
-PrintLedX("F",1,listaX);
+##Blink(f,c, 5,"Seg",False);
+##Delay(10,"Mil");
+##PrintLed(1,1,True);
+##PrintLedX("F",1,listaX);
+
+Procedure abc (){
+    j = 3;
+    If(b<=3){
+        h = 5;
+        If(b<=3){
+            k = 5;
+        }
+    }
+};
+
+Procedure Main (){
+    casa = 3;
+    If(b<=3){
+        k = 5;
+    }
+    for linea in lista{
+        h = 5;
+    }
+};
 
 
 

@@ -1,5 +1,5 @@
-from ParserAdrian3 import result
-from ParserAdrian3 import errors
+from Syntax_Analysis import result
+from Syntax_Analysis import errors
 import pprint
 
 # Lista de arboles sintacticos generados en el analisis sintactico
@@ -15,6 +15,7 @@ main_code = []
 global_variables = []
 
 """ ################################ COMPROBACIONES INICIALES #################################################### """
+
 
 # Revisa que tod0 el código se encuentre dentro de PROCEDURES
 def check_blocks():
