@@ -62,6 +62,7 @@ def p_operation(p):
               | var_assign
               | funcionreservada
               | procedure
+              | error_string
     '''
     p[0] = p[1]
 
@@ -131,6 +132,7 @@ def p_input(p):
         p[0] = p[1] + p[3]
 
 
+
 # Expresion para asignacion de variables.
 def p_var_assign(p):
     """
@@ -148,8 +150,20 @@ def p_var_assign(p):
     # print("ID:", p[1])
     # print("Val:", p[3])
     values = p[3]
+    if type(p[1]) == list:
+        values = p[3][0]
+        
     p[0] = [p.lineno(4), '=', p[1], values]
 
+
+# Expresion para variables de string.
+def p_var_error_string(p):
+    """
+    error_string : ID IGUAL STRING PYC
+    """
+    print("Error")
+    errors.append("Error in  linea")
+    p[0] = None
 
 # Expresion para consultar el tipo de una variable.
 def p_var_type(p):
@@ -212,7 +226,6 @@ def p_index_c(p):
     """
     # [:, 1]
     p[0] = ['col', p[4]]
-
 
 def p_index_sublist(p):
     """
@@ -488,4 +501,4 @@ pp = pprint.PrettyPrinter(indent=1, sort_dicts=False)
 with open(program_file, 'r') as file:
     insumo = file.read()
     result = parser.parse(insumo)
-    #pp.pprint(result)
+    pp.pprint(result)
