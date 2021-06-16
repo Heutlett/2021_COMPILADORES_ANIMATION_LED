@@ -1,59 +1,17 @@
-a = [100, 220, 335, 435, 595];
-b = 2;
-c = False;
-a[1]=21;
-
-If(b<=2){
-    d = 5;
-}
-
-If(b==5){
-    d = 5;
-}
-
-If(b<=2){
-    g = 5;
-    If(b<=3){
-        h = 5;
-        If(b<=2){
-            d = 2;
-            If(b==5){
-                d = 15;
-            }
-        }
-    }
-}
-
-
 Procedure abc (){
-
     j = 3;
     If(b<=3){
         h = 5;
-            If(b<=3){
-        k = 5;
-    }
+        If(b<=3){
+            k = 5;
+        }
     }
 };
 
 Procedure Main (){
-
     casa = 3;
+    If(b<=3){
+        k = 5;
+    }
 };
 
-If(b==3){
-    d = 8;
-}
-
-pa = 0;
-filas = 10;
-
-for pa in filas{
-    k = 4;
-}
-
-for pa in 5{
-    ko = 4;
-}
-
-call abc ();
