@@ -109,8 +109,6 @@ def p_params(p):
     if p[1][0] is None:
         p[0] = None
     # If only one param
-    elif len(p[1]) == 1:
-        p[0] = p[1][0]
     else:
         p[0] = p[1]
 
@@ -143,11 +141,12 @@ def p_var_assign(p):
     var_assign : ID IGUAL expression PYC
                | ID IGUAL primitive PYC
     """
+    var = p[3]
     # one variable, can only be int, bool, string or list.
-    if p[3] is None:
+    if var is None:
         return None
     # ERROR verification (assignment, reassignment)
-    if not var_assign_validation(p[1], p[3], p.lineno(1)):
+    if not var_assign_validation(p[1], var, p.lineno(1)):
         return None
 
     # If it is a list that does not meet the requirements, the recursion will end up in a string.
@@ -158,7 +157,7 @@ def p_var_assign(p):
     # Build our tree
     # Examples:
     # ('=', ('a', 1))
-    tree = (p[2], (p[1], p[3]))
+    tree = (p[2], (p[1], var))
     p[0] = run(tree)
 
 
@@ -184,7 +183,7 @@ def p_sublist_assign(p):
     var_assign : sublist IGUAL params PYC
     """
     sublist = p[1]
-    params = p[3]
+    params = p[3][0]
 
     # VALIDATIONS
     # Invalid types.
@@ -201,7 +200,8 @@ def p_sublist_assign(p):
     # Test:  a[0:4]=[1,2,3,4]
     # ( '=' , (('[]', 'a', [0, 4]) , [1, 2, 3, 4]))
     newTuple = (sublist[0] + '*', sublist[1], sublist[2])
-    tree = ("=", (newTuple, p[3]))
+    tree = ("=", (newTuple, params))
+    print("Tree", tree)
     p[0] = run(tree)
 
     # NOTA: run() is called in p_operation
@@ -282,7 +282,7 @@ def p_var_type(p):
     else:
         text = "ERROR in line {1}! \"{0}\" is not yet defined.".format(p[3], p.lineno(1))
         errors.append(text)
-        p[0] = text
+        return None
 
 
 # Funcion auxiliar para obtener el tipo de una variable en string.
@@ -324,7 +324,9 @@ def p_callable(p):
     '''
     callable  : sublist
     '''
-    p[0] = run(p[1])
+    tree = p[1]
+    # run(tree)
+    p[0] = tree
 
 
 # Expresion para obtener una sublista de una lista.
@@ -365,7 +367,9 @@ def p_sublist(p):
         if check_index_aux(p.lineno(1), getValue(ID), indexes[0][0], indexes[0][1]):
             # Build tree
             # Example ('[]', a, 1)
-            p[0] = ('[]', ID, indexes)
+            tree = ('[]', ID, indexes)
+            p[0] = tree
+            # run(tree)
 
     # If searching for column. M[:,0]
     elif indexes[0] == ":":
@@ -374,8 +378,8 @@ def p_sublist(p):
             # Build tree
             # Example (':', m, 4)
             tree = ('[:,]', ID, indexes[1])
-            p[0] = run(tree)
-
+            p[0] = tree
+            # run(tree)
 
     # If searching in matrix. M[0][0]
     else:
@@ -383,7 +387,8 @@ def p_sublist(p):
             # Build tree
             # Example ('[]', a, [1,2,3])
             tree = ('[]', ID, indexes)
-            p[0] = run(tree)
+            p[0] = tree
+            # run(tree)
 
 
 # Expresion para varios parámetros de index. Clausula de Klean.
@@ -434,7 +439,7 @@ def p_statement_list_insert(p):
     line = p.lineno(1)
     ID = p[1]
     num = p[5]
-    params = p[7]
+    params = p[7][0]
 
     # If its not defined
     if not isDefined(ID):
@@ -447,7 +452,8 @@ def p_statement_list_insert(p):
     # Example
     # ('INSERT', 'a', [True,False,True], 0, None) => a = [[True,False,True], [False, True], ...]
     tree = ("INSERT", ID, num, params)
-    p[0] = run(tree)
+    # run(tree)
+    p[0] = tree
 
 
 # Expresion para crear lista con range.
@@ -469,7 +475,8 @@ def p_statement_list_del(p):
     # Build tree
     # Example ('DEL', 'a', 2)
     tree = ("DEL", p[1], p[5])
-    p[0] = run(tree)
+    # run(tree)
+    p[0] = tree
 
 
 # Expresion para crear lista con range.
@@ -484,27 +491,73 @@ def p_statement_list_len(p):
         # Example ('LEN', [1,2,3])
         # Example ('LEN', 'a')
         tree = ("LEN", p[3])
-        p[0] = run(tree)
+        p[0] = tree
+
     elif not isDefined(p[3]):
         text = "ERROR in line {1}! \"{0}\" is not yet defined.".format(p[1], p.lineno(1))
         errors.append(text)
+        return None
 
 
-def p_neg(p):
+def p_boolOperation(p):
     """
-    statement : sublist PUNTO NEG PYC
-              | sublist PUNTO T PYC
-              | sublist PUNTO F PYC
+        boolOperation : NEG
+                  | T
+                  | F
+        """
+    p[0] = p[1].upper()
+
+
+def p_boolOperation_ID(p):
     """
-    sublist = p[1]
-    newTuple = (sublist[0] + '*', sublist[1], sublist[2])
-    print(newTuple)
-    p[0] = (p[3].upper(), newTuple)
+    statement : ID PUNTO boolOperation PYC
+    """
+
+    ID = p[1]
+    var = getValue(ID)
+    boolOperation = p[3]
+
+    # Si no existe el ID
+    if not isDefined(ID):
+        text = "ERROR in line {1}! \"{0}\" is not yet defined.".format(p[1], p.lineno(1))
+        errors.append(text)
+        return None
+    # Si no es una lista.
+    if not equalsType(var, list):
+        text = "TypeError in line {1}: The type of \"{0}\" must be list.".format(ID, p.lineno(1))
+        errors.append(text)
+        return None
+
+    # Si la lista no es de booleanos.
+    listType = get_list_type(var)
+    if listType != bool:
+        text = "TypeError in line {1}: The type of elements in \"{0}\" must be bool.".format(ID, p.lineno(1))
+        errors.append(text)
+        return None
 
     # Build tree
-    # Example  ('NEG', ('[]', 'b', [[0, 2]]))
-    # Example  ('T', ('[]*', 'b', [[0, 2]]))
-    # Example  ('F', ('[]', 'b', [[0, 2]]))
+    # Example  ('NEG', 'b'))
+    tree = (boolOperation, ID)
+    # run(tree)
+    p[0] = tree
+
+
+def p_boolOperation_sublist(p):
+    """
+    statement : sublist PUNTO boolOperation PYC
+    """
+    # print("Sublist:", p[1])
+    # print("Sublist run:", run(p[1]))
+    sublist = p[1]
+    boolOperation = p[3]
+
+    # Build tree
+    # Order, tree for assign, tree for values
+    # Example  ('NEG', ('[]*', 'a', [[1, None]]), ('[]', 'a', [[1, None]]))
+    newTuple = (sublist[0] + '*', sublist[1], sublist[2])
+    tree = (p[3].upper(), [newTuple, sublist])
+    # run(tree)
+    p[0] = tree
 
 
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  ARITHMETIC OPERATIONS  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
@@ -931,7 +984,7 @@ def p_blink(p):
     funcionreservada : BLINK PARENTESISIZQ params PARENTESISDER PYC
     '''
     print(p[3])
-
+    p[3] = p[3][0]
     if len(p[3]) == 4:
 
         if p[3][0] == "[]":
@@ -983,6 +1036,9 @@ def p_delay(p):
     funcionreservada : DELAY PARENTESISIZQ params PARENTESISDER PYC
     '''
 
+    print(p[3])
+    p[3] = p[3][0]
+
     if len(p[3]) == 2:
 
         if type(p[3][0]) == int:
@@ -1014,6 +1070,9 @@ def p_PrintLed(p):
     funcionreservada : PRINTLED PARENTESISIZQ params PARENTESISDER PYC
     '''
 
+    print(p[3])
+    p[3] = p[3][0]
+
     if len(p[3]) == 3:
 
         if type(p[3][0]) == int and type(p[3][1]) == int:
@@ -1044,6 +1103,9 @@ def p_PrintLedX(p):
     '''
     funcionreservada : PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC
     '''
+
+    print(p[3])
+    p[3] = p[3][0]
 
     if len(p[3]) == 3:
 
@@ -1099,7 +1161,7 @@ arithmetic_operators = ['+', '-', '*', '/', '//', '%', '^']
 def run(p):
     global env
     global arithmetic_operators
-    # print(p)
+    # print("Parsing", p)
     if equalsType(p, tuple):
 
         if p[0] in arithmetic_operators:  # OPERACIONES ARITMETICAS
@@ -1135,14 +1197,8 @@ def run(p):
         elif p[0] == 'LEN':
             return list_len_operation(p[1])
 
-        elif p[0] == "NEG":
-            return neg_operation(p[1])
-
-        elif p[0] == "T":
-            return t_operation(p[1])
-
-        elif p[0] == "F":
-            return f_operation(p[1])
+        elif p[0] == "NEG" or p[0] == "T" or p[0] == "F":
+            return bool_operation(p[0], p[1])
 
         elif p[0] == 'BLINK':
             return p[1]
@@ -1199,21 +1255,46 @@ def var_assign_operation_aux(var, value):
     if not equalsType(var, list):
         env[var] = run(value)
         return [var, ":", env[var]]
+    else:
+        return var_assign_indexes(var, value)
 
+
+def var_assign_indexes(var, value):
     # If its an assignment to a column.
-    elif var[0] == ':':
+    if var[0] == ':':
         ID = var[1]
         env[ID] = matrix_column_assign(getValue(ID), var[2], value)
 
     # If its an assignment to a sublist.
     else:
         ID = var[0]
-        i, j = var[1][0][0], var[1][0][1]
-        if j is not None:
-            getValue(ID)[i:j] = value
+        indexes = var[1]
+        i, j = indexes[0][0], indexes[0][1]
+
+        # If its a list
+        if len(indexes) == 1:
+            if j is not None:
+                getValue(ID)[i:j] = value
+            else:
+                getValue(ID)[i] = value
+            return [ID, ":", env[ID]]
+
+        # If its a matrix
         else:
-            getValue(ID)[i] = value
-        return [ID, ":", env[ID]]
+            m, n = indexes[1][0], indexes[1][1]
+            if j is not None:
+
+                if n is not None:
+                    getValue(ID)[i:j][m:n] = value
+                else:
+                    getValue(ID)[i:j][m] = value
+
+            else:
+                if n is not None:
+                    getValue(ID)[i][m:n] = value
+                else:
+                    getValue(ID)[i][m] = value
+            return [ID, ":", env[ID]]
 
 
 # Funcion para leer y realizar la funcion del arbol de la llamada a una sublista.
@@ -1270,29 +1351,49 @@ def list_len_operation(param):
     return len(param)
 
 
-# Funcion que hace switch del valor booleano de una lista, matriz o rango de las mismas.
-def neg_operation(param):
-    return bool_operation_aux("N", run(param))
+# Funcion que hace switch del valor booleano de una lista, matriz o rango de las mismas, dependiendo de la orden
+# recibida.
+def bool_operation(order, param):
+    # Si el parametro es un ID
+    if equalsType(param, str):
+        var = getValue(param)
+        return bool_operation_ID_aux(order, var)
+
+    # Si el parametro es una sublista
+    elif type(param) == list:
+        tree = param[0]
+        values = run(param[1])
+        applied = bool_operation_ID_aux(order, values)
+        return var_assign_operation_aux(run(tree), run(applied))
+    else:
+        return None
+
+def bool_operation_ID_aux(order, var):
+    # Si la variable es una lista
+    if equalsType(var, list):
+        # Si NO es una matriz
+        if not equalsType(var[0], list):
+            for e in range(len(var)):
+                var[e] = bool_operation_action(order, var[e])
+            return var
+        # Si es una matriz.
+        for row in var:
+            bool_operation_ID_aux(order, row)
+        return var
+    else:
+        var = bool_operation_action(order, var)
+        return var
 
 
-# Funcion que cambia el valor booleano a True de una lista, matriz o rango de las mismas.
-def t_operation(param):
-    return bool_operation_aux("T", run(param))
-
-
-# Funcion que cambia el valor booleano a False de una lista, matriz o rango de las mismas.
-def f_operation(param):
-    return bool_operation_aux("F", run(param))
-
-
-def bool_operation_aux(order, value):
-    # If value is not a list.
-    print(order)
-    print(value)
-
-    # if not equalsType(value, list):
-
-    # if (equalsType(param))
+# Funcion auxiliar para ver que accion se debe aplicar a la variable.
+def bool_operation_action(order, value):
+    if order == "NEG":
+        value = not value
+    elif order == "T":
+        value = True
+    elif order == "F":
+        value = False
+    return value
 
 
 # Funcion para leer y realizar la funcion del arbol de mostrar la columna de una matriz.
@@ -1331,10 +1432,11 @@ def matrix_column_assign(var, col, new_val_list):
 print("\n--------- RESULTS ---------")
 
 # Crea el printer para poder imprimir tanto en el Shell de Python como en CMD
-pp = pprint.PrettyPrinter(indent=4)
+pp = pprint.PrettyPrinter(indent=1, width=40, sort_dicts=False)
 
 # Implementación para leer un archivo que será el insumo del parser
 with open(program_file, 'r') as file:
+    print("\n")
     insumo = file.read()
     result = parser.parse(insumo)
     pp.pprint(result)
