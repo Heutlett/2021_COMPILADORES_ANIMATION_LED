@@ -28,6 +28,9 @@ Procedure Main (){
     for linea in lista{
         h = 5;
     }
+    for linea in lista Step 2{
+        h = 5;
+    }
 };
 
 

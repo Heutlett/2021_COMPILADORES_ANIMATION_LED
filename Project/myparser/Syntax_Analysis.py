@@ -442,9 +442,14 @@ def p_for(p):
     '''
     funcionreservada : FOR expression IN INT LLAVEIZQ ordenes LLAVEDER
                         | FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
+                        | FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
+                        | FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
     '''
 
-    p[0] = [p.lineno(1), 'FOR', p[2], p[4], p[6]]
+    if 'Step' not in p:
+        p[0] = [p.lineno(1), 'FOR', p[2], p[4], p[6]]
+    else:
+        p[0] = [p.lineno(1), 'FOR', p[2], p[4], p[6], p[8]]
 
 
 # Ordenes (se dan en forma de una lista de listas)

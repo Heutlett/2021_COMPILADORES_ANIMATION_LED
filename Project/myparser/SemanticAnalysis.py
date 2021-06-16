@@ -64,11 +64,16 @@ check_main_count()
 
 """ ###################################### Ciclos y Bifurcacion ################################################### """
 
-# temp_var: variable que cambiará
-# iterable: estructura usada para recorrer, normalmente será una lista, pero puede ser un entero (igual que range)
-# Step: incremento
-
 def ciclo_for(temp_var, iterable, step, ordenes):
+
+    """
+    Ejecuta el ciclo for
+    :param temp_var: variable que cambiará
+    :param iterable: estructura usada para recorrer, normalmente será una lista, pero puede ser un entero (igual que range)
+    :param step: incremento, por defecto es 1
+    :param ordenes: ordenes que se ejecutaran
+    :return: None
+    """
 
     if step == 1:
         if isinstance(iterable, list):
@@ -88,6 +93,64 @@ def ciclo_for(temp_var, iterable, step, ordenes):
                 print(temp_var)
 
 
+def bifurcacion(iterable, operator, value, ordenes):
+    """
+    Ejecuta el condicional if
+    :param iterable: estructura que sera utilizada para realizar la validacion, puede ser variable o lista
+    :param operator: operador de comparacion, ( == , <, <=, >, >=)
+    :param value: puede ser numero, o bool
+    :return: bool
+    """
+    if isinstance(iterable, list):
+
+        flag = True
+
+        for x in iterable:
+
+            if operator == '==':
+                if not x == value:
+                    flag = False
+            elif operator == '<':
+                if not x < value:
+                    flag = False
+            elif operator == '<=':
+                if not x <= value:
+                    flag = False
+            elif operator == '>':
+                if not x > value:
+                    flag = False
+            elif operator == '>=':
+                if not x >= value:
+                    flag = False
+
+        if flag == True:
+            # aqui se deberian ejecutar las ordenes
+            pass
+        return flag
+
+    elif isinstance(iterable, int) or isinstance(iterable, bool):
+
+        if operator == '==':
+            if iterable == value:
+                # ordenes
+                return True
+        elif operator == '<':
+            if iterable < value:
+                # ordenes
+                return True
+        elif operator == '<=':
+            if iterable <= value:
+                # ordenes
+                return True
+        elif operator == '>':
+            if iterable > value:
+                # ordenes
+                return True
+        elif operator == '>=':
+            if iterable >= value:
+                # ordenes
+                return True
+        return False
 
 
 """ ############################################################################################################### """
@@ -109,3 +172,18 @@ pp.pprint(main_code)
 # ciclo_for(a, [1,2,3,4,5,6,7,8,9,10],2,0)
 # ciclo_for(a, 10,1,0)
 # ciclo_for(a, 10,2,0)
+
+# a = True
+# print(bifurcacion(a,'==', True));
+#
+# a = 5
+# print(bifurcacion(a,'>', 4));
+#
+# a = [True,True,True]
+# print(bifurcacion(a,'==', True));
+#
+# a = [True,False,True]
+# print(bifurcacion(a,'==', True));
+#
+# a = [1,2,3]
+# print(bifurcacion(a,'<', 1));
