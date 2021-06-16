@@ -257,6 +257,7 @@ def run(p):
     else:
         return p
 
+""" ###################################### Operaciones aritmeticas ################################################### """
 
 def arithmetic_operation(line, operator, a, b):
     '''
@@ -287,6 +288,9 @@ def arithmetic_operation(line, operator, a, b):
         return "Error aritmetico"
 
 
+""" ###################################### Asignacion de variables ################################################### """
+
+
 # Funcion para operar la asignacion de las variables.
 def var_assign_operation(line, ID, value, variables_dict):
     '''
@@ -309,55 +313,38 @@ def var_assign_operation(line, ID, value, variables_dict):
 
         # Asignacion en cascada.
         for i in range(len(ID)):
-            var_assign_operation(line, ID[i], value[i], variables_dict)
+            tmp = var_assign_operation(line,  ID[i], value[i], variables_dict)
+            if tmp is False:
+                return False
+            # Asignación
+            variables_dict[tmp[0]] = tmp[1]
+        return variables_dict
 
     # Si es solo una variable.
-    # [line, '=', ID, value, dict]
+    # [line, ID, value, dict]
     else:
-        return var_assign_operation_individual(line, ID, value, variables_dict)
+        return individual_assign_validation(line, ID, value, variables_dict)
 
 
-# Auxiliar para verificar la asignacion de las variables.
-def var_assign_operation_individual(line, ID, value, variables_dict):
+
+def individual_assign_validation(line, ID, value, variables_dict):
+    '''
+    Funcion para verificar la asignacion de las variables individualmente.
+    :param line: linea en donde se encuentra el lector.
+    :param ID:  lista de los ids o ID individual
+    :param value:  lista de los valores o valor individual.
+    :param variables_dict: diccionario en donde se está trabajando la asignación.
+    :return: lista con ID y value si se cumplen todas las verificaciones, False en caso contrario.
+    '''
+
     # insumo :  [line, ID, value, dict]
-    a = [[18, '=', [18, 'a', [['row', 1]]], [True]]]
-    b = [18, [18, 'a', [['row', 1]]], [True], "dictionary"]
 
-    c = [16, '=', 'h', 5]
-    d = [16, 'h', 5, "dictionary"]
+    # De [[18, '=', [18, 'a', [['row', 1]]], [True]]]
+    #  se recibe[18, [18, 'a', [['row', 1]]], [True], "dictionary"]
 
-    # Si es una asignacion a una sublista.
-    if type(ID) == list:
-        return sublist_assign(line, ID, value, variables_dict)
+    # De [16, '=', 'h', 5]
+    #     se recibe [16, 'h', 5, "dictionary"]
 
-    # Si la variable es una lista, obtener el valor si es una operacion.
-    if type(value) == list:
-        value = run(value)
-
-    # Assign
-    variables_dict[ID] = run(value)
-    print("[{0} : {1}".format(ID, variables_dict[ID]))
-    return variables_dict[ID]
-
-
-    # If its an assignment to a column.
-    elif var[0] == ':':
-        ID = var[1]
-        env[ID] = matrix_column_assign(getValue(ID), var[2], value)
-
-    # If its an assignment to a sublist.
-    else:
-        ID = var[0]
-        i, j = var[1][0][0], var[1][0][1]
-        if j is not None:
-            getValue(ID)[i:j] = value
-        else:
-            getValue(ID)[i] = value
-        return [ID, ":", env[ID]]
-
-
-# Funcion para operar la asignacion de las variables individualmente.
-def var_assign_operation_individual(line, ID, value, variables_dict):
     # Si es una asignacion a una sublista.
     if type(ID) == list:
         return sublist_assign(line, ID, value, variables_dict)
@@ -369,25 +356,41 @@ def var_assign_operation_individual(line, ID, value, variables_dict):
     # Si no es una variable valida.
     if not var_verification(line, ID, value, variables_dict):
         # El error se agrega en la verificacion.
-        return
+        return False
 
-    # Asignar
-    setVariable(ID, variables_dict, value)
-    print("Se crea -> ", ID, ":", getVariable(ID, variables_dict))
-
-    # ('=', (a, 1)) : un elemento, struct = tuple
-    # ('=', [(a, 1), (b,2)]) : dos elementos, struct = list
-    # print ("Struct:", struct)
-    if type(struct) == tuple:
-        return var_assign_operation_aux(run(struct[0]), run(struct[1]))
-    else:
-        for t in struct:
-            var_assign_operation(t)
+    # Si se cumplen todas las validaciones.
+    print("-> {0} : {1}".format(ID, variables_dict[ID]))
+    return [ID, value]
 
 
-# Auxiliar para verificar la asignacion de las variables.
 def sublist_assign(line, ID, value, variables_dict):
+    '''
+    Auxiliar para verificar la asignacion de las variables a una sublista.
+    :param line: linea en donde se encuentra el lector.
+    :param ID:  lista de los ids o ID individual
+    :param value:  lista de los valores o valor individual.
+    :param variables_dict: diccionario en donde se está trabajando la asignación.
+    :return: lista con ID y value si se cumplen todas las verificaciones, False en caso contrario.
+    '''
+    
+    # # If its an assignment to a column.
+    # elif var[0] == ':':
+    # ID = var[1]
+    # env[ID] = matrix_column_assign(getValue(ID), var[2], value)
+    #
+    # # If its an assignment to a sublist.
+    # else:
+    # ID = var[0]
+    # i, j = var[1][0][0], var[1][0][1]
+    # if j is not None:
+    #     getValue(ID)[i:j] = value
+    # else:
+    #     getValue(ID)[i] = value
+    # return [ID, ":", env[ID]]
+
     pass
+
+
     # # If variable is a primitive but not a list.
     # if not equalsType(var, list):
     #     env[var] = run(value)
@@ -409,12 +412,8 @@ def sublist_assign(line, ID, value, variables_dict):
     #     return [ID, ":", env[ID]]
 
 
+""" ###################################### Validacion de asignacion de variables ################################################### """
 
-
-
-""" ###################################### Validacion de variables ################################################### """
-
-# Funcion auxiliar para validar los ids y values recibidos si son varios ids.
 def multi_assign_validation(line, ids, values, variables_dict):
     '''
     Funcion para verificar que la lista de IDS y VALUES corresponden al mismo tamaño,
@@ -447,6 +446,14 @@ def multi_assign_validation(line, ids, values, variables_dict):
 
 # Funcion auxiliar para verificar una reasignacion de la variable.
 def var_verification(line, ID, value, variables_dict):
+    '''
+    Funcion auxiliar para verificar una asignacion o reasignacion de la variable.
+    :param line: linea en donde se encuentra el lector.
+    :param ids: lista de los ids.
+    :param values: lista de los valores.
+    :param variables_dict: diccionario en donde se está trabajando la asignación.
+    :return: False si no se cumple alguna de las validaciones, True en caso contrario.
+    '''
     # CHECK VALUE...
 
     # Si value es un string.
@@ -497,7 +504,7 @@ def var_type(var):
     else:
         print("ERROR in type!")
 
-""" ###################################### Validacion de listas ################################################### """
+""" ###################################### Validaciones en listas ################################################### """
 
 def list_check_type_validation(line, lst):
     '''

@@ -152,7 +152,7 @@ def p_var_assign(p):
     values = p[3]
     if type(p[1]) == list:
         values = p[3][0]
-        
+
     p[0] = [p.lineno(4), '=', p[1], values]
 
 
