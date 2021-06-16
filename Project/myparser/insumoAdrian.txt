@@ -1,3 +1,12 @@
+##a=21;
+##b=[231];
+##mi_bool1 = True;
+##nums=[1,2,3,4,5];
+##x,y,z=1,2,3;
+##v,j=[2,3],[1,5];
+##f,g,h=[3,4],True,False;
+
+
 Procedure abc (){
     j = 3;
     If(b<=3){
@@ -9,9 +18,22 @@ Procedure abc (){
 };
 
 Procedure Main (){
+    Blink(f,c, 5,"Seg",a);
+    Delay(10,"Mil");
+    PrintLed(1,1,True);
+    PrintLedX("F",1,listaX);
+
     casa = 3;
     If(b<=3){
         k = 5;
     }
+    for linea in lista{
+        h = 5;
+    }
+    for linea in lista Step 2{
+        h = 5;
+    }
 };
+
+
 
