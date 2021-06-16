@@ -9,6 +9,7 @@ import pprint
 # Define el archivo del programa
 program_file = "insumoAdrian.txt"
 
+#result = []
 
 # Ensure our parser understands the correct order of operations.
 # The precedence variable is a special Ply variable.
@@ -1297,7 +1298,7 @@ def matrix_column_assign(var, col, new_val_list):
 #     parser.parse(s)
 
 # Create a REPL to provide a way to interface with our calculator.
-print("\n--------- RESULTS ---------")
+#print("\n--------- RESULTS ---------")
 
 # Crea el printer para poder imprimir tanto en el Shell de Python como en CMD
 pp = pprint.PrettyPrinter(indent=2)
@@ -1306,8 +1307,8 @@ pp = pprint.PrettyPrinter(indent=2)
 with open(program_file, 'r') as file:
     insumo = file.read()
     result = parser.parse(insumo)
-    pp.pprint(result)
-    print(env)
+    #pp.pprint(result)
+    #print(env)
 
-    print("\nErrores:")
-    pp.pprint(errors)
+    #print("\nErrores:")
+    #pp.pprint(errors)
