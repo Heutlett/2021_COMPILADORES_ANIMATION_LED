@@ -1,9 +1,6 @@
 from Syntax_Analysis import result
 from Syntax_Analysis import errors
 import pprint
-import time
-import threading
-import ast
 
 # Lista de arboles sintacticos generados en el analisis sintactico
 sintacticList = result
@@ -20,6 +17,12 @@ global_variables = {}
 # Lista de blinks activos
 blink_list = []
 
+# Lista de procedimientos secundarios
+procedures_list = []
+
+# Diccionario para acciones con dict
+accionesConDict = ['=','[]','[]*']
+
 # Matriz actual
 matriz = [[False, False, False, False, False, False, False, False],
           [False, False, False, False, False, False, False, False],
@@ -30,10 +33,23 @@ matriz = [[False, False, False, False, False, False, False, False],
           [False, False, False, False, False, False, False, False],
           [False, False, False, False, False, False, False, False]]
 
-# Pretty print para impresiones mas claras
-pp = pprint.PrettyPrinter(indent=0, sort_dicts=False)
+# Lista de instrucciones que ejecutara el arduino
+instrucciones = []
 
-""" ###################################### Validacion de variables ################################################### """
+# Pretty print para impresiones mas claras
+pp = pprint.PrettyPrinter(indent=2)
+
+""" ################################ Resultados del analisis sintactico ############################################ """
+
+print("\n--------- Syntactic Analysis Result ---------")
+
+pp.pprint(sintacticList)
+
+
+print("\n--------- Errors ---------")
+pp.pprint(errorList)
+
+""" ################################ Resultados del analisis sintactico ############################################ """
 
 
 # Funcion para obtener una de las variables del dictionario recibido
@@ -830,6 +846,8 @@ def get_list_type(lst):
 
 """ ###################################### Validacion de asignacion de variables ################################################### """
 
+
+
 """ ################################ COMPROBACIONES INICIALES #################################################### """
 
 
@@ -871,30 +889,11 @@ def find_main():
     for line in sintacticList:
         if line[1] == 'PROCEDURE':
             if line[2] == 'Main':
+
                 main_code = line[4]
 
-    runMainCode()
+                sintacticList.remove(line)
 
-accionesConDict = ['=','[]','[]*']
-
-def runMainCode():
-    global accionesConDict
-
-    for i in main_code:
-        # i = main_code[0]
-        p = i
-        accion = i[1]
-        if accion in accionesConDict:
-            p += [global_variables]
-
-        # print("TREE:", p)
-        print("RESULT >> ", run_tree(p))
-        print("BOOK: ", global_variables)
-        print("\n")
-
-
-check_blocks()
-check_main_count()
 
 """ ############################################################################################################### """
 
@@ -937,6 +936,7 @@ def bifurcacion(iterable, operator, value, ordenes):
     :param value: puede ser numero, o bool
     :return: bool
     """
+    print("Ejecutando IF: ", "if {0}".format(iterable), operator, str(value))
     if isinstance(iterable, list):
 
         flag = True
@@ -960,95 +960,162 @@ def bifurcacion(iterable, operator, value, ordenes):
                     flag = False
 
         if flag == True:
-            # aqui se deberian ejecutar las ordenes
-            pass
-        return flag
+            print("------EL IF SE HA CUMPLIDO CORRECTAMENTE, EJECUTANDO ORDENES DEL IF--------")
+            exe_ordenes(ordenes)
+            print("------Fin de ordenes del IF----------")
+        else:
+            print("------EL IF NO SE HA CUMPLIDO--------")
+            return
 
     elif isinstance(iterable, int) or isinstance(iterable, bool):
 
+        flag = False
+
         if operator == '==':
             if iterable == value:
-                # ordenes
-                return True
+
+                exe_ordenes(ordenes)
+
         elif operator == '<':
             if iterable < value:
-                # ordenes
-                return True
+                flag = True
+
         elif operator == '<=':
             if iterable <= value:
-                # ordenes
-                return True
+                flag = True
+
         elif operator == '>':
             if iterable > value:
-                # ordenes
-                return True
+                flag = True
+
         elif operator == '>=':
             if iterable >= value:
-                # ordenes
-                return True
-        return False
+                flag = True
+
+        if flag:
+            print("------EL IF SE HA CUMPLIDO CORRECTAMENTE, EJECUTANDO ORDENES DEL IF--------")
+            exe_ordenes(ordenes)
+            print("------Fin de ordenes del IF----------")
+        else:
+            print("------EL IF NO SE HA CUMPLIDO--------")
+            return
+
+
+""" ####################################### PROCEDURE ANALISIS #################################################### """
+
+
+def check_procedures_name_count():
+
+    for procedure in sintacticList:
+        procedures_list.append(procedure[2])
+
+    for procedure in procedures_list:
+        if procedures_list.count(procedure) > 1:
+            errorList.append("ERROR: el procedimiento: {0} esta definido mas de una vez".format(procedure))
+            return
+
+
+
+
+
+""" ####################################### PROCEDURE ANALISIS #################################################### """
+
 
 
 """ ####################################### Ejecucion principal #################################################### """
+
 
 
 def main_execute():
-    for linea in main_code:
 
-        if linea[1] == '=':
-            print(linea, "  ----->   Declaracion, asignacion o redefinicion de variables")
-        elif linea[1] == 'PROCEDURE':
-            print(linea, "  ----->   Procedimiento")
-        elif linea[1] == 'BLINK':
-            print(linea, "  ----->   BLINK")
-        elif linea[1] == 'DELAY':
-            print(linea, "  ----->   DELAY")
-        elif linea[1] == 'PRINTLED':
-            print(linea, "  ----->   PRINTLED")
-        elif linea[1] == 'PrintLedX':
-            print(linea, "  ----->   PRINTLEDX")
-        elif linea[1] == 'IF':
-            print(linea, "  ----->   IF")
-        elif linea[1] == 'FOR':
-            print(linea, "  ----->   FOR")
+    exe_ordenes(main_code)
 
 
-def exe_orden():
-    pass
+def procedure_execute(nombre, params):
+    print("-------------------------------------------------------------------")
+    print("Ejecutando procedure: ", nombre)
+    print("Parametros: ", params)
+    print()
+    print("-----------------EJECUTANDO ORDENES DE :", nombre, "---------------")
+
+    for procedure in sintacticList:
+        if procedure[2] == nombre:
+            exe_ordenes(procedure[4])
+
+
+
+    print("-----------------FIN DE DE ORDENES DE :", nombre, "----------------")
+    print()
+
+
+def exe_ordenes(ordenes):
+
+    for orden in ordenes:
+        exe_orden(orden)
+
+
+def exe_orden(linea):
+
+    if linea[1] in accionesConDict:  # ESTO EJECUTA LAS DECLARACIONES
+        print("----------------EJECUTANDO DECLARACION------------------")
+        linea += [global_variables]
+        run_tree(linea)
+        print("Se ha declarado la variable ", linea[2], " correctamente.")
+        print("BOOK: ", global_variables)
+        print(linea, "  ----->   Declaracion, asignacion o redefinicion de variables        [EJECUTADO CORRECTAMENTE]\n")
+        print("----------------FIN DE DECLARACION------------------")
+    elif linea[1] == 'CALL':
+        print(linea, "  ----->   Procedimiento     [EJECUTADO CORRECTAMENTE]\n")
+        procedure_execute(linea[2], linea[3])
+    elif linea[1] == 'BLINK':
+        print(linea, "  ----->   BLINK")
+    elif linea[1] == 'DELAY':
+        exe_delay(linea[2],linea[3])
+        print(linea, "  ----->   DELAY                        [EJECUTADO CORRECTAMENTE]\n")
+    elif linea[1] == 'PRINTLED':
+        exe_print_led(linea[2], linea[3], linea[4])
+        print(linea, "  ----->   PRINTLED               [EJECUTADO CORRECTAMENTE]\n")
+    elif linea[1] == 'PRINTLEDX':
+        matrizPrueba = [[True, False, False, False, False, False, False, False],
+                  [False, False, True, False, False, False, False, False],
+                  [False, False, False, True, False, False, False, False],
+                  [False, False, False, False, True, False, False, False],
+                  [False, False, True, False, False, True, False, False],
+                  [False, False, True, False, False, False, True, False],
+                  [False, False, False, False, False, False, False, True],
+                  [False, True, False, False, False, False, False, False]]
+        exe_print_ledx(linea[2], linea[3], matrizPrueba)
+        print(linea, "  ----->   PRINTLEDX       [EJECUTADO CORRECTAMENTE]\n")
+    elif linea[1] == 'IF':
+        iterable = global_variables[linea[2][0]]  # ESTA DEBE SER LA VARIABLE CON EL ID linea[2][0]
+        bifurcacion(iterable, linea[2][1], linea[2][2], linea[3])
+        print(linea, "  ----->   IF                  [EJECUTADO CORRECTAMENTE]\n")
+    elif linea[1] == 'FOR':
+        print(linea, "  ----->   FOR")
+    elif linea[1] == 'RANGE':    ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
+        print(linea, "  ----->   RANGE")
+    elif linea[1] == 'INSERT':    # [line, 'INSERT', lista, num, bool] ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
+        print(linea, "  ----->   INSERT")
+    elif linea[1] == 'DEL': ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
+        print(linea, "  ----->   DEL")
+    elif linea[1] == 'LEN':
+        print(linea, "  ----->   LEN")
+    elif linea[1] == 'NEG':
+        print(linea, "  ----->   NEG")
+    elif linea[1] == 'T':
+        print(linea, "  ----->   T")
+    elif linea[1] == 'F':
+        print(linea, "  ----->   F")
 
 
 """ ####################################### Ejecucion principal #################################################### """
 
+
+
 """ ###################################### Ejecuciones finales #################################################### """
 
+
 """ #######################################  BLINK  ############################################################### """
-
-
-def blink_cicle_start(row, column, tiempo, rangoTiempo):
-    flag = True
-
-    while (row, column) in blink_list:
-
-        if rangoTiempo == "seg":
-            time.sleep(tiempo)
-        elif rangoTiempo == "mil":
-            time.sleep(tiempo * 0.001)
-        elif rangoTiempo == "min":
-            time.sleep(tiempo * 60)
-
-        matriz[row][column] = flag
-        pp.pprint(matriz)
-        print()
-        if flag:
-            flag = False
-        else:
-            flag = True
-
-
-def init_new_blink_thread(row, column, tiempo, rangoTiempo):
-    hilo = threading.Thread(target=blink_cicle_start(row, column, tiempo, rangoTiempo))
-    hilo.start()
-
 
 """   
 Blink(Fila, Columna, Tiempo, RangoTiempo, Estado)
@@ -1062,11 +1129,7 @@ Estado: bool
 
 
 def exe_blink(row, column, tiempo, rangoTiempo, estado):
-    if estado:
-        blink_list.append((row, column))
-        init_new_blink_thread(row, column, tiempo, rangoTiempo)
-    else:
-        blink_list.remove((row, column))
+    pass
 
 
 """ #######################################  BLINK  ############################################################### """
@@ -1074,38 +1137,9 @@ def exe_blink(row, column, tiempo, rangoTiempo, estado):
 """ #######################################  Delay  ############################################################### """
 
 
-def delay_cicle_start(tiempo, rangoTiempo):
-    count = 0
-
-    while count <= tiempo:
-
-        if rangoTiempo == "seg":
-            time.sleep(1)
-        elif rangoTiempo == "mil":
-            time.sleep(1 * 0.001)
-        elif rangoTiempo == "min":
-            time.sleep(1 * 60)
-        print("delay in " + rangoTiempo + ": " + str(count))
-        count += 1
-
-
-def init_new_delay_thread(tiempo, rangoTiempo):
-    hilo = threading.Thread(target=delay_cicle_start(tiempo, rangoTiempo))
-    hilo.run()
-
-
-"""   
-Delay(Tiempo, RangoTiempo)
-Tiempo: Tiempo de delay
-RangoTiempo: "Seg", "Mil", "Min"
-
-['DELAY', 10, 'mil']
-"""
-
-
 def exe_delay(tiempo, rangoTiempo):
-    init_new_delay_thread(tiempo, rangoTiempo)
 
+    instrucciones.append(['DELAY', rangoTiempo, tiempo])
 
 """ #######################################  Delay  ############################################################### """
 
@@ -1121,13 +1155,14 @@ Valor: Bool
 
 
 def exe_print_led(row, column, value):
+
     if value:
         matriz[row][column] = True
     else:
         matriz[row][column] = False
 
-    pp.pprint(matriz)
-    print()
+    # pp.pprint(matriz)
+    instrucciones.append(['PRINT', matriz])
 
 
 """ #######################################  PrintLed  ############################################################ """
@@ -1165,31 +1200,43 @@ def exe_print_ledx(tipo_objeto, index, arreglo):
             else:
                 errors.append("Error, la lista que se desea adjuntar sobrepasa los limites de la matriz 8x8")
 
-        pp.pprint(matriz)
-        print()
+        #pp.pprint(matriz)
+        #print()
 
     else:
         errors.append("Error, el indice debe ser entre 0 y 7")
 
+    instrucciones.append(['PRINT', matriz])
+
 
 """ #######################################  PrintLedX  ############################################################ """
 
-""" ###################################### Validacion de variables ################################################### """
 
-""" ############################################################################################################### """
+""" ####################################### Ejecucion ##################################################### """
 
-# print("\n--------- Syntactic Analysis Result ---------")
-# pp.pprint(sintacticList)
+check_blocks()
+check_main_count()
+check_procedures_name_count()
+
+print("\n--------- Main ---------")
+pp.pprint(main_code)
+
+print("\n--------- Lista de procedimientos ---------")
+pp.pprint(procedures_list)
+
+print("\n--------- Ejecutando Main ---------")
+main_execute()
+
+print("\n--------- Variables globales ---------")
+pp.pprint(global_variables)
 
 print("\n--------- Errors ---------")
 pp.pprint(errorList)
 
-print("\n--------- Main ---------")
-# pp.pprint(main_code)
-print(main_code)
-#
-# print("\n--------- Ejecutando Main ---------")
-# main_execute()
+print("\n--------- INSTRUCCIONES ARDUINO ---------")
+pp.pprint(instrucciones)
+
+
 
 # a = None
 # ciclo_for(a, [1,2,3,4,5,6,7,8,9,10],1,0)

@@ -17,8 +17,8 @@ Procedure Main (){
         h = 5;
     }
 
-    call pro1(True, a);
-    call pro2();
+    ##call pro1(True, a);
+    ##call pro2();
 
 };
 
