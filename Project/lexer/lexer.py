@@ -76,6 +76,7 @@ tokens = [
     'MAYORIGUAL',
     'MENORQUE',
     'MENORIGUAL',
+    'DIFERENTE',
 
     # Literal caracteres
 
@@ -116,6 +117,7 @@ t_MAYORQUE = r'>'
 t_MAYORIGUAL = r'>='
 t_MENORQUE = r'<'
 t_MENORIGUAL = r'<='
+t_DIFERENTE = r'<>'
 
 # Literales
 

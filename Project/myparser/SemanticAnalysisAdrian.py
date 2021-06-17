@@ -24,9 +24,7 @@ blink_list = []
 procedures_list = []
 
 # Diccionario para acciones con dict
-accionesConDict = ['=','[]','[]*']
-
-
+accionesConDict = ['=', '[]', '[]*']
 
 # Matriz actual
 matriz = [[False, False, False, False, False, False, False, False],
@@ -49,7 +47,6 @@ pp = pprint.PrettyPrinter(indent=2)
 print("\n--------- Syntactic Analysis Result ---------")
 
 pp.pprint(sintacticList)
-
 
 print("\n--------- Errors ---------")
 pp.pprint(errorList)
@@ -106,7 +103,7 @@ def run_tree(p):
 
         elif p[1] == '[]':
             indexes = p[3]
-            #print()
+            # print()
             return get_sublist(p[0], False, indexes[0], indexes, p[2], p[3], p[4])
 
         elif p[1] == '[]*':
@@ -205,7 +202,7 @@ def var_assign_operation(line, ID, value, variables_dict):
     if tmp is False:
         return False
     # Asignación
-    #print("TEMP is:", tmp)
+    # print("TEMP is:", tmp)
 
     if type(tmp[0]) == str:
         variables_dict[tmp[0]] = tmp[1]
@@ -301,7 +298,6 @@ def sublist_assign(sublist, value, variables_dict):
     return get_sublist(line, True, indexes[0], indexes, ID, value, variables_dict)
 
 
-
 def get_sublist(line, assigning, action, indexes, ID, value, variables_dict):
     # Verificar que la variable existe en el diccionario recibido o en el global.
     var = getByID(ID, variables_dict)
@@ -328,7 +324,6 @@ def get_sublist(line, assigning, action, indexes, ID, value, variables_dict):
 
 
 def get_sublist_one_index(line, assigning, action, ID, indexes, value, variables_dict):
-
     if action == 'row':
         row = indexes[1]
         return do_row(line, assigning, ID, row, value, variables_dict)
@@ -350,7 +345,6 @@ def do_row(line, assigning, ID, row, value=None, variables_dict=None):
     # Verificaciones de asignacion y de llamada.
     apt = row_verification(line, lst, row, ID, value, variables_dict) \
         if assigning else row_verification(line, lst, row)
-
 
     # Si no cumple con los requisitos.
     if not apt:
@@ -472,7 +466,6 @@ def get_real_value(value, dct):
 
 
 def entry_type_verification(line, lst, ID, value, variables_dict):
-
     # Si el valor es un ID y aun no se ha creado.
     if type(value) == str:
         if not var_ID_validation(line, value, variables_dict):
@@ -544,7 +537,6 @@ def col_verification(line, lst, col, ID=None, value=None, variables_dict=None):
     :return: True si se cumplen todas las verificaciones, False en caso contrario.
     '''
 
-
     if type(lst[0]) != lst:
         errors.append("TypeError in line {0}: {1} object is not subscriptable.".format(line, var_type(lst)))
         return False
@@ -604,7 +596,6 @@ def row_col_verification(line, lst, row, col, ID=None, value=None, variables_dic
 
 
 def sublist_verification(line, lst, start, end, ID=None, value=None, variables_dict=None):
-
     if end < start:
         errors.append("RangeError in line {0}: Index 'start' cannot be greater than 'end'.".format(line, start))
         return False
@@ -630,8 +621,6 @@ def sublist_verification(line, lst, start, end, ID=None, value=None, variables_d
             errors.append(
                 "RangeError in line {0}: The range between index must be equal to the number of elements.".format(line))
             return False
-
-
 
     return True
 
@@ -851,8 +840,6 @@ def get_list_type(lst):
 
 """ ###################################### Validacion de asignacion de variables ################################################### """
 
-
-
 """ ################################ COMPROBACIONES INICIALES #################################################### """
 
 
@@ -894,7 +881,6 @@ def find_main():
     for line in sintacticList:
         if line[1] == 'PROCEDURE':
             if line[2] == 'Main':
-
                 main_code = line[4]
 
                 sintacticList.remove(line)
@@ -915,12 +901,11 @@ def ciclo_for(temp_var, iterable, step, ordenes, procedure_name):
     :return: None
     """
 
-    var = buscar_variable_localmente(temp_var, procedure_name)
+    #var = buscar_variable_localmente(temp_var, procedure_name)
 
-
-    if var == None and procedure_name == "Main":
-        #exe_global_var_declaration()
-        pass
+    # if var == None and procedure_name == "Main":
+    #     # exe_global_var_declaration()
+    #     pass
 
     if step == 1:
         if isinstance(iterable, list):
@@ -948,7 +933,9 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
     :param value: puede ser numero, o bool
     :return: bool
     """
-    print("Ejecutando IF: ", "if {0}".format(iterable), operator, str(value))
+    print("---------------------------------------------------------------------------")
+    print("                 Ejecutando IF: ", "if {0}".format(iterable), operator, str(value))
+    print("---------------------------------------------------------------------------")
     if isinstance(iterable, list):
 
         flag = True
@@ -970,13 +957,16 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
             elif operator == '>=':
                 if not x >= value:
                     flag = False
+            elif operator == '<>':
+                if not x != value:
+                    flag = False
 
-        if flag == True:
+        if flag:
             print("------EL IF SE HA CUMPLIDO CORRECTAMENTE, EJECUTANDO ORDENES DEL IF--------")
             exe_ordenes(ordenes, procedure_name)
-            print("------Fin de ordenes del IF----------")
+            print("---------------------------Fin de ordenes del IF---------------------------")
         else:
-            print("------EL IF NO SE HA CUMPLIDO--------")
+            print("---------------------------EL IF NO SE HA CUMPLIDO-------------------------")
             return
 
     elif isinstance(iterable, int) or isinstance(iterable, bool):
@@ -985,7 +975,6 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
 
         if operator == '==':
             if iterable == value:
-
                 exe_ordenes(ordenes, procedure_name)
 
         elif operator == '<':
@@ -1004,12 +993,16 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
             if iterable >= value:
                 flag = True
 
+        elif operator == '<>':
+            if iterable != value:
+                flag = True
+
         if flag:
             print("------EL IF SE HA CUMPLIDO CORRECTAMENTE, EJECUTANDO ORDENES DEL IF--------")
             exe_ordenes(ordenes, procedure_name)
-            print("------Fin de ordenes del IF----------")
+            print("---------------------------Fin de ordenes del IF---------------------------")
         else:
-            print("------EL IF NO SE HA CUMPLIDO--------")
+            print("---------------------------EL IF NO SE HA CUMPLIDO-------------------------")
             return
 
 
@@ -1017,7 +1010,6 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
 
 
 def check_procedures_name_count():
-
     for procedure in sintacticList:
         procedures_list.append(procedure[2])
 
@@ -1028,18 +1020,12 @@ def check_procedures_name_count():
         local_variables[procedure] = {}
 
 
-
-
 """ ####################################### PROCEDURE ANALISIS #################################################### """
-
-
 
 """ ####################################### Ejecucion principal #################################################### """
 
 
-
 def main_execute():
-
     exe_ordenes(main_code, "Main")
 
 
@@ -1054,30 +1040,54 @@ def procedure_execute(nombre, params):
         if procedure[2] == nombre:
             exe_ordenes(procedure[4], nombre)
 
-
-
     print("-----------------FIN DE DE ORDENES DE :", nombre, "----------------")
     print()
 
 
 def exe_ordenes(ordenes, procedure_name):
-
     for orden in ordenes:
         exe_orden(orden, procedure_name)
 
 
-def buscar_variable_localmente(id, procedure_name):
+def buscar_variable_globalmente(id):
+    print("-----Buscando la variable {0} globalmente-----".format(id))
     var = None
-    print("JASDADSJASKLDHADADSJADS")
-    print(id)
-    print(procedure_name)
     if id in global_variables.keys():
-        var = getByID(id, local_variables[procedure_name])
-    elif procedure_name != "Main" and id in local_variables[procedure_name].keys():
         var = getByID(id, global_variables)
     else:
-        errorList.append("ERROR, NO SE HA ENCONTRADO LA VARIABLE")
+        print("-----Busqueda sin resultados: No se ha encontrado la variable {0}-----".format(id))
         return None
+    print("-----Exito: la variable {0} se ha encontrado globalmente-----".format(id))
+    return var
+
+
+def buscar_variable_localmente(id, procedure_name):
+    print("-----Buscando la variable {0} localmente-----".format(id))
+    var = None
+    if id in local_variables[procedure_name].keys():
+        var = getByID(id, local_variables[procedure_name])
+    else:
+        print("-----Busqueda sin resultados: No se ha encontrado la variable {0}-----".format(id))
+        return None
+    print("-----Exito: la variable {0} se ha encontrado localmente-----".format(id))
+    return var
+
+"""
+Busca una variable:
+Primero busca si esta en las variables globales
+Si no la encuentra y no es el main, la busca localmente
+"""
+
+def buscar_variable(id, procedure_name):
+    var = None
+    if procedure_name == "Main":
+        var = buscar_variable_globalmente(id)
+    elif procedure_name != "Main":
+        var = buscar_variable_localmente(id, procedure_name)
+    if var is None:
+        var = buscar_variable_globalmente(id)
+    if var is None:
+        errorList.append("Error, la variable {0} no existe")
     return var
 
 
@@ -1093,11 +1103,11 @@ def exe_local_var_declaration(linea, procedure_name):
     linea += [local_variables[procedure_name]]
     run_tree(linea)
     print("Se ha declarado la variable ", linea[2], " correctamente.")
-    print("Local BOOK for: ",procedure_name)
+    print("Local BOOK for: ", procedure_name)
     pp.pprint(local_variables[procedure_name])
 
-def exe_orden(linea, procedure_name):
 
+def exe_orden(linea, procedure_name):
     if linea[1] in accionesConDict:  # ESTO EJECUTA LAS DECLARACIONES
         print("----------------EJECUTANDO DECLARACION------------------")
         if procedure_name == "Main":
@@ -1121,45 +1131,34 @@ def exe_orden(linea, procedure_name):
         exe_print_led(linea[2], linea[3], linea[4])
         print(linea, "  ----->   PRINTLED               [EJECUTADO CORRECTAMENTE]\n")
     elif linea[1] == 'PRINTLEDX':
-        if procedure_name == "Main":
 
-            print("PRUEBAAAAAAAAAAA")
-            print(linea[4])
-            var = getByID(linea[4], global_variables)
+        var = buscar_variable(linea[4], procedure_name)
 
-            if var != None:
-
-                exe_print_ledx(linea[2], linea[3], var)
-                print(linea, "  ----->   PRINTLEDX       [EJECUTADO CORRECTAMENTE]\n")
-
-            else:
-                errorList.append("Error, la variable {0} no existe")
-
+        if var is not None:
+            exe_print_ledx(linea[2], linea[3], var)
+            print(linea, "  ----->   PRINTLEDX       [EJECUTADO CORRECTAMENTE]\n")
         else:
-
-            var = buscar_variable_localmente(linea[4], procedure_name)
-
-            if var != None:
-
-                exe_print_ledx(linea[2], linea[3], var)
-                print(linea, "  ----->   PRINTLEDX       [EJECUTADO CORRECTAMENTE]\n")
-
-            else:
-                errorList.append("Error, la variable {0} no existe")
+            errorList.append("Error: no se ha encontrado la variable {0}".format(linea[4]))
 
     elif linea[1] == 'IF':
-        iterable = global_variables[linea[2][0]]  # ESTA DEBE SER LA VARIABLE CON EL ID linea[2][0]
-        bifurcacion(iterable, linea[2][1], linea[2][2], linea[3], procedure_name)
-        print(linea, "  ----->   IF                  [EJECUTADO CORRECTAMENTE]\n")
+
+        var = buscar_variable(linea[2][0], procedure_name)
+
+        if var is not None:
+            bifurcacion(var, linea[2][1], linea[2][2], linea[3], procedure_name)
+            print(linea, "  ----->   IF                  [EJECUTADO CORRECTAMENTE]\n")
+        else:
+            errorList.append("Error: no se ha encontrado la variable {0}".format(linea[2][0]))
+
     elif linea[1] == 'FOR':
         print("PRUEBAaaaa for")
         ciclo_for(linea[2], linea[3], linea[5], linea[4], procedure_name)
         print(linea, "  ----->   FOR")
-    elif linea[1] == 'RANGE':    ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
+    elif linea[1] == 'RANGE':  ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
         print(linea, "  ----->   RANGE")
-    elif linea[1] == 'INSERT':    # [line, 'INSERT', lista, num, bool] ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
+    elif linea[1] == 'INSERT':  # [line, 'INSERT', lista, num, bool] ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
         print(linea, "  ----->   INSERT")
-    elif linea[1] == 'DEL': ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
+    elif linea[1] == 'DEL':  ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
         print(linea, "  ----->   DEL")
     elif linea[1] == 'LEN':
         print(linea, "  ----->   LEN")
@@ -1173,10 +1172,7 @@ def exe_orden(linea, procedure_name):
 
 """ ####################################### Ejecucion principal #################################################### """
 
-
-
 """ ###################################### Ejecuciones finales #################################################### """
-
 
 """ #######################################  BLINK  ############################################################### """
 
@@ -1201,8 +1197,8 @@ def exe_blink(row, column, tiempo, rangoTiempo, estado):
 
 
 def exe_delay(tiempo, rangoTiempo):
-
     instrucciones.append(['DELAY', rangoTiempo, tiempo])
+
 
 """ #######################################  Delay  ############################################################### """
 
@@ -1218,14 +1214,18 @@ Valor: Bool
 
 
 def exe_print_led(row, column, value):
+    if row <= 7 and column <= 7:
 
-    if value:
-        matriz[row][column] = True
+        if value:
+            matriz[row][column] = True
+        else:
+            matriz[row][column] = False
+
+        # pp.pprint(matriz)
+        instrucciones.append(['PRINT', matriz])
+
     else:
-        matriz[row][column] = False
-
-    # pp.pprint(matriz)
-    instrucciones.append(['PRINT', matriz])
+        errorList.append("ERROR: La fila o columna esta fuera de los limites de la matriz 8x8")
 
 
 """ #######################################  PrintLed  ############################################################ """
@@ -1263,8 +1263,8 @@ def exe_print_ledx(tipo_objeto, index, arreglo):
             else:
                 errors.append("Error, la lista que se desea adjuntar sobrepasa los limites de la matriz 8x8")
 
-        #pp.pprint(matriz)
-        #print()
+        # pp.pprint(matriz)
+        # print()
 
     else:
         errors.append("Error, el indice debe ser entre 0 y 7")
@@ -1273,7 +1273,6 @@ def exe_print_ledx(tipo_objeto, index, arreglo):
 
 
 """ #######################################  PrintLedX  ############################################################ """
-
 
 """ ####################################### Ejecucion ##################################################### """
 
@@ -1287,7 +1286,7 @@ pp.pprint(main_code)
 print("\n--------- Lista de procedimientos ---------")
 pp.pprint(procedures_list)
 
-print("\n--------- Ejecutando Main ---------")
+print("\n########################################################## Ejecutando Main ##########################################################")
 main_execute()
 
 print("\n--------- Variables globales ---------")
@@ -1301,7 +1300,6 @@ pp.pprint(errorList)
 
 print("\n--------- INSTRUCCIONES ARDUINO ---------")
 #pp.pprint(instrucciones)
-
 
 
 # a = None

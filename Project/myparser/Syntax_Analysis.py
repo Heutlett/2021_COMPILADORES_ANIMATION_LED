@@ -431,6 +431,7 @@ def p_condicion(p):
                              | expression  MENORQUE valorIf
                              | expression  MENORIGUAL valorIf
                              | expression  MAYORIGUAL valorIf
+                             | expression  DIFERENTE valorIf
     """
     p[0] = [p[1], p[2], p[3]]
 
