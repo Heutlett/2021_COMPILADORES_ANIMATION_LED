@@ -3,7 +3,6 @@ from Syntax_Analysis import errors
 import copy
 import pprint
 
-
 # Lista de arboles sintacticos generados en el analisis sintactico
 sintacticList = []
 
@@ -45,7 +44,6 @@ instrucciones = []
 pp = pprint.PrettyPrinter(indent=2)
 
 
-
 # Funcion para obtener una de las variables del dictionario recibido
 def getVariable(key, variables_dict):
     return variables_dict.get(key)
@@ -75,6 +73,13 @@ arithmetic_operators = ['+', '-', '*', '/', '//', '%', '^']
 sublist_operators = ['row', 'row,col', 'col', 'sublist']
 
 
+def get_var(line, var, varDict):
+    val = getByID(var, varDict)
+    if val is None:
+        errors.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, var))
+    # print("Val", val)
+    return val
+
 def run_tree(p):
     '''
     Funcion que toma todos los arboles e interpreta qué subfunción debe llamar.
@@ -84,11 +89,11 @@ def run_tree(p):
     '''
 
     global arithmetic_operators
-    # print("P  :", p)
+    print("P  :", p)
     if equalsType(p, list):
 
         if p[1] in arithmetic_operators:  # OPERACIONES ARITMETICAS
-            return arithmetic_operation(p[0], p[1], p[2], p[3])
+            return arithmetic_operation(p[0], p[1], p[2], p[3], p[4])
 
         elif p[1] == '=':
             return var_assign_operation(p[0], p[2], p[3], p[4])
@@ -101,8 +106,8 @@ def run_tree(p):
         elif p[1] == '[]*':
             return var_assign_operation(p[0], p[1], p[2], p[3])
 
-        # elif p[0] == 'var':  # DEFINIR UNA VARIABLE
-        #     return env[p[1]]
+        elif p[1] == 'var':  # DEFINIR UNA VARIABLE
+            return get_var(p[0], p[2], p[3])
 
         # elif p[0] == 'type':
         #     return p[1]
@@ -144,7 +149,7 @@ def run_tree(p):
 """ ###################################### Operaciones aritmeticas ################################################### """
 
 
-def arithmetic_operation(line, operator, a, b):
+def arithmetic_operation(line, operator, a, b, dictionary):
     '''
     Funcion auxiliar para operar los calculos aritmeticos por aparte.
     Funciona como switch case para la operacion que se debe realizar.
@@ -154,8 +159,16 @@ def arithmetic_operation(line, operator, a, b):
     :param b: expresion dos
     :return: el resultado de aplicar el operando a ambas expresiones recibididas.
     '''
-    if operator == '+':
+
+    a = run_tree(a)
+    b = run_tree(b)
+
+    if a is None or b is None:
+        return None
+
+    elif operator == '+':
         return run_tree(a) + run_tree(b)
+
     elif operator == '-':
         return run_tree(a) - run_tree(b)
     elif operator == '*':
@@ -193,6 +206,7 @@ def var_assign_operation(line, ID, value, variables_dict):
     tmp = individual_assign_validation(line, ID, value, variables_dict)
     if tmp is False:
         return False
+
     # Asignación
     # print("TEMP is:", tmp)
 
@@ -254,6 +268,14 @@ def individual_assign_validation(line, ID, value, variables_dict):
 
     # Si la variable es una lista, obtener el valor si es una operacion.
     if type(value) == list:
+
+        # Si es una variable.
+        if value[1] in arithmetic_operators:
+            value += [variables_dict]
+            var = value[3]
+            if type(var) == str:
+                value[3] = [line, 'var', var, variables_dict]
+
         value = run_tree(value)
 
     # Si no es una variable valida.
@@ -835,20 +857,17 @@ def get_list_type(lst):
 """ ################################ COMPROBACIONES INICIALES #################################################### """
 
 
-
 def validate_iterable_for(iterable, procedure_name):
-
     if type(iterable) == int or type(iterable) == list:
         return True
     elif type(iterable) == str:
-        var = buscar_variable(iterable,procedure_name)
+        var = buscar_variable(iterable, procedure_name)
         if var is not None:
             return True
         else:
             errorList.append("ERROR: el iterable no existe")
     errorList.append("ERROR: el iterable del for debe ser una lista o un entero")
     return False
-
 
 
 def get_var_for_type(iterable):
@@ -859,8 +878,9 @@ def get_var_for_type(iterable):
             if type(iterable[0]) == int:
                 return "INT"
             elif type(iterable[0]) == bool:
-                return  "BOOL"
+                return "BOOL"
     return None
+
 
 """ ############################################################################################################### """
 
@@ -944,6 +964,7 @@ def ciclo_for(temp_var, iterable, step, ordenes, procedure_name):
         if temp_var in dict.keys():
             del dict[temp_var]
 
+
 def bifurcacion(iterable, operator, value, ordenes, procedure_name):
     """
     Ejecuta el condicional if
@@ -1025,34 +1046,36 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
             return
 
 
-
-
 """ ####################################### Ejecucion principal #################################################### """
 
 
 def main_execute():
+    print("\n\n◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆"
+          " EJECUTANDO PROCEDURE: Main ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆\n\n")
     exe_ordenes(main_code, "Main")
-    print(
-        "\n#####################################################################################################################################################################")
-    print(
-        "############################################################################# FIN de Main ###########################################################################")
-    print(
-        "#####################################################################################################################################################################")
+    print("\n◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆"
+          " FIN Main ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆\n")
     print()
 
 
 def procedure_execute(nombre, params):
-    print("-------------------------------------------------------------------")
-    print("Ejecutando procedure: ", nombre)
-    print("Parametros: ", params)
     print()
-    print("-----------------EJECUTANDO ORDENES DE :", nombre, "---------------")
+    print("★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★")
+    # print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
+
+    print(" ➽ EJECUTANDO PROCEDURE:", nombre)
+    print("\t↪ params: ", params)
+    print()
+
+    print("\t ◖ ejecutando ordenes de : ", nombre)
 
     for procedure in sintacticList:
         if procedure[2] == nombre:
             exe_ordenes(procedure[4], nombre)
 
-    print("-----------------FIN DE DE ORDENES DE :", nombre, "----------------")
+    print("\t ◗ finalizadas ordenes de :", nombre)
+    print("★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★")
+    # print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
     print()
 
 
@@ -1060,28 +1083,10 @@ def exe_ordenes(ordenes, procedure_name):
     for orden in ordenes:
         exe_orden(orden, procedure_name)
 
-
-def buscar_variable_globalmente(id):
-    print("-----Buscando la variable {0} globalmente-----".format(id))
-    var = None
-    if id in global_variables.keys():
-        var = getByID(id, global_variables)
-    else:
-        print("-----Busqueda sin resultados: No se ha encontrado la variable {0}-----".format(id))
-        return None
-    print("-----Exito: la variable {0} se ha encontrado globalmente-----".format(id))
-    return var
-
-
-def buscar_variable_localmente(id, procedure_name):
-    print("-----Buscando la variable {0} localmente-----".format(id))
-    var = None
-    if id in local_variables[procedure_name].keys():
-        var = getByID(id, local_variables[procedure_name])
-    else:
-        print("-----Busqueda sin resultados: No se ha encontrado la variable {0}-----".format(id))
-        return None
-    print("-----Exito: la variable {0} se ha encontrado localmente-----".format(id))
+def buscar_variable(id, procedure_name):
+    var = getVariableFromDict(id,procedure_name)
+    if var is None:
+        print("Busqueda sin resultados, la variable no se encuentra declarada globalmente ni localmente")
     return var
 
 """
@@ -1090,23 +1095,30 @@ Primero busca si esta en las variables globales
 Si no la encuentra y no es el main, la busca localmente
 """
 
-def buscar_variable(id, procedure_name):
-    var = None
-    if procedure_name == "Main":
-        var = buscar_variable_globalmente(id)
-    elif procedure_name != "Main":
-        var = buscar_variable_localmente(id, procedure_name)
-    if var is not None:
-        return var
-    if var is None:
-        var = buscar_variable_globalmente(id)
-    if var is None:
-        print("Busqueda sin resultados, la variable no se encuentra declarada globalmente ni localmente")
-    return var
+# Funcion para obtener una de las variables del dictionario recibido
+def getVariableFromDict(key, procedure):
+    '''
+    Funcion que retorna el valor de un key en el diccionario recibido, si no se encuentra en
+    el diccionario recibido se busca en el diccionario global.
+    :param key: key de la variable en el diccionario
+    :param procedure: diccionario en donde se debe buscar
+    :return: Value del key correspondiente, si no se encuentra retorna None.
+    '''
+
+    # print("Procedure", procedure)
+
+    if procedure.lower() == "main":
+        if key in global_variables.keys():
+            return global_variables.get(key)
+    else:
+        if key in local_variables[procedure].keys():
+            return local_variables[procedure].get(key)
+        elif key in global_variables.keys():
+            return global_variables.get(key)
+    return None
 
 
 def buscar_valor_param(value, procedure_name):
-
     if type(value) == str:
 
         var = buscar_variable(value, procedure_name)
@@ -1122,13 +1134,22 @@ def buscar_valor_param(value, procedure_name):
     else:
         return value
 
+
+def exe_var_declaration(linea, procedure_name):
+    print("----------------EJECUTANDO DECLARACION------------------")
+    if procedure_name == "Main":
+        exe_global_var_declaration(linea)
+    else:
+        exe_local_var_declaration(linea, procedure_name)
+    print("----------------FIN DE DECLARACION------------------")
+
 def exe_global_var_declaration(linea):
     linea += [global_variables]
+    print("Linea :: ", linea)
     run_tree(linea)
     print("Se ha declarado la variable ", linea[2], " correctamente.")
     print("Global BOOK: ", )
     pp.pprint(global_variables)
-
 
 def exe_local_var_declaration(linea, procedure_name):
     linea += [local_variables[procedure_name]]
@@ -1137,39 +1158,44 @@ def exe_local_var_declaration(linea, procedure_name):
     print("Local BOOK for: ", procedure_name)
     pp.pprint(local_variables[procedure_name])
 
-
-def exe_var_declaration(linea,procedure_name):
-    print("----------------EJECUTANDO DECLARACION------------------")
-    if procedure_name == "Main":
-        exe_global_var_declaration(linea)
-    else:
-        exe_local_var_declaration(linea, procedure_name)
-    print("----------------FIN DE DECLARACION------------------")
-
-
 def exe_orden(linea, procedure_name):
-    if linea[1] in accionesConDict:  # ESTO EJECUTA LAS DECLARACIONES
-        exe_var_declaration(linea,procedure_name)
-        print(linea,
-              "  ----->   Declaracion, asignacion o redefinicion de variables        [EJECUTADO CORRECTAMENTE]\n")
+    # ESTO EJECUTA LAS DECLARACIONES
+    if linea[1] in accionesConDict or linea[1] in arithmetic_operators:
+        # print("----------------EJECUTANDO DECLARACION------------------")
+        exe_var_declaration(linea, procedure_name)
+
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DECLARATION     ", "\t→\t", linea)
+        # print("----------------FIN DE DECLARACION------------------\n")
+
     elif linea[1] == 'CALL':
-        print(linea, "  ----->   Procedimiento     [EJECUTADO CORRECTAMENTE]\n")
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "CALL     ", "\t→\t", linea)
         procedure_execute(linea[2], linea[3])
+
+
     elif linea[1] == 'BLINK':
         print(linea, "  ----->   BLINK")
+
+
     elif linea[1] == 'DELAY':
-        exe_delay(buscar_valor_param(linea[2],procedure_name), linea[3])
-        print(linea, "  ----->   DELAY                        [EJECUTADO CORRECTAMENTE]\n")
+        exe_delay(buscar_valor_param(linea[2], procedure_name), linea[3])
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DELAY     ", "\t→\t", linea)
+
+
+
     elif linea[1] == 'PRINTLED':
-        exe_print_led(buscar_valor_param(linea[2],procedure_name), buscar_valor_param(linea[3],procedure_name), buscar_valor_param(linea[4],procedure_name), procedure_name)
-        print(linea, "  ----->   PRINTLED               [EJECUTADO CORRECTAMENTE]\n")
+        exe_print_led(buscar_valor_param(linea[2], procedure_name), buscar_valor_param(linea[3], procedure_name),
+                      buscar_valor_param(linea[4], procedure_name), procedure_name)
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "PRINTLED  ", "\t→\t", linea)
+
+
+
     elif linea[1] == 'PRINTLEDX':
 
         var = buscar_variable(linea[4], procedure_name)
 
         if var is not None:
-            exe_print_ledx(linea[2], buscar_valor_param(linea[3],procedure_name), var)
-            print(linea, "  ----->   PRINTLEDX       [EJECUTADO CORRECTAMENTE]\n")
+            exe_print_ledx(linea[2], buscar_valor_param(linea[3], procedure_name), var)
+            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "PRINTLEDX ", "\t→\t", linea)
         else:
             errorList.append("Error: no se ha encontrado la variable {0}".format(linea[4]))
 
@@ -1178,30 +1204,47 @@ def exe_orden(linea, procedure_name):
         var = buscar_variable(linea[2][0], procedure_name)
 
         if var is not None:
-            bifurcacion(var, linea[2][1], buscar_valor_param(linea[2][2],procedure_name), linea[3], procedure_name)
-            print(linea, "  ----->   IF                  [EJECUTADO CORRECTAMENTE]\n")
+            bifurcacion(var, linea[2][1], buscar_valor_param(linea[2][2], procedure_name), linea[3], procedure_name)
+            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "IF     ", "\t→\t", linea)
+            print()
+
         else:
             errorList.append("Error: no se ha encontrado la variable {0}".format(linea[2][0]))
 
+
+
     elif linea[1] == 'FOR':
         print("PRUEBA for")
-        ciclo_for(linea[2], linea[3], linea[5], buscar_valor_param(linea[4],procedure_name), procedure_name)
-        print(linea, "  ----->   FOR                 [EJECUTADO CORRECTAMENTE]")
+        ciclo_for(linea[2], linea[3], linea[5], buscar_valor_param(linea[4], procedure_name), procedure_name)
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "FOR       ", "\t→\t", linea)
+
+
     elif linea[1] == 'RANGE':  ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
-        print(linea, "  ----->   RANGE")
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "RANGE     ", "\t→\t", linea)
+
+
     elif linea[1] == 'INSERT':  # [line, 'INSERT', lista, num, bool] ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
         print(linea, "  ----->   INSERT")
+
+
     elif linea[1] == 'DEL':  ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
         print(linea, "  ----->   DEL")
+
+
     elif linea[1] == 'LEN':
         print(linea, "  ----->   LEN")
+
+
     elif linea[1] == 'NEG':
         print(linea, "  ----->   NEG")
+
+
     elif linea[1] == 'T':
         print(linea, "  ----->   T")
+
+
     elif linea[1] == 'F':
         print(linea, "  ----->   F")
-
 
 
 """ ####################################### Ejecucion principal #################################################### """
@@ -1248,7 +1291,6 @@ Valor: Bool
 
 
 def exe_print_led(row, column, value, procedure_name):
-
     if row <= 7 and column <= 7:
 
         temp = value
@@ -1266,7 +1308,7 @@ def exe_print_led(row, column, value, procedure_name):
         else:
             matriz[row][column] = False
 
-        print("Printing led: {0}|{1} with value {2}".format(row,column,value))
+        print("Printing led: {0}|{1} with value {2}".format(row, column, value))
         pp.pprint(matriz)
 
         # pp.pprint(matriz)
@@ -1384,9 +1426,6 @@ def find_main():
                 sintacticList.remove(line)
 
 
-
-
-
 def compile_program():
     # Lista de arboles sintacticos generados en el analisis sintactico
     global sintacticList
@@ -1418,12 +1457,6 @@ def compile_program():
     print("\n--------- Lista de procedimientos ---------")
     pp.pprint(procedures_list)
 
-    print(
-        "\n#####################################################################################################################################################################")
-    print(
-        "############################################################################# Ejecutando Main #######################################################################")
-    print(
-        "#####################################################################################################################################################################")
     print()
     main_execute()
 
@@ -1449,8 +1482,8 @@ def compile_program():
 
     return errorList
 
-compile_program()
 
+compile_program()
 
 # a = None
 # ciclo_for(a, [1,2,3,4,5,6,7,8,9,10],1,0)

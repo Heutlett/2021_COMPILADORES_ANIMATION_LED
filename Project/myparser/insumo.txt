@@ -11,7 +11,9 @@ Procedure Main (){
     estado = True;
     PrintLed(row,column,estado);
 
-
+    yes = 1 + 2;
+    today = 2 + noobAdrian;
+    noobAdrian = 2 + yes;
     h = [True, False, True, True];
 
     h.del(1,1);
