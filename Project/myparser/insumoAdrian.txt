@@ -9,16 +9,22 @@ Procedure Main (){
     Delay(2,"Seg");
     PrintLed(1,1,True);
 
-    If(b<=3){
+    b = 5;
+
+    If(b<=10){
         k = 5;
         j = 10;
+    }
+    If(b<=3){
+        p = 22;
+        r = 15;
     }
     for linea in lista{
         h = 5;
     }
 
-    ##call pro1(True, a);
-    ##call pro2();
+    call pro1(True, a);
+    call pro2();
 
 };
 
