@@ -49,12 +49,20 @@ def check_main_count():
 
 # Busca el main y lo guarda en una variable global
 def find_main():
+    global global_variables
+
     for line in sintacticList:
         if line[1] == 'PROCEDURE':
             if line[2] == 'Main':
                 global main_code
                 main_code = line
+                print("P:", line)
+                if line[0] == '=':
+                    p = line + [global_variables]
+                    print("P:", p)
+                    run(p)
 
+    print("BOOK: ", global_variables)
 
 check_blocks()
 check_main_count()
@@ -181,6 +189,7 @@ def equalsType(var, tipo):
 
 
 arithmetic_operators = ['+', '-', '*', '/', '//', '%', '^']
+sublist_operators = ['row', 'row,col', 'col', 'sublist']
 
 
 def run(p):
@@ -205,23 +214,19 @@ def run(p):
         elif action == '=':
             return var_assign_operation(line, data1, data2, p[4])
 
+        elif p[0] == '[]':
+            indexes = p[2]
+            return get_sublist(line, False, indexes[0], indexes, p[1], p[2], p[3])
+
+        elif p[0] == '[]*':
+            return var_assign_operation(line, p[1], p[2], p[3])
+
         # elif p[0] == 'var':  # DEFINIR UNA VARIABLE
         #     return env[p[1]]
-        #
+
         # elif p[0] == 'type':
         #     return p[1]
         #
-        # elif p[0] == '[]':
-        #     return list_callable_operation(p[1], p[2])
-        #
-        # elif p[0] == '[]*':
-        #     return list_callable_operation(p[1], p[2], False)
-        #
-        # elif p[0] == '[:,]':
-        #     return matrix_column_operation(p[1], p[2])
-        #
-        # elif p[0] == '[:,]*':
-        #     return matrix_column_operation(p[1], p[2], False)
         #
         # elif p[0] == 'INSERT':
         #     return list_insert_operation(p[1], p[2], p[3])
@@ -257,7 +262,9 @@ def run(p):
     else:
         return p
 
+
 """ ###################################### Operaciones aritmeticas ################################################### """
+
 
 def arithmetic_operation(line, operator, a, b):
     '''
@@ -313,7 +320,7 @@ def var_assign_operation(line, ID, value, variables_dict):
 
         # Asignacion en cascada.
         for i in range(len(ID)):
-            tmp = var_assign_operation(line,  ID[i], value[i], variables_dict)
+            tmp = var_assign_operation(line, ID[i], value[i], variables_dict)
             if tmp is False:
                 return False
             # Asignación
@@ -324,7 +331,6 @@ def var_assign_operation(line, ID, value, variables_dict):
     # [line, ID, value, dict]
     else:
         return individual_assign_validation(line, ID, value, variables_dict)
-
 
 
 def individual_assign_validation(line, ID, value, variables_dict):
@@ -347,7 +353,7 @@ def individual_assign_validation(line, ID, value, variables_dict):
 
     # Si es una asignacion a una sublista.
     if type(ID) == list:
-        return sublist_assign(line, ID, value, variables_dict)
+        return sublist_assign(line, run(value), variables_dict)
 
     # Si la variable es una lista, obtener el valor si es una operacion.
     if type(value) == list:
@@ -363,56 +369,300 @@ def individual_assign_validation(line, ID, value, variables_dict):
     return [ID, value]
 
 
-def sublist_assign(line, ID, value, variables_dict):
+def sublist_assign(sublist, value, variables_dict):
     '''
     Auxiliar para verificar la asignacion de las variables a una sublista.
-    :param line: linea en donde se encuentra el lector.
-    :param ID:  lista de los ids o ID individual
+    :param sublist: sublista de entrada
     :param value:  lista de los valores o valor individual.
     :param variables_dict: diccionario en donde se está trabajando la asignación.
     :return: lista con ID y value si se cumplen todas las verificaciones, False en caso contrario.
     '''
-    
-    # # If its an assignment to a column.
-    # elif var[0] == ':':
-    # ID = var[1]
-    # env[ID] = matrix_column_assign(getValue(ID), var[2], value)
-    #
-    # # If its an assignment to a sublist.
-    # else:
-    # ID = var[0]
-    # i, j = var[1][0][0], var[1][0][1]
-    # if j is not None:
-    #     getValue(ID)[i:j] = value
-    # else:
-    #     getValue(ID)[i] = value
-    # return [ID, ":", env[ID]]
 
-    pass
+    # ROW ES LISTA SIEMPRE ES TAMANO 1
+    # ROW COL , O ROW ROW SIEMPRE TAMANO 1
+    # COL SIEMRPE ES TAMA'O 1
+    # SUBLIST SUBLIST
+    # SUBLIST ROW
+    # SUBLIST COL
+
+    line = sublist[0]
+    ID = sublist[1]
+    indexes = sublist[2]
+
+    # Obtener la sublista a la que debe ser igual el ID.
+    newAssign = get_sublist(line, True, indexes[0], ID, value, variables_dict)
+
+    # Passed validation?
+    if newAssign is False: return False
+
+    # Asignación en el diccionario.
+    variables_dict[ID] = newAssign
+
+    return variables_dict
 
 
-    # # If variable is a primitive but not a list.
-    # if not equalsType(var, list):
-    #     env[var] = run(value)
-    #     return [var, ":", env[var]]
-    #
-    # # If its an assignment to a column.
-    # elif var[0] == ':':
-    #     ID = var[1]
-    #     env[ID] = matrix_column_assign(getValue(ID), var[2], value)
-    #
-    # # If its an assignment to a sublist.
-    # else:
-    #     ID = var[0]
-    #     i, j = var[1][0][0], var[1][0][1]
-    #     if j is not None:
-    #         getValue(ID)[i:j] = value
-    #     else:
-    #         getValue(ID)[i] = value
-    #     return [ID, ":", env[ID]]
+def get_sublist(line, assigning, action, indexes, ID, value, variables_dict):
+    # Verificar que la variable existe en el diccionario recibido o en el global.
+    var = getByID(ID, variables_dict)
+    if var is None:
+        errors.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, value))
+        return False
+
+    # Si la variable existe pero no es una lista.
+    else:
+        if type(var) != list:
+            errors.append("TypeError in line {0}: {1} object is not subscriptable.".format(line, var_type(var)))
+            return False
+
+    # Si se está asignando, remover el * de la acción.
+    if assigning:
+        action = indexes[0][:-1]
+
+    if len(indexes) == 1:
+        newAssign = get_sublist_one_index(line, assigning, action, ID, indexes, value, variables_dict)
+
+    elif len(indexes) == 2:
+        newAssign = False
+
+    else:
+        newAssign = False
+
+    return newAssign
+
+
+def get_sublist_one_index(line, assigning, action, ID, indexes, value, variables_dict):
+    lst = variables_dict[ID]
+
+    if action == 'row':
+        row = indexes[1]
+
+        # Llamada a la verificacion
+        if assigning:
+            apt = row_verification(line, lst, row, ID, value)
+        else:
+            apt = row_verification(line, lst, row)
+
+        # Si no cumple con los requisitos.
+        if not apt:
+            return False
+
+        # Assign
+        if assigning:
+            lst[row] = value
+
+        return lst
+
+
+    elif action == 'col':
+        col = indexes[1]
+
+        # Llamada a la verificacion
+        if assigning:
+            apt = col_verification(line, lst, col, ID, value)
+        else:
+            apt = col_verification(line, lst, col)
+
+        # Si no cumple con los requisitos.
+        if not apt:
+            return False
+
+        # Assign
+        if assigning:
+            for r in range(len(lst)):
+                # print(var[r][col], "|", new_val_list[r])
+                lst[r][col] = value[r]
+
+        return get_matrix_column(lst, col)
+
+
+    elif action == 'row,col':
+        row = indexes[1]
+        col = indexes[2]
+
+        # Llamada a la verificacion
+        if assigning:
+            apt = row_col_verification(line, lst, row, col, ID, value)
+        else:
+            apt = row_col_verification(line, lst, row, col)
+
+        # Si no cumple con los requisitos.
+        if not apt:
+            return False
+
+        # Assign
+        if assigning:
+            lst[row][col] = value
+
+        return lst
+
+    elif action == 'sublist':
+        start = indexes[1]
+        end = indexes[2]
+
+        # Llamada a la verificacion
+        if assigning:
+            apt = sublist_verification(line, lst, start, end, ID, value)
+        else:
+            apt = sublist_verification(line, lst, start, end)
+
+        if not apt:
+            return False
+
+        # Assign
+        if assigning:
+            lst[start:end] = value
+
+        return lst
+
+
+def row_verification(line, lst, row, ID=None, value=None):
+    '''
+    # Funcion que verifica el indice de fila en una lista.
+    :param line: linea en donde se encuentra el lector.
+    :param lst: lista a analizar.
+    :param row: columna en la que se debe sustituir
+    :param value: Entrada que se debe validar
+    :param ID: ID de la variable que se debe validar la entrada
+    :return: True si se cumplen todas las verificaciones, False en caso contrario.
+    '''
+    if row >= len(lst):
+        errors.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, row))
+        return False
+
+    # Validaciones de la entrada.
+    if ID is not None and value is not None:
+        print("validando entrada")
+
+        if type(value) == lst:
+            if get_list_type(lst) != get_list_type(value):
+                errors.append(
+                    "TypeError in line {0}: Elements in \"{2}\" does not match the type of \"{1}\".".format(line, ID,
+                                                                                                            value))
+                return False
+        else:
+            if get_list_type(lst) != type(value):
+                errors.append(
+                    "TypeError in line {0}: \"{2}\" does not match the type of elements in \"{1}\".".format(line, ID,
+                                                                                                            value))
+            return False
+
+    return True
+
+
+def col_verification(line, lst, col, ID=None, value=None):
+    '''
+    Funcion que verifica el indice de columna en una lista.
+    :param line: linea en donde se encuentra el lector.
+    :param lst: lista a analizar.
+    :param col: columna en la que se debe sustituir
+    :param value: Entrada que se debe validar
+    :param ID: ID de la variable que se debe validar la entrada
+    :return: True si se cumplen todas las verificaciones, False en caso contrario.
+    '''
+
+    if type(lst[0]) != lst:
+        errors.append("TypeError in line {0}: {1} object is not subscriptable.".format(line, var_type(lst)))
+        return False
+
+    if col >= len(lst[0]):
+        errors.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, col))
+        return False
+
+    # Validaciones de la entrada.
+    if ID is not None and value is not None:
+        print("validando entrada")
+        if type(value) != list:
+            if len(lst) != 1:
+                return False
+        else:
+            if len(value) != len(lst):
+                return False
+
+    return True
+
+
+def get_matrix_column(matrix, col):
+    tmp = []
+    for row in matrix:
+        tmp.append(row[col])
+    return tmp
+
+
+def row_col_verification(line, lst, row, col, ID=None, value=None):
+    '''
+    Funcion que verifica los indices fila y columna de una matriz.
+    :param value: Entrada que se debe validar
+    :param ID: ID de la variable que se debe validar la entrada
+    :param line: linea en donde se encuentra el lector.
+    :param lst: lista a analizar.
+    :param row: fila en la que se debe buscar
+    :param col: columna en la que se debe buscar
+    :return: True si se cumplen todas las verificaciones, False en caso contrario.
+    '''
+
+    if type(lst[0]) != lst:
+        errors.append("TypeError in line {0}: {1} object is not subscriptable.".format(line, var_type(lst)))
+        return False
+    if row >= len(lst):
+        errors.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, row))
+        return False
+    if col >= len(lst):
+        errors.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, col))
+        return False
+
+        # Validaciones de la entrada.
+    if ID is not None and value is not None:
+        print("validando entrada")
+
+    return True
+
+
+def sublist_verification(line, lst, start, end, ID=None, value=None):
+    if end < start:
+        errors.append("RangeError in line {0}: Index 'start' cannot be greater than 'end'.".format(line, start))
+        return False
+    if start >= len(lst):
+        errors.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, start))
+        return False
+    if end >= len(lst):
+        errors.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, end))
+        return False
+
+    distance = end - start
+    if type(value) != list:
+        if distance != 1:
+            errors.append(
+                "RangeError in line {0}: The range between index must be equal to the number of elements.".format(line))
+            return False
+    elif distance != len(value):
+        errors.append(
+            "RangeError in line {0}: The range between index must be equal to the number of elements.".format(line))
+        return False
+
+        # Validaciones de la entrada.
+    if ID is not None and value is not None:
+        print("validando entrada")
+
+    return True
+
+
+def getByID(ID, variables_dic):
+    '''
+    Funcion que retorna el valor de un key en el diccionario recibido, si no se encuentra en
+    el diccionario recibido se busca en el diccionario global.
+    :param ID: key de la variable en el diccionario
+    :param variables_dic: diccionario en donde se debe buscar
+    :return: Value del key correspondiente, si no se encuentra retorna False.
+    '''
+    if variables_dic[ID] is None:
+        if global_variables[ID] is None:
+            return False
+        return global_variables[ID]
+    return variables_dic[ID]
 
 
 """ ###################################### Validacion de asignacion de variables ################################################### """
+
 
 def multi_assign_validation(line, ids, values, variables_dict):
     '''
@@ -481,7 +731,11 @@ def var_verification(line, ID, value, variables_dict):
                           .format(line, ID, value))
             return False
 
-    # Return true if its a new variable and param is not and undeclared variable.
+    # Si pasa lo anterior significa que es una nueva variable.
+    # Si es una lista y no cumple con los tipos iguales.
+    if not list_check_type_validation(line, value):
+        return False
+
     return True
 
 
@@ -504,7 +758,9 @@ def var_type(var):
     else:
         print("ERROR in type!")
 
+
 """ ###################################### Validaciones en listas ################################################### """
+
 
 def list_check_type_validation(line, lst):
     '''
@@ -590,12 +846,7 @@ def get_list_type(lst):
     return type(lst)
 
 
-
-
 """ ###################################### Validacion de variables ################################################### """
-
-
-
 
 """ ############################################################################################################### """
 
@@ -610,6 +861,7 @@ pp.pprint(errorList)
 
 print("\n--------- Main ---------")
 pp.pprint(main_code)
+
 
 # a = None
 # ciclo_for(a, [1,2,3,4,5,6,7,8,9,10],1,0)
