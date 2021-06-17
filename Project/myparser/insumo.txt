@@ -21,6 +21,21 @@ Procedure Main (){
     b = False;
     c = [10,20,30,40,50];
     c[0] = a;
+
+    Blink(f,c, 5,"Seg",a);
+    Delay(10,"Mil");
+    PrintLed(1,1,True);
+    PrintLedX("F",1,listaX);
+
+    ##call(prim);
+
+    If(b<=3){
+        k = 5;
+    }
+    for linea in lista{
+        h = 5;
+    }
+
 };
 
 Procedure prim (){
