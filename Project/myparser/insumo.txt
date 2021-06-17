@@ -43,6 +43,7 @@ Procedure Main (){
 };
 
 Procedure pro1 (){
+    c = 5;
 
     PrintLedX("M",0,matriz1);
     Delay(2,"Seg");
@@ -54,7 +55,7 @@ Procedure pro1 (){
 };
 
 Procedure pro2 (){
-
+    d = [True, False, True];
     PrintLedX("M",0,matriz1);
     Delay(2,"Seg");
     PrintLedX("M",0,matriz2);

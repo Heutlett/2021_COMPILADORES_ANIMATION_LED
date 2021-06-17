@@ -14,6 +14,9 @@ main_code = []
 # Lista de variables globales
 global_variables = {}
 
+# Diccionario de diccionarios de variables locales
+local_variables = {}
+
 # Lista de blinks activos
 blink_list = []
 
@@ -22,6 +25,8 @@ procedures_list = []
 
 # Diccionario para acciones con dict
 accionesConDict = ['=','[]','[]*']
+
+
 
 # Matriz actual
 matriz = [[False, False, False, False, False, False, False, False],
@@ -928,7 +933,7 @@ def ciclo_for(temp_var, iterable, step, ordenes):
                 print(temp_var)
 
 
-def bifurcacion(iterable, operator, value, ordenes):
+def bifurcacion(iterable, operator, value, ordenes, procedure_name):
     """
     Ejecuta el condicional if
     :param iterable: estructura que sera utilizada para realizar la validacion, puede ser variable o lista
@@ -961,7 +966,7 @@ def bifurcacion(iterable, operator, value, ordenes):
 
         if flag == True:
             print("------EL IF SE HA CUMPLIDO CORRECTAMENTE, EJECUTANDO ORDENES DEL IF--------")
-            exe_ordenes(ordenes)
+            exe_ordenes(ordenes, procedure_name)
             print("------Fin de ordenes del IF----------")
         else:
             print("------EL IF NO SE HA CUMPLIDO--------")
@@ -974,7 +979,7 @@ def bifurcacion(iterable, operator, value, ordenes):
         if operator == '==':
             if iterable == value:
 
-                exe_ordenes(ordenes)
+                exe_ordenes(ordenes, procedure_name)
 
         elif operator == '<':
             if iterable < value:
@@ -994,7 +999,7 @@ def bifurcacion(iterable, operator, value, ordenes):
 
         if flag:
             print("------EL IF SE HA CUMPLIDO CORRECTAMENTE, EJECUTANDO ORDENES DEL IF--------")
-            exe_ordenes(ordenes)
+            exe_ordenes(ordenes, procedure_name)
             print("------Fin de ordenes del IF----------")
         else:
             print("------EL IF NO SE HA CUMPLIDO--------")
@@ -1013,7 +1018,7 @@ def check_procedures_name_count():
         if procedures_list.count(procedure) > 1:
             errorList.append("ERROR: el procedimiento: {0} esta definido mas de una vez".format(procedure))
             return
-
+        local_variables[procedure] = {}
 
 
 
@@ -1028,7 +1033,7 @@ def check_procedures_name_count():
 
 def main_execute():
 
-    exe_ordenes(main_code)
+    exe_ordenes(main_code, "Main")
 
 
 def procedure_execute(nombre, params):
@@ -1040,7 +1045,7 @@ def procedure_execute(nombre, params):
 
     for procedure in sintacticList:
         if procedure[2] == nombre:
-            exe_ordenes(procedure[4])
+            exe_ordenes(procedure[4], nombre)
 
 
 
@@ -1048,21 +1053,30 @@ def procedure_execute(nombre, params):
     print()
 
 
-def exe_ordenes(ordenes):
+def exe_ordenes(ordenes, procedure_name):
 
     for orden in ordenes:
-        exe_orden(orden)
+        exe_orden(orden, procedure_name)
 
 
-def exe_orden(linea):
+def exe_orden(linea, procedure_name):
 
     if linea[1] in accionesConDict:  # ESTO EJECUTA LAS DECLARACIONES
         print("----------------EJECUTANDO DECLARACION------------------")
-        linea += [global_variables]
-        run_tree(linea)
-        print("Se ha declarado la variable ", linea[2], " correctamente.")
-        print("BOOK: ", global_variables)
-        print(linea, "  ----->   Declaracion, asignacion o redefinicion de variables        [EJECUTADO CORRECTAMENTE]\n")
+        if procedure_name == "Main":
+            linea += [global_variables]
+            run_tree(linea)
+            print("Se ha declarado la variable ", linea[2], " correctamente.")
+            print("Global BOOK: ", global_variables)
+            print(linea,
+                  "  ----->   Declaracion, asignacion o redefinicion de variables        [EJECUTADO CORRECTAMENTE]\n")
+        else:
+            linea += [local_variables[procedure_name]]
+            run_tree(linea)
+            print("Se ha declarado la variable ", linea[2], " correctamente.")
+            print("Local BOOK for: ", procedure_name, local_variables[procedure_name])
+            print(linea,
+                  "  ----->   Declaracion, asignacion o redefinicion de variables        [EJECUTADO CORRECTAMENTE]\n")
         print("----------------FIN DE DECLARACION------------------")
     elif linea[1] == 'CALL':
         print(linea, "  ----->   Procedimiento     [EJECUTADO CORRECTAMENTE]\n")
@@ -1088,7 +1102,7 @@ def exe_orden(linea):
         print(linea, "  ----->   PRINTLEDX       [EJECUTADO CORRECTAMENTE]\n")
     elif linea[1] == 'IF':
         iterable = global_variables[linea[2][0]]  # ESTA DEBE SER LA VARIABLE CON EL ID linea[2][0]
-        bifurcacion(iterable, linea[2][1], linea[2][2], linea[3])
+        bifurcacion(iterable, linea[2][1], linea[2][2], linea[3], procedure_name)
         print(linea, "  ----->   IF                  [EJECUTADO CORRECTAMENTE]\n")
     elif linea[1] == 'FOR':
         print(linea, "  ----->   FOR")
@@ -1229,6 +1243,9 @@ main_execute()
 
 print("\n--------- Variables globales ---------")
 pp.pprint(global_variables)
+
+print("\n--------- Lista de variables locales de procedimientos ---------")
+pp.pprint(local_variables)
 
 print("\n--------- Errors ---------")
 pp.pprint(errorList)
