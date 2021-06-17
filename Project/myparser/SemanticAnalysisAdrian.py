@@ -3,11 +3,12 @@ from Syntax_Analysis import errors
 import copy
 import pprint
 
+
 # Lista de arboles sintacticos generados en el analisis sintactico
-sintacticList = result
+sintacticList = []
 
 # Errores generados en el analisis sintactico
-errorList = errors
+errorList = []
 
 # Codigo main
 main_code = []
@@ -43,16 +44,6 @@ instrucciones = []
 # Pretty print para impresiones mas claras
 pp = pprint.PrettyPrinter(indent=2)
 
-""" ################################ Resultados del analisis sintactico ############################################ """
-
-print("\n--------- Syntactic Analysis Result ---------")
-
-pp.pprint(sintacticList)
-
-print("\n--------- Errors ---------")
-pp.pprint(errorList)
-
-""" ################################ Resultados del analisis sintactico ############################################ """
 
 
 # Funcion para obtener una de las variables del dictionario recibido
@@ -844,48 +835,6 @@ def get_list_type(lst):
 """ ################################ COMPROBACIONES INICIALES #################################################### """
 
 
-# Revisa que tod0 el código se encuentre dentro de PROCEDURES
-def check_blocks():
-    for line in sintacticList:
-
-        if line[1] != 'PROCEDURE':
-            errorList.append(
-                "Error in line {0}, all the instructions must be inside of procedure block".format(line[0]))
-
-
-# Revisa que solo exista un main en el codigo
-def check_main_count():
-    count = 0
-
-    for line in sintacticList:
-        if line[1] == 'PROCEDURE':
-            if line[2] == 'Main':
-                count += 1
-
-    if count == 1:
-        find_main()
-        return
-
-    if count == 0:
-        errorList.append(
-            "Error, Main not found")
-    elif count > 1:
-        errorList.append(
-            "Error, There can only be one main")
-
-
-# Busca el main y lo guarda en una variable global
-def find_main():
-    global global_variables
-    global main_code
-
-    for line in sintacticList:
-        if line[1] == 'PROCEDURE':
-            if line[2] == 'Main':
-                main_code = line[4]
-
-                sintacticList.remove(line)
-
 
 def validate_iterable_for(iterable, procedure_name):
 
@@ -1076,21 +1025,7 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
             return
 
 
-""" ####################################### PROCEDURE ANALISIS #################################################### """
 
-
-def check_procedures_name_count():
-    for procedure in sintacticList:
-        procedures_list.append(procedure[2])
-
-    for procedure in procedures_list:
-        if procedures_list.count(procedure) > 1:
-            errorList.append("ERROR: el procedimiento: {0} esta definido mas de una vez".format(procedure))
-            return
-        local_variables[procedure] = {}
-
-
-""" ####################################### PROCEDURE ANALISIS #################################################### """
 
 """ ####################################### Ejecucion principal #################################################### """
 
@@ -1251,7 +1186,7 @@ def exe_orden(linea, procedure_name):
     elif linea[1] == 'FOR':
         print("PRUEBA for")
         ciclo_for(linea[2], linea[3], linea[5], buscar_valor_param(linea[4],procedure_name), procedure_name)
-        print(linea, "  ----->   FOR")
+        print(linea, "  ----->   FOR                 [EJECUTADO CORRECTAMENTE]")
     elif linea[1] == 'RANGE':  ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
         print(linea, "  ----->   RANGE")
     elif linea[1] == 'INSERT':  # [line, 'INSERT', lista, num, bool] ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
@@ -1386,35 +1321,132 @@ def exe_print_ledx(tipo_objeto, index, arreglo):
 
 """ #######################################  PrintLedX  ############################################################ """
 
+""" ####################################### PROCEDURE ANALISIS #################################################### """
+
+
+def check_procedures_name_count():
+    for procedure in sintacticList:
+        procedures_list.append(procedure[2])
+
+    for procedure in procedures_list:
+        if procedures_list.count(procedure) > 1:
+            errorList.append("ERROR: el procedimiento: {0} esta definido mas de una vez".format(procedure))
+            return
+        local_variables[procedure] = {}
+
+
+""" ####################################### PROCEDURE ANALISIS #################################################### """
+
 """ ####################################### Ejecucion ##################################################### """
 
-check_blocks()
-check_main_count()
-check_procedures_name_count()
 
-print("\n--------- Main ---------")
-pp.pprint(main_code)
+# Revisa que tod0 el código se encuentre dentro de PROCEDURES
+def check_blocks():
+    for line in sintacticList:
 
-print("\n--------- Lista de procedimientos ---------")
-pp.pprint(procedures_list)
+        if line[1] != 'PROCEDURE':
+            errorList.append(
+                "Error in line {0}, all the instructions must be inside of procedure block".format(line[0]))
 
-print("\n#####################################################################################################################################################################")
-print("############################################################################# Ejecutando Main #######################################################################")
-print("#####################################################################################################################################################################")
-print()
-main_execute()
 
-print("\n--------- Variables globales ---------")
-pp.pprint(global_variables)
+# Revisa que solo exista un main en el codigo
+def check_main_count():
+    count = 0
 
-print("\n--------- Lista de variables locales de procedimientos ---------")
-pp.pprint(local_variables)
+    for line in sintacticList:
+        if line[1] == "PROCEDURE":
+            if line[2] == "Main":
+                count += 1
 
-print("\n--------- INSTRUCCIONES ARDUINO ---------")
-pp.pprint(instrucciones)
+    if count == 1:
+        find_main()
+        return
 
-print("\n--------- Errors ---------")
-pp.pprint(errorList)
+    if count == 0:
+        errorList.append(
+            "Error, Main not found")
+    elif count > 1:
+        errorList.append(
+            "Error, There can only be one main")
+
+
+# Busca el main y lo guarda en una variable global
+def find_main():
+    global global_variables
+    global main_code
+
+    for line in sintacticList:
+        if line[1] == 'PROCEDURE':
+            if line[2] == 'Main':
+                main_code = line[4]
+
+                sintacticList.remove(line)
+
+
+
+
+
+def compile_program():
+    # Lista de arboles sintacticos generados en el analisis sintactico
+    global sintacticList
+    global errorList
+
+    sintacticList = result
+
+    # Errores generados en el analisis sintactico
+    errorList = errors
+
+    """ ################################ Resultados del analisis sintactico ############################################ """
+
+    print("\n--------- Syntactic Analysis Result ---------")
+
+    pp.pprint(sintacticList)
+
+    print("\n--------- Errors ---------")
+    pp.pprint(errorList)
+
+    """ ################################ Resultados del analisis sintactico ############################################ """
+
+    check_blocks()
+    check_main_count()
+    check_procedures_name_count()
+
+    print("\n--------- Main ---------")
+    pp.pprint(main_code)
+
+    print("\n--------- Lista de procedimientos ---------")
+    pp.pprint(procedures_list)
+
+    print(
+        "\n#####################################################################################################################################################################")
+    print(
+        "############################################################################# Ejecutando Main #######################################################################")
+    print(
+        "#####################################################################################################################################################################")
+    print()
+    main_execute()
+
+    print("\n--------- Variables globales ---------")
+    pp.pprint(global_variables)
+
+    print("\n--------- Lista de variables locales de procedimientos ---------")
+    pp.pprint(local_variables)
+
+    print("\n--------- INSTRUCCIONES ARDUINO ---------")
+    pp.pprint(instrucciones)
+
+    print("\n--------- Errors ---------")
+    pp.pprint(errorList)
+
+    file = open("ArduinoCompiledOutput.txt", "w")
+    if len(errorList) == 0:
+        file.write(str(instrucciones))
+    else:
+        file.write("")
+    file.close()
+
+#compile_program()
+
 
 # a = None
 # ciclo_for(a, [1,2,3,4,5,6,7,8,9,10],1,0)
