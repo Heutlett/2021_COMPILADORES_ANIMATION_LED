@@ -193,6 +193,7 @@ def var_assign_operation(line, ID, value, variables_dict):
     tmp = individual_assign_validation(line, ID, value, variables_dict)
     if tmp is False:
         return False
+
     # Asignación
     # print("TEMP is:", tmp)
 
@@ -1031,28 +1032,32 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
 
 
 def main_execute():
+    print("\n\n◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆"
+          " EJECUTANDO PROCEDURE: Main ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆\n\n")
     exe_ordenes(main_code, "Main")
-    print(
-        "\n#####################################################################################################################################################################")
-    print(
-        "############################################################################# FIN de Main ###########################################################################")
-    print(
-        "#####################################################################################################################################################################")
+    print("\n◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆"
+              " FIN Main ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆\n")
     print()
 
 
 def procedure_execute(nombre, params):
-    print("-------------------------------------------------------------------")
-    print("Ejecutando procedure: ", nombre)
-    print("Parametros: ", params)
     print()
-    print("-----------------EJECUTANDO ORDENES DE :", nombre, "---------------")
+    print("★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★")
+    # print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
+
+    print(" ➽ EJECUTANDO PROCEDURE:", nombre)
+    print("\t↪ params: ", params)
+    print()
+
+    print("\t ◖ ejecutando ordenes de : ", nombre)
 
     for procedure in sintacticList:
         if procedure[2] == nombre:
             exe_ordenes(procedure[4], nombre)
 
-    print("-----------------FIN DE DE ORDENES DE :", nombre, "----------------")
+    print("\t ◗ finalizadas ordenes de :", nombre)
+    print("★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★")
+    # print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
     print()
 
 
@@ -1148,28 +1153,41 @@ def exe_var_declaration(linea,procedure_name):
 
 
 def exe_orden(linea, procedure_name):
-    if linea[1] in accionesConDict:  # ESTO EJECUTA LAS DECLARACIONES
-        exe_var_declaration(linea,procedure_name)
-        print(linea,
-              "  ----->   Declaracion, asignacion o redefinicion de variables        [EJECUTADO CORRECTAMENTE]\n")
+    # ESTO EJECUTA LAS DECLARACIONES
+    if linea[1] in accionesConDict:
+        # print("----------------EJECUTANDO DECLARACION------------------")
+        exe_var_declaration(linea, procedure_name)
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DECLARATION     ", "\t→\t", linea)
+        # print("----------------FIN DE DECLARACION------------------\n")
+
     elif linea[1] == 'CALL':
-        print(linea, "  ----->   Procedimiento     [EJECUTADO CORRECTAMENTE]\n")
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "CALL     ", "\t→\t", linea)
         procedure_execute(linea[2], linea[3])
+
+
     elif linea[1] == 'BLINK':
         print(linea, "  ----->   BLINK")
+
+
     elif linea[1] == 'DELAY':
         exe_delay(buscar_valor_param(linea[2],procedure_name), linea[3])
-        print(linea, "  ----->   DELAY                        [EJECUTADO CORRECTAMENTE]\n")
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DELAY     ", "\t→\t", linea)
+
+
+
     elif linea[1] == 'PRINTLED':
         exe_print_led(buscar_valor_param(linea[2],procedure_name), buscar_valor_param(linea[3],procedure_name), buscar_valor_param(linea[4],procedure_name), procedure_name)
-        print(linea, "  ----->   PRINTLED               [EJECUTADO CORRECTAMENTE]\n")
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "PRINTLED  ", "\t→\t", linea)
+
+
+
     elif linea[1] == 'PRINTLEDX':
 
         var = buscar_variable(linea[4], procedure_name)
 
         if var is not None:
             exe_print_ledx(linea[2], buscar_valor_param(linea[3],procedure_name), var)
-            print(linea, "  ----->   PRINTLEDX       [EJECUTADO CORRECTAMENTE]\n")
+            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "PRINTLEDX ", "\t→\t", linea)
         else:
             errorList.append("Error: no se ha encontrado la variable {0}".format(linea[4]))
 
@@ -1179,26 +1197,44 @@ def exe_orden(linea, procedure_name):
 
         if var is not None:
             bifurcacion(var, linea[2][1], buscar_valor_param(linea[2][2],procedure_name), linea[3], procedure_name)
-            print(linea, "  ----->   IF                  [EJECUTADO CORRECTAMENTE]\n")
+            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "IF     ", "\t→\t", linea)
+            print()
+
         else:
             errorList.append("Error: no se ha encontrado la variable {0}".format(linea[2][0]))
+
+
 
     elif linea[1] == 'FOR':
         print("PRUEBA for")
         ciclo_for(linea[2], linea[3], linea[5], buscar_valor_param(linea[4],procedure_name), procedure_name)
-        print(linea, "  ----->   FOR                 [EJECUTADO CORRECTAMENTE]")
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "FOR       ", "\t→\t", linea)
+
+
     elif linea[1] == 'RANGE':  ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
-        print(linea, "  ----->   RANGE")
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "RANGE     ", "\t→\t", linea)
+
+
     elif linea[1] == 'INSERT':  # [line, 'INSERT', lista, num, bool] ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
         print(linea, "  ----->   INSERT")
+
+
     elif linea[1] == 'DEL':  ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
         print(linea, "  ----->   DEL")
+
+
     elif linea[1] == 'LEN':
         print(linea, "  ----->   LEN")
+
+
     elif linea[1] == 'NEG':
         print(linea, "  ----->   NEG")
+
+
     elif linea[1] == 'T':
         print(linea, "  ----->   T")
+
+
     elif linea[1] == 'F':
         print(linea, "  ----->   F")
 
@@ -1384,9 +1420,6 @@ def find_main():
                 sintacticList.remove(line)
 
 
-
-
-
 def compile_program():
     # Lista de arboles sintacticos generados en el analisis sintactico
     global sintacticList
@@ -1418,12 +1451,6 @@ def compile_program():
     print("\n--------- Lista de procedimientos ---------")
     pp.pprint(procedures_list)
 
-    print(
-        "\n#####################################################################################################################################################################")
-    print(
-        "############################################################################# Ejecutando Main #######################################################################")
-    print(
-        "#####################################################################################################################################################################")
     print()
     main_execute()
 
