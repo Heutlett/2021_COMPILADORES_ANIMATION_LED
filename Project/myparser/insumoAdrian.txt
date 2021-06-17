@@ -1,48 +1,56 @@
-##a=21;
-##b=[231];
-##mi_bool1 = True;
-##nums=[1,2,3,4,5];
-##x,y,z=1,2,3;
-##v,j=[2,3],[1,5];
-##f,g,h=[3,4],True,False;
-##a=21;
-##b=[231];
-##mi_bool1 = True;
-##nums=[1,2,3,4,5];
-##x,y,z=1,2,3;
-##v,j=[2,3],[1,5];
-##f,g,h=[3,4],True,False;
-##a[1]=True;
-g[1,2]=False;
-gram[1,2]=[1];
-
-Procedure abc (){
-    j = 3;
-    If(b<=3){
-        h = 5;
-        If(b<=3){
-            k = 5;
-        }
-    }
-};
 
 Procedure Main (){
-    Blink(f,c, 5,"Seg",a);
-    Delay(10,"Mil");
-    PrintLed(1,1,True);
-    PrintLedX("F",1,listaX);
 
-    casa = 3;
+    PrintLedX("M",0,matriz1);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz2);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz3);
+    Delay(2,"Seg");
+    PrintLed(1,1,True);
+
     If(b<=3){
         k = 5;
+        j = 10;
     }
     for linea in lista{
         h = 5;
     }
-    for linea in lista Step 2{
-        h = 5;
-    }
+
+    call pro1(True, a);
+    call pro2();
+
 };
 
+Procedure pro1 (){
 
+    PrintLedX("M",0,matriz1);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz2);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz3);
+    Delay(2,"Seg");
 
+};
+
+Procedure pro2 (){
+
+    PrintLedX("M",0,matriz1);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz2);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz3);
+    Delay(2,"Seg");
+
+};
+
+Procedure pro3 (){
+
+    PrintLedX("M",0,matriz1);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz2);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz3);
+    Delay(2,"Seg");
+
+};
