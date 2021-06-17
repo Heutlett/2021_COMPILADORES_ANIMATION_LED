@@ -1,56 +1,46 @@
-##a=21;
-##b=[231];
-##mi_bool1 = True;
-##nums=[1,2,3,4,5];
-##x,y,z=1,2,3;
-##v,j=[2,3],[1,5];
-##f,g,h=[3,4],True,False;
-##a=21;
-##b=[231];
-##mi_bool1 = True;
-##nums=[1,2,3,4,5];
-##x,y,z=1,2,3;
-##v,j=[2,3],[1,5];
-##f,g,h=[3,4],True,False;
-##a[1]=True;
-##g[1,2]=False;
-##gram[1,2]=[1];
 
 Procedure Main (){
-    a = 1;
-    b = False;
-    c = [10,20,30,40,50];
-    c[0] = a;
 
-    Blink(f,c, 5,"Seg",a);
-    Delay(10,"Mil");
-    PrintLed(1,1,True);
-    PrintLedX("F",1,listaX);
+    PrintLedX("M",0,matriz1);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz2);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz3);
+    Delay(2,"Seg");
 
-    ##call(prim);
-
-    If(b<=3){
-        k = 5;
-    }
-    for linea in lista{
-        h = 5;
-    }
+    call pro1(True, a);
 
 };
 
-Procedure prim (){
-    a = 1;
-    b = False;
-    c = [10,20,30,40,50];
-    c[0] = a;
+Procedure pro1 (){
+
+    PrintLedX("M",0,matriz1);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz2);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz3);
+    Delay(2,"Seg");
+
 };
 
-##
-##a[0]=1;
-##b[1][2]; b[1][2]=2;
-##c[3,4]=3;
-##d[:,5]=4;
-##e[5:7]=[34,43];
+Procedure pro2 (){
 
-##f[1][3]=1;
-##g[5:7][2:3]=66;
+    PrintLedX("M",0,matriz1);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz2);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz3);
+    Delay(2,"Seg");
+
+};
+
+Procedure pro3 (){
+
+    PrintLedX("M",0,matriz1);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz2);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz3);
+    Delay(2,"Seg");
+
+};

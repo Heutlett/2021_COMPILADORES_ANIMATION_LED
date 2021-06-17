@@ -1,7 +1,7 @@
 import threading
 import time
 
-def contar():
+def contar(perro):
     '''Contar hasta cien'''
     contador = 0
     while contador<100:
@@ -11,8 +11,12 @@ def contar():
               threading.current_thread().getName(), contador)
 
 
-hilo1 = threading.Thread(target=contar)
-hilo2 = threading.Thread(target=contar)
-hilo1.start()
-hilo2.start()
+def create_thread():
+    hilo=threading.Thread(target=contar, kwargs={'perro': 1})
+    hilo.start()
+
+
+create_thread()
+create_thread()
+
 print("asdasd")
