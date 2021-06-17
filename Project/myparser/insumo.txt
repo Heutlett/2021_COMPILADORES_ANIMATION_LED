@@ -1,13 +1,43 @@
 
 Procedure Main (){
 
-    b = 5;
+    tiempo = 5;
 
-    If(b<>10){
-        casa = 10;
+    Delay(tiempo, "Seg");
+
+    row = 1;
+    column = 5;
+    estado = True;
+    PrintLed(row,column,estado);
+
+
+    h = [True, False, True, True];
+    for x in h{
+        PrintLed(0,0,x);
+        Delay(1,"Seg");
     }
 
-    PrintLed(7,1,True);
+    a = 3;
+    for z in h Step 2{
+        PrintLed(7,7,z);
+        Delay(1,"Seg");
+    }
+
+    b = True;
+
+    for z in 7 Step 2{
+        PrintLed(7,z,b);
+    }
+
+
+    ##b = 5;
+
+    ##If(b<>10){
+    ##    casa = 10;
+    ##}
+
+
+    ##PrintLed(7,1,True);
 
     ##  a = 1;
     ## b = False;
@@ -22,57 +52,54 @@ Procedure Main (){
     ##d[0,0];
     ##d[0:2];
 
-    matriz1 = [[True, False, False, False, False, False, False, False],
-          [True, False, False, False, False, False, False, False],
-          [True, False, False, False, False, False, False, False],
-          [True, False, False, False, False, False, False, False],
-          [True, False, False, False, False, False, False, False],
-          [True, False, False, False, False, False, False, False],
-          [True, False, False, False, False, False, False, False],
-          [True, False, False, False, False, False, False, False]];
+    ##matriz1 = [[True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False]];
 
-    matriz2 = [[True, False, False, False, False, False, False, False],
-          [False, True, False, False, False, False, False, False],
-          [False, False, True, False, False, False, False, False],
-          [False, False, False, True, False, False, False, False],
-          [False, False, False, False, True, False, False, False],
-          [False, False, False, False, False, True, False, False],
-          [False, False, False, False, False, False, True, False],
-          [False, False, False, False, False, False, False, True]];
+    ##matriz2 = [[True, False, False, False, False, False, False, False],
+    ##      [False, True, False, False, False, False, False, False],
+    ##      [False, False, True, False, False, False, False, False],
+    ##      [False, False, False, True, False, False, False, False],
+    ##      [False, False, False, False, True, False, False, False],
+    ##      [False, False, False, False, False, True, False, False],
+    ##      [False, False, False, False, False, False, True, False],
+    ##      [False, False, False, False, False, False, False, True]];
 
-    matriz3 = [[False, False, False, False, False, False, True, False],
-          [False, False, False, False, False, False, True, False],
-          [False, False, False, False, False, True, False, False],
-          [False, False, False, False, True, False, False, False],
-          [False, False, False, True, False, False, False, False],
-          [False, False, True, False, False, False, False, False],
-          [False, True, False, False, False, False, False, False],
-          [True, False, False, False, False, False, False, False]];
+    ##matriz3 = [[False, False, False, False, False, False, True, False],
+    ##      [False, False, False, False, False, False, True, False],
+    ##      [False, False, False, False, False, True, False, False],
+    ##      [False, False, False, False, True, False, False, False],
+    ##      [False, False, False, True, False, False, False, False],
+    ##      [False, False, True, False, False, False, False, False],
+    ##      [False, True, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False]];
 
-    PrintLedX("M",0,matriz1);
-    Delay(1,"Seg");
-    PrintLedX("M",0,matriz2);
-    Delay(1,"Seg");
-    PrintLedX("M",0,matriz3);
-    Delay(1,"Seg");
-    PrintLed(1,1,True);
+    ##PrintLedX("M",0,matriz1);
+    ##Delay(1,"Seg");
+    ##PrintLedX("M",0,matriz2);
+    ##Delay(1,"Seg");
+    ##PrintLedX("M",0,matriz3);
+    ##Delay(1,"Seg");
+    ##PrintLed(1,1,True);
 
 
 
-    If(b<=10){
-        k = 5;
-        j = 10;
-    }
-    If(b<=3){
-        p = 22;
-        r = 15;
-    }
-    for linea in lista{
-        h = 5;
-    }
+    ##If(b<=10){
+    ##    k = 5;
+    ##    j = 10;
+    ##}
+    ##If(b<=3){
+    ##    p = 22;
+    ##    r = 15;
+    ##}
 
-    call pro1(True, a);
-    call pro2();
+    ##call pro1(True, a);
+    ##call pro2();
 
 };
 
