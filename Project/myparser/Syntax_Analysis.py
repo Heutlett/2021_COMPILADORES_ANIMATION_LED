@@ -517,4 +517,4 @@ pp = pprint.PrettyPrinter(indent=1, sort_dicts=False)
 with open(program_file, 'r') as file:
     insumo = file.read()
     result = parser.parse(insumo)
-    #pp.pprint(result)
+    # pp.pprint(result)

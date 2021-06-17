@@ -1,3 +1,5 @@
 /venv
 
 Project/venv/
+
+Project/myparser/__pycache__/Syntax_Analysis.cpython-39.pyc
