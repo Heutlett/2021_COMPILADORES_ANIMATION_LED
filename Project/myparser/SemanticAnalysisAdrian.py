@@ -106,7 +106,7 @@ def run_tree(p):
 
         elif p[1] == '[]':
             indexes = p[3]
-            print()
+            #print()
             return get_sublist(p[0], False, indexes[0], indexes, p[2], p[3], p[4])
 
         elif p[1] == '[]*':
@@ -205,7 +205,7 @@ def var_assign_operation(line, ID, value, variables_dict):
     if tmp is False:
         return False
     # Asignación
-    print("TEMP is:", tmp)
+    #print("TEMP is:", tmp)
 
     if type(tmp[0]) == str:
         variables_dict[tmp[0]] = tmp[1]
@@ -646,8 +646,8 @@ def getByID(ID, variables_dic):
     '''
 
     if variables_dic:
-        if variables_dic[ID] is None:
-            if global_variables[ID] is None:
+        if ID not in variables_dic.keys():
+            if ID not in global_variables.keys():
                 return None
             return global_variables[ID]
         return variables_dic[ID]
@@ -905,7 +905,7 @@ def find_main():
 """ ###################################### Ciclos y Bifurcacion ################################################### """
 
 
-def ciclo_for(temp_var, iterable, step, ordenes):
+def ciclo_for(temp_var, iterable, step, ordenes, procedure_name):
     """
     Ejecuta el ciclo for
     :param temp_var: variable que cambiará
@@ -914,6 +914,13 @@ def ciclo_for(temp_var, iterable, step, ordenes):
     :param ordenes: ordenes que se ejecutaran
     :return: None
     """
+
+    var = buscar_variable_localmente(temp_var, procedure_name)
+
+
+    if var == None and procedure_name == "Main":
+        #exe_global_var_declaration()
+        pass
 
     if step == 1:
         if isinstance(iterable, list):
@@ -1059,22 +1066,46 @@ def exe_ordenes(ordenes, procedure_name):
         exe_orden(orden, procedure_name)
 
 
+def buscar_variable_localmente(id, procedure_name):
+    var = None
+    print("JASDADSJASKLDHADADSJADS")
+    print(id)
+    print(procedure_name)
+    if id in global_variables.keys():
+        var = getByID(id, local_variables[procedure_name])
+    elif procedure_name != "Main" and id in local_variables[procedure_name].keys():
+        var = getByID(id, global_variables)
+    else:
+        errorList.append("ERROR, NO SE HA ENCONTRADO LA VARIABLE")
+        return None
+    return var
+
+
+def exe_global_var_declaration(linea):
+    linea += [global_variables]
+    run_tree(linea)
+    print("Se ha declarado la variable ", linea[2], " correctamente.")
+    print("Global BOOK: ", )
+    pp.pprint(global_variables)
+
+
+def exe_local_var_declaration(linea, procedure_name):
+    linea += [local_variables[procedure_name]]
+    run_tree(linea)
+    print("Se ha declarado la variable ", linea[2], " correctamente.")
+    print("Local BOOK for: ",procedure_name)
+    pp.pprint(local_variables[procedure_name])
+
 def exe_orden(linea, procedure_name):
 
     if linea[1] in accionesConDict:  # ESTO EJECUTA LAS DECLARACIONES
         print("----------------EJECUTANDO DECLARACION------------------")
         if procedure_name == "Main":
-            linea += [global_variables]
-            run_tree(linea)
-            print("Se ha declarado la variable ", linea[2], " correctamente.")
-            print("Global BOOK: ", global_variables)
+            exe_global_var_declaration(linea)
             print(linea,
                   "  ----->   Declaracion, asignacion o redefinicion de variables        [EJECUTADO CORRECTAMENTE]\n")
         else:
-            linea += [local_variables[procedure_name]]
-            run_tree(linea)
-            print("Se ha declarado la variable ", linea[2], " correctamente.")
-            print("Local BOOK for: ", procedure_name, local_variables[procedure_name])
+            exe_local_var_declaration(linea, procedure_name)
             print(linea,
                   "  ----->   Declaracion, asignacion o redefinicion de variables        [EJECUTADO CORRECTAMENTE]\n")
         print("----------------FIN DE DECLARACION------------------")
@@ -1106,13 +1137,7 @@ def exe_orden(linea, procedure_name):
 
         else:
 
-            if linea[4] in local_variables[procedure_name].keys():
-                var = getByID(linea[4], local_variables[procedure_name])
-            elif linea[4] in global_variables.keys():
-                var = getByID(linea[4], global_variables)
-            else:
-                errorList.append("ERROR, NO SE HA ENCONTRADO LA VARIABLE")
-                return
+            var = buscar_variable_localmente(linea[4], procedure_name)
 
             if var != None:
 
@@ -1127,6 +1152,8 @@ def exe_orden(linea, procedure_name):
         bifurcacion(iterable, linea[2][1], linea[2][2], linea[3], procedure_name)
         print(linea, "  ----->   IF                  [EJECUTADO CORRECTAMENTE]\n")
     elif linea[1] == 'FOR':
+        print("PRUEBAaaaa for")
+        ciclo_for(linea[2], linea[3], linea[5], linea[4], procedure_name)
         print(linea, "  ----->   FOR")
     elif linea[1] == 'RANGE':    ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
         print(linea, "  ----->   RANGE")
@@ -1273,7 +1300,7 @@ print("\n--------- Errors ---------")
 pp.pprint(errorList)
 
 print("\n--------- INSTRUCCIONES ARDUINO ---------")
-pp.pprint(instrucciones)
+#pp.pprint(instrucciones)
 
 
 

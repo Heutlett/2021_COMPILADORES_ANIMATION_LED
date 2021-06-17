@@ -476,7 +476,7 @@ def p_for(p):
     '''
 
     if 'Step' not in p:
-        p[0] = [p.lineno(1), 'FOR', p[2], p[4], p[6]]
+        p[0] = [p.lineno(1), 'FOR', p[2], p[4], p[6], 1]
     else:
         p[0] = [p.lineno(1), 'FOR', p[2], p[4], p[6], p[8]]
 
