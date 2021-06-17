@@ -1441,9 +1441,12 @@ def compile_program():
     file = open("ArduinoCompiledOutput.txt", "w")
     if len(errorList) == 0:
         file.write(str(instrucciones))
+        flag_errors = True
     else:
         file.write("")
     file.close()
+
+    return errorList
 
 #compile_program()
 

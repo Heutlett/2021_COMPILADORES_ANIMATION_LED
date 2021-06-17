@@ -1,7 +1,7 @@
 import tkinter
 from tkinter import *
 from tkinter import scrolledtext
-from SemanticAnalysisAdrian import compile_program
+
 
 
 class Ide(Frame):
@@ -66,7 +66,7 @@ class Ide(Frame):
         self.txtOutput['font'] = ('consolas', '12')
         self.txtOutput.place(x=90, y=600)
 
-        self.insertTextOutput("SE HA COMPILADO CORRECTAMENTE EL CODIGO")
+        self.insertTextOutput("")
 
     def loadFunction(self):
         print("loading program")
@@ -75,13 +75,22 @@ class Ide(Frame):
         # print(self.txtInput.vbar.get()[1])
 
     def compileFunction(self):
+        self.clearTextOutput()
         print("compiling program...")
         print()
         file = open("insumo.txt", "w")
 
         file.write(self.inputTxt.get("1.0", tkinter.END))
         file.close()
-        compile_program()
+
+        from SemanticAnalysisAdrian import compile_program, errorList
+
+        errors = compile_program()
+        if len(errors) == 0:
+            self.insertTextOutput("El codigo se ha compilado correctamente sin errores")
+        else:
+            self.insertTextOutput("ERRORES ENCONTADOS, NO SE PUDO COMPILAR CORRECTAMENTE:\n")
+            self.insertTextOutput(str(errors))
 
 
 
@@ -91,6 +100,11 @@ class Ide(Frame):
     def insertTextOutput(self, text):
         self.txtOutput.configure(state=NORMAL)
         self.txtOutput.insert(INSERT, text)
+        self.txtOutput.configure(state=DISABLED)
+
+    def clearTextOutput(self):
+        self.txtOutput.configure(state=NORMAL)
+        self.txtOutput.delete('1.0', END)
         self.txtOutput.configure(state=DISABLED)
 
     def insertLineNumber(self):
