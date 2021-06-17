@@ -132,20 +132,17 @@ def p_input(p):
         p[0] = p[1] + p[3]
 
 
-
 # Expresion para asignacion de variables.
 def p_var_assign(p):
     """
     var_assign : ID IGUAL expression PYC
                | ID IGUAL primitive PYC
                | ids IGUAL params PYC
-               | sublist IGUAL params PYC
     """
     # Build our tree
     # Examples:
     # [line, '=', ID, value]
     # [line, '=', [ID1,ID2,..., IDn], [val1,val2,..., valn]]
-    # [line, '=', ['[]', 'a', [0, 4]] , [1, 2, 3, 4]]
 
     # print("ID:", p[1])
     # print("Val:", p[3])
@@ -156,6 +153,16 @@ def p_var_assign(p):
     p[0] = [p.lineno(4), '=', p[1], values]
 
 
+def p_var_sublist_assign(p):
+    """
+    var_assign : sublist IGUAL params PYC
+    """
+    # [line, '=', ['[]*', 'a', [['row', 0, 4]]] , [1, 2, 3, 4]]
+    values = p[3][0]
+    newSublist = [p[1][0], p[1][1]+'*', p[1][2], p[1][3]]
+    p[0] = [p.lineno(4), '=', newSublist, values]
+
+
 # Expresion para variables de string.
 def p_var_error_string(p):
     """
@@ -164,6 +171,7 @@ def p_var_error_string(p):
     print("Error")
     errors.append("Error in  linea")
     p[0] = None
+
 
 # Expresion para consultar el tipo de una variable.
 def p_var_type(p):
@@ -227,6 +235,7 @@ def p_index_c(p):
     # [:, 1]
     p[0] = ['col', p[4]]
 
+
 def p_index_sublist(p):
     """
     index  : CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER
@@ -254,7 +263,7 @@ def p_sublist(p):
     '''
     sublist  : ID multi_index
     '''
-    p[0] = [p.lineno(1), p[1], p[2]]
+    p[0] = [p.lineno(1), '[]', p[1], p[2]]
 
 
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  ARITHMETIC OPERATIONS  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
@@ -318,6 +327,7 @@ Tiempo: Tiempo en el que se encenderan
 RangoTiempo: "Seg", "Mil", "Min"
 Estado: bool
 """
+
 
 def p_blink(p):
     '''
@@ -385,6 +395,7 @@ def p_PrintLed(p):
     # ['PRINTLED', row, column, valor]
     p[0] = [p.lineno(1), "PRINTLED", params[0], params[1], params[2]]
 
+
 """   
 PrintLedX(TipoObjeto, Indice, Arreglo)
 TipoObjeto: "C", "F", "M"
@@ -408,7 +419,6 @@ def p_PrintLedX(p):
 
     # ['DELAY', 10, 'mil']
     p[0] = [p.lineno(1), "PRINTLEDX", objeto, params[1], params[2]]
-
 
 
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  ADRIAN  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
@@ -498,7 +508,7 @@ errors = []
 parser = yacc.yacc()
 
 # Create a REPL to provide a way to interface with our calculator.
-#print("\n--------- RESULTS ---------")
+# print("\n--------- RESULTS ---------")
 
 # Crea el printer para poder imprimir tanto en el Shell de Python como en CMD
 pp = pprint.PrettyPrinter(indent=1, sort_dicts=False)
