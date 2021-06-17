@@ -1084,22 +1084,44 @@ def exe_orden(linea, procedure_name):
     elif linea[1] == 'BLINK':
         print(linea, "  ----->   BLINK")
     elif linea[1] == 'DELAY':
-        exe_delay(linea[2],linea[3])
+        exe_delay(linea[2], linea[3])
         print(linea, "  ----->   DELAY                        [EJECUTADO CORRECTAMENTE]\n")
     elif linea[1] == 'PRINTLED':
         exe_print_led(linea[2], linea[3], linea[4])
         print(linea, "  ----->   PRINTLED               [EJECUTADO CORRECTAMENTE]\n")
     elif linea[1] == 'PRINTLEDX':
-        matrizPrueba = [[True, False, False, False, False, False, False, False],
-                  [False, False, True, False, False, False, False, False],
-                  [False, False, False, True, False, False, False, False],
-                  [False, False, False, False, True, False, False, False],
-                  [False, False, True, False, False, True, False, False],
-                  [False, False, True, False, False, False, True, False],
-                  [False, False, False, False, False, False, False, True],
-                  [False, True, False, False, False, False, False, False]]
-        exe_print_ledx(linea[2], linea[3], matrizPrueba)
-        print(linea, "  ----->   PRINTLEDX       [EJECUTADO CORRECTAMENTE]\n")
+        if procedure_name == "Main":
+
+            print("PRUEBAAAAAAAAAAA")
+            print(linea[4])
+            var = getByID(linea[4], global_variables)
+
+            if var != None:
+
+                exe_print_ledx(linea[2], linea[3], var)
+                print(linea, "  ----->   PRINTLEDX       [EJECUTADO CORRECTAMENTE]\n")
+
+            else:
+                errorList.append("Error, la variable {0} no existe")
+
+        else:
+
+            if linea[4] in local_variables[procedure_name].keys():
+                var = getByID(linea[4], local_variables[procedure_name])
+            elif linea[4] in global_variables.keys():
+                var = getByID(linea[4], global_variables)
+            else:
+                errorList.append("ERROR, NO SE HA ENCONTRADO LA VARIABLE")
+                return
+
+            if var != None:
+
+                exe_print_ledx(linea[2], linea[3], var)
+                print(linea, "  ----->   PRINTLEDX       [EJECUTADO CORRECTAMENTE]\n")
+
+            else:
+                errorList.append("Error, la variable {0} no existe")
+
     elif linea[1] == 'IF':
         iterable = global_variables[linea[2][0]]  # ESTA DEBE SER LA VARIABLE CON EL ID linea[2][0]
         bifurcacion(iterable, linea[2][1], linea[2][2], linea[3], procedure_name)
