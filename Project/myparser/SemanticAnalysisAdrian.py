@@ -1203,6 +1203,7 @@ def exe_orden(linea, procedure_name):
         print(linea, "  ----->   F")
 
 
+
 """ ####################################### Ejecucion principal #################################################### """
 
 """ ###################################### Ejecuciones finales #################################################### """
@@ -1448,7 +1449,7 @@ def compile_program():
 
     return errorList
 
-#compile_program()
+compile_program()
 
 
 # a = None

@@ -468,6 +468,25 @@ def p_call(p):
     p[0] = [p.lineno(1), 'CALL', p[2], p[4]]
 
 
+def p_del(p):
+    '''
+    funcionreservada : ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+   '''
+
+    # ['DEL', ID, INDICE, TIPOELIMINACION]
+    p[0] = [p.lineno(1), 'DEL', p[1], p[5], p[7]]
+
+
+# Expresion para crear lista con range.
+def p_statement_list_range(p):
+    """
+    var_assign : ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA BOOLEAN PARENTESISDER PARENTESISDER PYC
+    """
+
+    p[0] = [p.lineno(1), '=r', p[1], p[7], p[9]]
+
+
+
 def p_for(p):
     '''
     funcionreservada : FOR expression IN INT LLAVEIZQ ordenes LLAVEDER
@@ -499,6 +518,7 @@ def p_ordenes(p):
     # Si es más de una orden, se concatenan
     else:
         p[0] = p[1] + [p[2]]
+
 
 
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  OUTPUT  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''

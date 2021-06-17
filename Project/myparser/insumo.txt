@@ -4,6 +4,8 @@ Procedure Main (){
 
     Delay(tiempo, "Seg");
 
+    lista = list(range(tiempo,True));
+
     row = 1;
     column = 5;
     estado = True;
@@ -11,6 +13,9 @@ Procedure Main (){
 
 
     h = [True, False, True, True];
+
+    h.del(1,1);
+
     for x in h{
         PrintLed(0,0,x);
         Delay(1,"Seg");
