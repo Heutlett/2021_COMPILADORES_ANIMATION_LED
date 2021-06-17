@@ -951,9 +951,7 @@ def ciclo_for(temp_var, iterable, step, ordenes, procedure_name):
     if step == 1:
         if isinstance(iterable, list):
             for var in iterable:
-                print("PRUEBAAAAAAAAAAAAAAAAAAAAAAA asasdsdadasadsasa")
-                print(iterable)
-                print(var)
+
                 tipo_var = get_var_for_type(iterable)
                 if tipo_var == "INT":
                     exe_var_declaration([0, "=", temp_var, var], procedure_name)
@@ -971,9 +969,7 @@ def ciclo_for(temp_var, iterable, step, ordenes, procedure_name):
                 exe_ordenes(ordenes, procedure_name)
     else:
         if isinstance(iterable, list):
-            print("PRUEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-            print("iterable")
-            print(iterable)
+
             for var in iterable[::step]:
                 tipo_var = get_var_for_type(iterable)
                 if tipo_var == "INT":
@@ -983,13 +979,6 @@ def ciclo_for(temp_var, iterable, step, ordenes, procedure_name):
                 exe_ordenes(ordenes, procedure_name)
 
         elif isinstance(iterable, int):
-            print("PRUEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-            print("iterable")
-            print(iterable)
-            print("var")
-            print(var)
-            print("step")
-            print(step)
 
             for var in range(0, iterable, step):
                 tipo_var = get_var_for_type(iterable)
