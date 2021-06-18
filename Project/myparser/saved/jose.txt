@@ -1,0 +1,65 @@
+Procedure Main (){
+
+    matriz1 = [[True, False, False, False, False, False, False, False],
+          [True, False, False, False, False, False, False, False],
+          [True, False, False, False, False, False, False, False],
+          [True, False, False, False, False, False, False, False],
+          [True, False, False, False, False, False, False, False],
+          [True, False, False, False, False, False, False, False],
+          [True, False, False, False, False, False, False, False],
+          [True, False, False, False, False, False, False, False]];
+
+    matriz2 = [[True, False, False, False, False, False, False, False],
+          [False, True, False, False, False, False, False, False],
+          [False, False, True, False, False, False, False, False],
+          [False, False, False, True, False, False, False, False],
+          [False, False, False, False, True, False, False, False],
+          [False, False, False, False, False, True, False, False],
+          [False, False, False, False, False, False, True, False],
+          [False, False, False, False, False, False, False, True]];
+
+    matriz3 = [[False, False, False, False, False, False, True, False],
+          [False, False, False, False, False, False, True, False],
+          [False, False, False, False, False, True, False, False],
+          [False, False, False, False, True, False, False, False],
+          [False, False, False, True, False, False, False, False],
+          [False, False, True, False, False, False, False, False],
+          [False, True, False, False, False, False, False, False],
+          [True, False, False, False, False, False, False, False]];
+
+    PrintLedX("M",0,matriz1);
+    Delay(1,"Seg");
+    PrintLedX("M",0,matriz2);
+    Delay(1,"Seg");
+    PrintLedX("M",0,matriz3);
+    Delay(1,"Seg");
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

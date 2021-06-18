@@ -1,9 +1,11 @@
 import tkinter
 from tkinter import *
 from tkinter import scrolledtext
-from SemanticAnalysis import compile_program  # CAMBIAR CAMBIAR CAMBIAR CAMBIAR
+from SemanticAdrianCopia import compile_program  # CAMBIAR CAMBIAR CAMBIAR CAMBIAR
 import os
-
+import ast
+# from led_controller import led_exe
+# from led_controller.led_exe import exe_led
 
 user_color = '#aa9787' #Café
 change_color='#b0dfc2' #lila
@@ -217,6 +219,7 @@ class Ide(Frame):
 
 
     def compileAndRunFunction(self):
+        self.compileFunction()
         self.crear_linea()
         self.clearTextOutput()
         self.insertTextOutput("compiling and running program...\n\n")
@@ -231,6 +234,22 @@ class Ide(Frame):
 
         if vacio:
             self.insertTextOutput("Error: no se ha podido compilar porque el programa esta vacio\n\n")
+            return
+
+        file = open("ArduinoCompiledOutput.txt", "r")
+        content = file.readlines()
+        content = ast.literal_eval(content[0])
+
+        if len(content) > 0:
+            print("se ha enviado")
+            print(content)
+            #exe_led(content)
+            self.insertTextOutput("El programa se ha enviado correctamente al controlador\n\n")
+            return
+        else:
+            self.insertTextOutput("Error, no se podido correr porque hay errores en la compilacion\n\n")
+            return
+
 
 
 
