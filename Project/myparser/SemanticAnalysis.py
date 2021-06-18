@@ -4,6 +4,7 @@
 from Syntax_Analysis import run_syntax_analysis
 import copy
 import pprint
+import ast
 
 # Lista de arboles sintacticos generados en el analisis sintactico
 sintacticList = []
@@ -105,8 +106,6 @@ def get_var(line, var, varDict):
         errorList.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, var))
     # print("Val", val)
     return val
-
-
 
 
 
@@ -350,6 +349,7 @@ def individual_assign_validation(line, procedure, ID, value):
     # Si se cumplen todas las validaciones.
     # print("-> {0} : {1}".format(ID, procedure[ID]))
     return [ID, value]
+
 
 
 def get_sublist(procedure, sublist):
@@ -1197,9 +1197,9 @@ def exe_var_declaration(linea, procedure_name):
     # linea.insert(2, procedure_name)
     # print("☀ Resultado:\t", run_tree(linea))
     # run_tree(linea)
-    print("✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ")
-    print()
-    print()
+    # print("✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ")
+    # print()
+    # print()
 
 
 def exe_orden(linea, procedure_name):
@@ -1260,6 +1260,14 @@ def exe_orden(linea, procedure_name):
         ciclo_for(linea[2], linea[3], linea[5], buscar_valor_param(linea[4], procedure_name), procedure_name)
         print("[EJECUTADO CORRECTAMENTE]\t➤\t", "FOR       ", "\t→\t", linea)
 
+
+    elif linea[1] == '=r':  ## ESTE ES EL RANGEEEEEEEEEEEEEEEEEEEEE
+        """
+        listax = list(range(5,True));
+        [3, '=r', 'listax', 5, True]
+        """
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "RANGE     ", "\t→\t", linea)
+        exe_range(linea, procedure_name)
 
 
     elif linea[1] == 'INSERT':  # [line, 'INSERT', lista, num, bool] ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
@@ -1376,6 +1384,10 @@ def exe_orden(linea, procedure_name):
 
 
 """##################################### Métodos listas ##########################################################"""
+
+
+def exe_range(linea, procedure_name):
+    pass
 
 
 def exe_insert_listas(linea, procedure_name):
@@ -1577,9 +1589,7 @@ def exe_neg(linea, procedure_name):
                         elif var[i] == False:
                             var[i] = True
                     elif type(var[i]) == int:
-                        if var[i] == 0:
-                            var[i] = 1
-                        elif var[i] == 1:
+                        if var[i] == 1 or var[i] == 0:
                             var[i] = 0
                         else:
                             errorList.append(
@@ -1600,7 +1610,7 @@ def exe_neg(linea, procedure_name):
 
     # [5, 'NEG', 'matriz', 1],     len 4
     if len(linea) == 4:
-        if is_matriz(var):
+        if is_matriz(var):  # negar toda la fila
 
             l = linea[3]
 
@@ -1655,13 +1665,256 @@ def exe_neg(linea, procedure_name):
 
     print("------------------- NEG EJECUTADO CORRECTAMENTE ---------------------------")
 
-
+"""
+lista.T;
+lista[1].T;
+lista[1][1].T;
+[11, 'T', 'lista'],
+[12, 'T', 'lista', 1],
+[13, 'T', 'lista', 1, 1],
+"""
 def exe_F(linea, procedure_name):
-    pass
+
+    print("------------------- EJECUTANDO F ---------------------------")
+
+    id = linea[2]
+    var = buscar_variable(id, procedure_name)
+
+    if var is None:
+        errorList.append("Error en la linea {0}, no se ha encontrado la variable {1}".format(linea[0], id))
+        print("------------------------ FIN DEL F, SE PRODUJO UN ERROR --------------------------")
+        return
+
+    if is_matriz(var) and len(var) == 0:
+        errorList.append("Error en la linea {0}, la matriz {1} esta vacia".format(linea[0], id))
+        return
+
+    if len(linea) == 3:
+
+        if type(var) == list:
+            if is_matriz(var): # es una matriz
+
+                for filas in range(len(var)):
+                    for columnas in range(len(var[0])):
+
+                        if type(var[filas][columnas]) == bool:
+                                var[filas][columnas] = False
+                        elif type(var[filas][columnas]) == int:
+                            if var[filas][columnas] == 0 or var[filas][columnas] == 1:
+                                var[filas][columnas] = 0
+                            else:
+                                errorList.append(
+                                    "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(
+                                        linea[0]))
+                                print(
+                                    "------------------------ FIN DEL F, SE PRODUJO UN ERROR --------------------------")
+
+            else:  # es una lista
+
+                for i in range(len(var)):
+
+                    if type(var[i]) == bool:
+                        var[i] = False
+                    elif type(var[i]) == int and (var[i] == 1 or var[i] == 0):
+                        var[i] = 0
+                    else:
+                        errorList.append("Error en la linea {0}, la lista {1} contiene valores que no se pueden negar".format(linea[0], id))
+                        print(
+                            "------------------------ FIN DEL F, SE PRODUJO UN ERROR --------------------------")
+                        return
+
+                print("-------------- F ejecutado correctamente -------------")
+                return
+
+    # [12, 'T', 'lista', 1],
+
+    if len(linea) == 4:
+
+        if type(var) == list:
+            if is_matriz(var):  # es matriz, negar toda la fila
+
+                l = linea[3]
+
+                for index in range(len(var[0])):
+
+                    if type(var[l][index]) == int:
+                        if var[l][index] == 1 or var[l][index] == 0:
+                            var[l][index] = 0
+                        else:
+                            errorList.append(
+                                "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(
+                                    linea[0]))
+                    elif type(var[l][index]) == bool:
+                        var[l][index] = False
 
 
+            else:  # es una lista, negar indice
+                if not linea[3] >= len(var):
+
+                    if type(var[linea[3]]) == bool:
+                        var[linea[3]] = False
+                    elif type(var[linea[3]]) == int and (var[linea[3]] == 1 or var[linea[3]] == 0):
+                        var[linea[3]] = 0
+                    else:
+                        errorList.append("Error en la linea {0}, la lista {1} contiene valores que no se pueden negar".format(linea[0], id))
+                        print(
+                            "------------------------ FIN DEL F, SE PRODUJO UN ERROR --------------------------")
+                        return
+
+                else:
+                    errorList.append(
+                        "Error en la linea {0}, el indice excede los limites de la lista {1}".format(linea[0],
+                                                                                                             id))
+                    print(
+                        "------------------------ FIN DEL F, SE PRODUJO UN ERROR --------------------------")
+                    return
+
+    if len(linea) == 5:
+        if is_matriz(var):
+            try:
+
+                if type(var[linea[3]][linea[4]]) == int:
+                    if var[linea[3]][linea[4]] == 1 or var[linea[3]][linea[4]] == 0:
+                        var[linea[3]][linea[4]] = 0
+                    else:
+                        errorList.append(
+                            "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(linea[0]))
+                elif type(var[linea[3]][linea[4]]) == bool:
+                    var[linea[3]][linea[4]] = False
+
+
+            except Exception:
+                errorList.append(
+                    "Error en la linea {0}, el indice supera el limite del tamaño de la matriz {1}".format(linea[0],
+                                                                                                           id))
+
+    print("------------------- F EJECUTADO CORRECTAMENTE ---------------------------")
+
+
+"""
+lista.T;
+lista[1]T;
+lista[1][1].T;
+[14, 'T', 'lista'],
+[15, 'T', 'lista', 1],
+[16, 'T', 'lista', 1, 1],
+"""
 def exe_T(linea, procedure_name):
-    pass
+
+    print("------------------- EJECUTANDO T ---------------------------")
+
+    id = linea[2]
+    var = buscar_variable(id, procedure_name)
+
+    if var is None:
+        errorList.append("Error en la linea {0}, no se ha encontrado la variable {1}".format(linea[0], id))
+        print("------------------------ FIN DEL T, SE PRODUJO UN ERROR --------------------------")
+        return
+
+    if is_matriz(var) and len(var) == 0:
+        errorList.append("Error en la linea {0}, la matriz {1} esta vacia".format(linea[0], id))
+        return
+
+    if len(linea) == 3:
+
+        if type(var) == list:
+            if is_matriz(var): # es una matriz
+
+                for filas in range(len(var)):
+                    for columnas in range(len(var[0])):
+
+                        if type(var[filas][columnas]) == bool:
+                                var[filas][columnas] = True
+                        elif type(var[filas][columnas]) == int:
+                            if var[filas][columnas] == 0 or var[filas][columnas] == 1:
+                                var[filas][columnas] = 1
+                            else:
+                                errorList.append(
+                                    "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(
+                                        linea[0]))
+                                print(
+                                    "------------------------ FIN DEL T, SE PRODUJO UN ERROR --------------------------")
+
+            else:  # es una lista
+
+                for i in range(len(var)):
+
+                    if type(var[i]) == bool:
+                        var[i] = True
+                    elif type(var[i]) == int and (var[i] == 1 or var[i] == 0):
+                        var[i] = 1
+                    else:
+                        errorList.append("Error en la linea {0}, la lista {1} contiene valores que no se pueden negar".format(linea[0], id))
+                        print(
+                            "------------------------ FIN DEL T, SE PRODUJO UN ERROR --------------------------")
+                        return
+
+                print("-------------- T ejecutado correctamente -------------")
+                return
+
+    # [12, 'T', 'lista', 1],
+
+    if len(linea) == 4:
+
+        if type(var) == list:
+            if is_matriz(var):  # es matriz, negar toda la fila
+
+                l = linea[3]
+
+                for index in range(len(var[0])):
+
+                    if type(var[l][index]) == int:
+                        if var[l][index] == 1 or var[l][index] == 0:
+                            var[l][index] = 1
+                        else:
+                            errorList.append(
+                                "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(
+                                    linea[0]))
+                    elif type(var[l][index]) == bool:
+                        var[l][index] = True
+
+
+            else:  # es una lista, negar indice
+                if not linea[3] >= len(var):
+
+                    if type(var[linea[3]]) == bool:
+                        var[linea[3]] = True
+                    elif type(var[linea[3]]) == int and (var[linea[3]] == 1 or var[linea[3]] == 0):
+                        var[linea[3]] = 1
+                    else:
+                        errorList.append("Error en la linea {0}, la lista {1} contiene valores que no se pueden negar".format(linea[0], id))
+                        print(
+                            "------------------------ FIN DEL T, SE PRODUJO UN ERROR --------------------------")
+                        return
+
+                else:
+                    errorList.append(
+                        "Error en la linea {0}, el indice excede los limites de la lista {1}".format(linea[0],
+                                                                                                             id))
+                    print(
+                        "------------------------ FIN DEL T, SE PRODUJO UN ERROR --------------------------")
+                    return
+
+    if len(linea) == 5:
+        if is_matriz(var):
+            try:
+
+                if type(var[linea[3]][linea[4]]) == int:
+                    if var[linea[3]][linea[4]] == 1 or var[linea[3]][linea[4]] == 0:
+                        var[linea[3]][linea[4]] = 1
+                    else:
+                        errorList.append(
+                            "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(linea[0]))
+                elif type(var[linea[3]][linea[4]]) == bool:
+                    var[linea[3]][linea[4]] = True
+
+
+            except Exception:
+                errorList.append(
+                    "Error en la linea {0}, el indice supera el limite del tamaño de la matriz {1}".format(linea[0],
+                                                                                                           id))
+
+    print("------------------- T EJECUTADO CORRECTAMENTE ---------------------------")
 
 
 """##################################### Operaciones booleanas ###################################################"""
@@ -1821,7 +2074,7 @@ def check_procedures_name_count():
 # Revisa que tod0 el código se encuentre dentro de PROCEDURES
 def check_blocks():
     for line in sintacticList:
-        print("Linea - - - - - - ", line)
+
         if line[1] != 'PROCEDURE':
             errorList.append(
                 "Error in line {0}, all the instructions must be inside of procedure block".format(line[0]))
@@ -1892,6 +2145,7 @@ def compile_program(insumo):
     global errorList
     global global_variables
     global local_variables
+    global instrucciones
 
     clear_all()
 
@@ -1938,6 +2192,8 @@ def compile_program(insumo):
     print("\n--------- Errors ---------")
     pp.pprint(errorList)
 
+    instrucciones = convert_instructions_to_list(str(instrucciones))
+
     file = open("ArduinoCompiledOutput.txt", "w")
     if len(errorList) == 0:
         file.write(str(instrucciones))
@@ -1946,6 +2202,22 @@ def compile_program(insumo):
     file.close()
 
     return errorList
+
+
+def convert_instructions_to_list(instructions):
+
+    temp = ast.literal_eval(instructions)
+
+    for x in temp:
+        if x[0] == "PRINT":
+            x[1] = ast.literal_eval(x[1])
+
+
+    return temp
+
+
+
+
 
 # compile_program()
 

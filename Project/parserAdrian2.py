@@ -7,7 +7,6 @@ from lexer.lexer import tokens
 import pprint
 
 # Define el archivo del programa
-program_file = "myparser/insumoAdrian.txt"
 
 """
 Writing Machine
