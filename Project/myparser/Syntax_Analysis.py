@@ -370,7 +370,8 @@ def p_len(p):
 def p_neg(p):
 
     '''
-    funcionreservada : ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
+    funcionreservada :   ID CORCHETEIZQ expression CORCHETEDER CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
+                       | ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
                        | ID PUNTO NEG PYC
     '''
 
@@ -378,6 +379,8 @@ def p_neg(p):
 
     if len(p) == 5:
         p[0] = [p.lineno(1), 'NEG', p[1]]
+    elif len(p) == 11:
+        p[0] = [p.lineno(1), 'NEG', p[1], p[3], p[6]]
     else:
         p[0] = [p.lineno(1), 'NEG', p[1], p[3]]
 
@@ -385,24 +388,37 @@ def p_neg(p):
 def p_T(p):
 
     '''
-    funcionreservada : ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
+    funcionreservada :    ID CORCHETEIZQ expression CORCHETEDER CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
+                        | ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
+                        | ID PUNTO T PYC
     '''
 
     # [p.lineno(1), 'NEG', ID, INDICE]
 
-    p[0] = [p.lineno(1), 'T', p[1], p[3]]
+    if len(p) == 5:
+        p[0] = [p.lineno(1), 'T', p[1]]
+    elif len(p) == 8:
+        p[0] = [p.lineno(1), 'T', p[1], p[3]]
+    elif len(p) == 11:
+        p[0] = [p.lineno(1), 'T', p[1], p[3], p[6]]
+
 
 
 def p_F(p):
-
     '''
-    funcionreservada : ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
+    funcionreservada :    ID CORCHETEIZQ expression CORCHETEDER CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
+                        | ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
+                        | ID PUNTO F PYC
     '''
 
-    # [p.lineno(1), 'NEG', ID, INDICE]
+    # [p.lineno(1), 'F', ID, INDICE]
 
-    p[0] = [p.lineno(1), 'F', p[1], p[3]]
-
+    if len(p) == 5:
+        p[0] = [p.lineno(1), 'F', p[1]]
+    elif len(p) == 8:
+        p[0] = [p.lineno(1), 'F', p[1], p[3]]
+    elif len(p) == 11:
+        p[0] = [p.lineno(1), 'F', p[1], p[3], p[6]]
 
 
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  DEFAULT FUNCTIONS  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
