@@ -15,7 +15,7 @@ class Ide(Frame):
 
     def initUI(self):
 
-        self.contador = 1
+        self.contadorLineas = 50
 
         self.master.title("IDE")
         self.pack(fill=BOTH, expand=1)
@@ -75,7 +75,7 @@ class Ide(Frame):
 
         txtLineCount.configure(state=NORMAL)
         i = 1
-        for x in range(0, 200):
+        for x in range(0, self.contadorLineas):
             txtInput.insert(INSERT, "\n")
             txtLineCount.insert(INSERT, str(i))
             txtLineCount.insert(INSERT, "\n")
@@ -92,11 +92,18 @@ class Ide(Frame):
 
         self.insertTextOutput("")
 
+    def crear_linea(self):
+        print("PRUEBa")
+        self.lineCountTxt.configure(state=NORMAL)
+        self.contadorLineas += 1
+        self.inputTxt.insert(END, "\n")
+        self.lineCountTxt.insert(END, str(self.contadorLineas))
+        self.lineCountTxt.insert(END, "\n")
+        self.lineCountTxt.configure(state=DISABLED)
+
     def _on_mousewheel(self, event):
 
         self.lineCountTxt.yview_moveto(self.inputTxt.yview()[0])
-
-
 
 
     def loadFunction(self):
@@ -158,6 +165,7 @@ class Ide(Frame):
 
 
     def compileAndRunFunction(self):
+        self.crear_linea()
         self.clearTextOutput()
         self.insertTextOutput("compiling and running program...\n\n")
 

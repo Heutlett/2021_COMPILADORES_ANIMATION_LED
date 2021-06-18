@@ -1,0 +1,2004 @@
+Procedure Main (){
+
+    ##   tiempo = 5;
+
+  ##  Delay(tiempo, "Seg");
+
+  ##  lista = list(range(tiempo,True));
+
+    lista.insert(a,True);
+
+    lista.del(0);
+
+    len(lista);
+
+    ##lista[1].Neg;
+    ##lista.Neg;
+
+    lista[1].F;
+
+    lista[1].T;
+
+    matriz.shapeF;
+
+    matriz.shapeC;
+
+    matriz.insert(a, b, c);
+
+    matriz.insert(a, d);
+
+    matriz.delete(0,0);
+
+    matriz.delete(a,b);
+
+    row = 1;
+    column = 5;
+    estado = True;
+    PrintLed(row,column,estado);
+  ##  row = 1;
+  ##  column = 5;
+ ##   estado = True;
+  ##  PrintLed(row,column,estado);
+
+   ##yes = 1 + 2;
+   ##   noobAdrian = 2 + yes;
+  ## today = 2 + noobAdrian;
+
+   ##h = [True, False, True, True];
+   ## gim = [[1,2,3],[4,5,6],[8,7,9]];
+
+   ##d  = [[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],[16,17,18,19]];
+
+
+    ##s=gim[1][0];
+    ##gim[1][0];
+
+    ##h.del(1,1);
+    ##h.del(1,1);
+
+    for x in h{
+        PrintLed(0,0,x);
+        Delay(1,"Seg");
+    }
+
+    a = 3;
+    for z in h Step 2{
+        PrintLed(7,7,z);
+        Delay(1,"Seg");
+    }
+
+    b = True;
+
+    for z in 7 Step 2{
+        PrintLed(7,z,b);
+    }
+
+
+    th = 5;
+
+    If(th<>10){
+       casa = 10;
+    }
+
+
+    ##PrintLed(7,1,True);
+
+    ##  a = 1;
+    ## b = False;
+    ## c = [10,20,30,40,50];
+    ## c[0] = a;
+
+
+    ##d[4] = c;
+    ##d[0];
+    ##d[0][0];
+    ##d[0,0];
+    ##d[0:2];
+
+    ##matriz1 = [[True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False]];
+
+    ##matriz2 = [[True, False, False, False, False, False, False, False],
+    ##      [False, True, False, False, False, False, False, False],
+    ##      [False, False, True, False, False, False, False, False],
+    ##      [False, False, False, True, False, False, False, False],
+    ##      [False, False, False, False, True, False, False, False],
+    ##      [False, False, False, False, False, True, False, False],
+    ##      [False, False, False, False, False, False, True, False],
+    ##      [False, False, False, False, False, False, False, True]];
+
+    ##matriz3 = [[False, False, False, False, False, False, True, False],
+    ##      [False, False, False, False, False, False, True, False],
+    ##      [False, False, False, False, False, True, False, False],
+    ##      [False, False, False, False, True, False, False, False],
+    ##      [False, False, False, True, False, False, False, False],
+    ##      [False, False, True, False, False, False, False, False],
+    ##      [False, True, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False]];
+
+    ##PrintLedX("M",0,matriz1);
+    ##Delay(1,"Seg");
+    ##PrintLedX("M",0,matriz2);
+    ##Delay(1,"Seg");
+    ##PrintLedX("M",0,matriz3);
+    ##Delay(1,"Seg");
+    ##PrintLed(1,1,True);
+
+
+
+    ##If(b<=10){
+    ##    k = 5;
+    ##    j = 10;
+    ##}
+    ##If(b<=3){
+    ##    p = 22;
+    ##    r = 15;
+    ##}
+
+    ##call pro1(True, a);
+    ##call pro2();
+
+};
+
+
+Procedure pro5 (){
+    c = 5;
+};
+
+Procedure pro1 (){
+    c = 5;
+
+    b = 50;
+
+    If(b<=10){
+        l = 0;
+    }
+    If(c<=10){
+        l = 10;
+    }
+    If(k<>15){
+        prueba = 0;
+    }
+    matriz4 = [[False, False, False, False, False, False, True, False],
+          [False, False, False, False, False, False, True, False],
+          [False, False, False, False, False, True, False, False],
+          [False, False, False, False, True, False, False, False],
+          [False, False, False, True, False, False, False, False],
+          [False, False, True, False, False, False, False, False],
+          [False, True, False, False, False, False, False, False],
+          [True, False, False, False, False, False, False, False]];
+
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz4);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz2);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz3);
+    Delay(2,"Seg");
+
+};
+
+Procedure pro2 (){
+    d = [True, False, True];
+    PrintLedX("M",0,matriz1);
+    Delay(3,"Min");
+    PrintLedX("M",0,matriz2);
+    Delay(3,"Min");
+    PrintLedX("M",0,matriz3);
+    Delay(3,"Min");
+
+};
+
+Procedure pro3 (){
+
+    PrintLedX("M",0,matriz1);
+    Delay(4,"Mil");
+    PrintLedX("M",0,matriz2);
+    Delay(4,"Mil");
+    PrintLedX("M",0,matriz3);
+    Delay(4,"Mil");
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Procedure Main (){
+
+
+	
+
+
+ ##   tiempo = 5;
+
+  ##  Delay(tiempo, "Seg");
+
+  ##  lista = list(range(tiempo,True));
+
+    lista.insert(a,True);
+
+    lista.del(0);
+
+    len(lista);
+
+    lista[1].Neg;
+
+    lista[1].F;
+
+    lista[1].T;
+
+    matriz.shapeF;
+
+    matriz.shapeC;
+
+    matriz.insert(a, b, c);
+
+    matriz.insert(a, d);
+
+    matriz.delete(0,0);
+
+    matriz.delete(a,b);
+
+    row = 1;
+    column = 5;
+    estado = True;
+    PrintLed(row,column,estado);
+  ##  row = 1;
+  ##  column = 5;
+ ##   estado = True;
+  ##  PrintLed(row,column,estado);
+
+ yes = 1 + 2;
+	noobAdrian = 2 + yes;
+   today = 2 + noobAdrian;
+   
+ ##  h = [True, False, True, True];
+    gim = [[1,2,3],[4,5,6],[8,7,9]];
+
+##   d  = [[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],[16,17,18,19]];
+
+    a=1;
+    a= a+1;
+    a = a+1;
+    a = a+1;
+    a = a+1;
+    a = a+1;
+    a = a+1;
+    gim[1];
+
+    newID = gim[1];
+    ##gim[1][0];
+   ## gim[0:2];
+
+    ##h.del(1,1);
+    ##h.del(1,1);
+
+
+    ##PrintLed(7,1,True);
+
+    ##  a = 1;
+    ## b = False;
+    ## c = [10,20,30,40,50];
+    ## c[0] = a;
+
+
+    ##d[4] = c;
+    ##d[0];
+    ##d[0][0];
+    ##d[0,0];
+    ##d[0:2];
+
+    ##matriz1 = [[True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False]];
+
+    ##matriz2 = [[True, False, False, False, False, False, False, False],
+    ##      [False, True, False, False, False, False, False, False],
+    ##      [False, False, True, False, False, False, False, False],
+    ##      [False, False, False, True, False, False, False, False],
+    ##      [False, False, False, False, True, False, False, False],
+    ##      [False, False, False, False, False, True, False, False],
+    ##      [False, False, False, False, False, False, True, False],
+    ##      [False, False, False, False, False, False, False, True]];
+
+    ##matriz3 = [[False, False, False, False, False, False, True, False],
+    ##      [False, False, False, False, False, False, True, False],
+    ##      [False, False, False, False, False, True, False, False],
+    ##      [False, False, False, False, True, False, False, False],
+    ##      [False, False, False, True, False, False, False, False],
+    ##      [False, False, True, False, False, False, False, False],
+    ##      [False, True, False, False, False, False, False, False],
+    ##      [True, False, False, False, False, False, False, False]];
+
+    ##PrintLedX("M",0,matriz1);
+    ##Delay(1,"Seg");
+    ##PrintLedX("M",0,matriz2);
+    ##Delay(1,"Seg");
+    ##PrintLedX("M",0,matriz3);
+    ##Delay(1,"Seg");
+    ##PrintLed(1,1,True);
+
+
+
+    ##If(b<=10){
+    ##    k = 5;
+    ##    j = 10;
+    ##}
+    ##If(b<=3){
+    ##    p = 22;
+    ##    r = 15;
+    ##}
+
+    ##call pro1(True, a);
+    ##call pro2();
+
+};
+
+
+Procedure pro1 (){
+    c = 5;
+
+    b = 50;
+
+    If(b<=10){
+        l = 0;
+    }
+    If(c<=10){
+        l = 10;
+    }
+    If(k<>15){
+        prueba = 0;
+    }
+    matriz4 = [[False, False, False, False, False, False, True, False],
+          [False, False, False, False, False, False, True, False],
+          [False, False, False, False, False, True, False, False],
+          [False, False, False, False, True, False, False, False],
+          [False, False, False, True, False, False, False, False],
+          [False, False, True, False, False, False, False, False],
+          [False, True, False, False, False, False, False, False],
+          [True, False, False, False, False, False, False, False]];
+
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz4);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz2);
+    Delay(2,"Seg");
+    PrintLedX("M",0,matriz3);
+    Delay(2,"Seg");
+
+};
+
+Procedure pro2 (){
+    d = [True, False, True];
+    PrintLedX("M",0,matriz1);
+    Delay(3,"Min");
+    PrintLedX("M",0,matriz2);
+    Delay(3,"Min");
+    PrintLedX("M",0,matriz3);
+    Delay(3,"Min");
+
+};
+
+Procedure pro3 (){
+
+    PrintLedX("M",0,matriz1);
+    Delay(4,"Mil");
+    PrintLedX("M",0,matriz2);
+    Delay(4,"Mil");
+    PrintLedX("M",0,matriz3);
+    Delay(4,"Mil");
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
