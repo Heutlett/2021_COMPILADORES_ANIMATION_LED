@@ -3,7 +3,6 @@ from Syntax_Analysis import errors
 import copy
 import pprint
 
-
 # Lista de arboles sintacticos generados en el analisis sintactico
 sintacticList = []
 
@@ -137,8 +136,8 @@ def run_tree(p):
         elif p[1] == '[]*':
             return var_assign_operation(p[0], p[2], p[3], p[4])
 
-        # elif p[0] == 'var':  # DEFINIR UNA VARIABLE
-        #     return env[p[1]]
+        elif p[1] == 'var':  # DEFINIR UNA VARIABLE
+            return get_var(p[0], p[2], p[3])
 
         # elif p[0] == 'type':
         #     return p[1]
@@ -190,8 +189,16 @@ def arithmetic_operation(line, operator, a, b):
     :param b: expresion dos
     :return: el resultado de aplicar el operando a ambas expresiones recibididas.
     '''
-    if operator == '+':
+
+    a = run_tree(a)
+    b = run_tree(b)
+
+    if a is None or b is None:
+        return None
+
+    elif operator == '+':
         return run_tree(a) + run_tree(b)
+
     elif operator == '-':
         return run_tree(a) - run_tree(b)
     elif operator == '*':
@@ -864,20 +871,17 @@ def get_list_type(lst):
 """ ################################ COMPROBACIONES INICIALES #################################################### """
 
 
-
 def validate_iterable_for(iterable, procedure_name):
-
     if type(iterable) == int or type(iterable) == list:
         return True
     elif type(iterable) == str:
-        var = buscar_variable(iterable,procedure_name)
+        var = buscar_variable(iterable, procedure_name)
         if var is not None:
             return True
         else:
             errorList.append("ERROR: el iterable no existe")
     errorList.append("ERROR: el iterable del for debe ser una lista o un entero")
     return False
-
 
 
 def get_var_for_type(iterable):
@@ -888,8 +892,9 @@ def get_var_for_type(iterable):
             if type(iterable[0]) == int:
                 return "INT"
             elif type(iterable[0]) == bool:
-                return  "BOOL"
+                return "BOOL"
     return None
+
 
 """ ############################################################################################################### """
 
@@ -972,6 +977,7 @@ def ciclo_for(temp_var, iterable, step, ordenes, procedure_name):
         dict = local_variables[procedure_name]
         if temp_var in dict.keys():
             del dict[temp_var]
+
 
 def bifurcacion(iterable, operator, value, ordenes, procedure_name):
     """
@@ -1061,8 +1067,6 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
             return
 
 
-
-
 """ ####################################### Ejecucion principal #################################################### """
 
 
@@ -1106,41 +1110,36 @@ def buscar_variable(id, procedure_name):
         print("Busqueda sin resultados, la variable no se encuentra declarada globalmente ni localmente")
     return var
 
-
-def buscar_variable_localmente(id, procedure_name):
-    print("-----Buscando la variable {0} localmente-----".format(id))
-    var = None
-    if id in local_variables[procedure_name].keys():
-        var = getByID(id, local_variables[procedure_name])
-    else:
-        print("-----Busqueda sin resultados: No se ha encontrado la variable {0}-----".format(id))
-        return None
-    print("-----Exito: la variable {0} se ha encontrado localmente-----".format(id))
-    return var
-
 """
 Busca una variable:
 Primero busca si esta en las variables globales
 Si no la encuentra y no es el main, la busca localmente
 """
 
-def buscar_variable(id, procedure_name):
-    var = None
-    if procedure_name == "Main":
-        var = buscar_variable_globalmente(id)
-    elif procedure_name != "Main":
-        var = buscar_variable_localmente(id, procedure_name)
-    if var is not None:
-        return var
-    if var is None:
-        var = buscar_variable_globalmente(id)
-    if var is None:
-        print("Busqueda sin resultados, la variable no se encuentra declarada globalmente ni localmente")
-    return var
+# Funcion para obtener una de las variables del dictionario recibido
+def getVariableFromDict(key, procedure):
+    '''
+    Funcion que retorna el valor de un key en el diccionario recibido, si no se encuentra en
+    el diccionario recibido se busca en el diccionario global.
+    :param key: key de la variable en el diccionario
+    :param procedure: diccionario en donde se debe buscar
+    :return: Value del key correspondiente, si no se encuentra retorna None.
+    '''
+
+    # print("Procedure", procedure)
+
+    if procedure.lower() == "main":
+        if key in global_variables.keys():
+            return global_variables.get(key)
+    else:
+        if key in local_variables[procedure].keys():
+            return local_variables[procedure].get(key)
+        elif key in global_variables.keys():
+            return global_variables.get(key)
+    return None
 
 
 def buscar_valor_param(value, procedure_name):
-
     if type(value) == str:
 
         var = buscar_variable(value, procedure_name)
@@ -1171,13 +1170,8 @@ def exe_orden(linea, procedure_name):
         # print("----------------EJECUTANDO DECLARACION------------------")
         exe_var_declaration(linea, procedure_name)
 
-def exe_var_declaration(linea,procedure_name):
-    print("----------------EJECUTANDO DECLARACION------------------")
-    if procedure_name == "Main":
-        exe_global_var_declaration(linea)
-    else:
-        exe_local_var_declaration(linea, procedure_name)
-    print("----------------FIN DE DECLARACION------------------")
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DECLARATION     ", "\t→\t", linea)
+        # print("----------------FIN DE DECLARACION------------------\n")
 
     elif linea[1] == 'CALL':
         print("[EJECUTADO CORRECTAMENTE]\t➤\t", "CALL     ", "\t→\t", linea)
@@ -1261,7 +1255,6 @@ def exe_var_declaration(linea,procedure_name):
         print(linea, "  ----->   F")
 
 
-
 """ ####################################### Ejecucion principal #################################################### """
 
 """ ###################################### Ejecuciones finales #################################################### """
@@ -1306,7 +1299,6 @@ Valor: Bool
 
 
 def exe_print_led(row, column, value, procedure_name):
-
     if row <= 7 and column <= 7:
 
         temp = value
@@ -1502,8 +1494,8 @@ def compile_program():
 
     return errorList
 
-compile_program()
 
+compile_program()
 
 # a = None
 # ciclo_for(a, [1,2,3,4,5,6,7,8,9,10],1,0)
