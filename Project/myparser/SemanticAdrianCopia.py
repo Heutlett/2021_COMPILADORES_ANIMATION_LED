@@ -108,7 +108,8 @@ def get_var(line, var, varDict):
     return val
 
 
-def run_tree(p, dict=None):
+
+def run_tree(p, procedure_name=None):
     '''
     Funcion que toma todos los arboles e interpreta qué subfunción debe llamar.
     Funciona como switch case basicamente.
@@ -118,61 +119,50 @@ def run_tree(p, dict=None):
 
     global arithmetic_operators
 
-    # print()
-    # print()
-    # print("✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ")
-    # print("TREE  :", p)
+    print()
+    print()
+    print("✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ")
+    print("TREE  :", p)
 
     if equalsType(p, list):
 
-        if p[1] in arithmetic_operators:  # OPERACIONES ARITMETICAS
-            return arithmetic_operation(p[0], p[1], p[2], p[3])
+        if len(p) == 1:
+            return p
+
+        elif p[1] in arithmetic_operators:  # OPERACIONES ARITMETICAS
+            print("ENTRADA ARITMETIC : ", p)
+            return arithmetic_operation(p[0], p[1], p[2], p[3], procedure_name)
 
         elif p[1] == '=':
-            return var_assign_operation(p[0], dict, p[2], p[3])
+            print("ENTRADA ASIGNACION : ", p)
+            return var_assign_operation(p[0], procedure_name, p[2], p[3])
 
         elif p[1] == '[]':
-            return get_sublist(dict, p)
+            print("ENTRADA SUBLISTA : ", p)
+            return get_sublist(procedure_name, p)
 
         elif p[1] == '[]*':
-            return var_assign_operation(p[0], dict, p[2], p[3])
+            return var_assign_operation(p[0], procedure_name, p[2], p[3])
 
         elif p[1] == 'var':  # DEFINIR UNA VARIABLE
-            return get_var(p[0], p[2], p[3])
+            print("ENTRADA VARIABLE : ", p)
+            return get_var(p[0], p[2], procedure_name)
 
         # elif p[0] == 'type':
         #     return p[1]
         #
-        #
+        elif p[1] == 'RANGE':  ## ESTE ES EL RANGEEEEEEEEEEEEEEEEEEEEE
+            print("ENTRADA RANGE : ", p)
+            return exe_range_operation(p[0], p[2], p[3], procedure_name)
+
         # elif p[0] == 'INSERT':
         #     return list_insert_operation(p[1], p[2], p[3])
         #
         # elif p[0] == 'DEL':
         #     return list_delete_operation(p[1], p[2])
         #
-        # elif p[0] == 'LEN':
-        #     return list_len_operation(p[1])
-        #
-        # elif p[0] == "NEG":
-        #     return neg_operation(p[1])
-        #
-        # elif p[0] == "T":
-        #     return t_operation(p[1])
-        #
-        # elif p[0] == "F":
-        #     return f_operation(p[1])
-        #
-        # elif p[0] == 'BLINK':
-        #     return p[1]
-        #
-        # elif p[0] == 'DELAY':
-        #     return p[1]
-        #
-        # elif p[0] == 'PRINTLED':
-        #     return p[1]
-        #
-        # elif p[0] == 'PRINTLEDX':
-        #     return p[1]
+        elif p[1] == 'LEN':
+            return exe_len_operation(p[0], p[2], procedure_name)
 
     return p
 
@@ -180,7 +170,7 @@ def run_tree(p, dict=None):
 """ ###################################### Operaciones aritmeticas ################################################### """
 
 
-def arithmetic_operation(line, operator, a, b):
+def arithmetic_operation(line, operator, a, b, procedure):
     '''
     Funcion auxiliar para operar los calculos aritmeticos por aparte.
     Funciona como switch case para la operacion que se debe realizar.
@@ -191,33 +181,83 @@ def arithmetic_operation(line, operator, a, b):
     :return: el resultado de aplicar el operando a ambas expresiones recibididas.
     '''
 
-    a = run_tree(a)
-    b = run_tree(b)
+    # Si es una variable.
+    tmpa = a
+    tmpb = b
+
+    if type(a) == str:
+        tmpa = [line, 'var', a]
+    a = tmpa
+
+    if type(b) == str:
+        tmpb = [line, 'var', b]
+    b = tmpb
 
     if a is None or b is None:
         return None
 
-    elif operator == '+':
-        return run_tree(a) + run_tree(b)
+    a = run_tree(a, procedure)
+    b = run_tree(b, procedure)
+    #
+    # print("Este es a:", a)
+    # print("Este es b:", b)
+
+    if operator == '+':
+        return a + b
 
     elif operator == '-':
-        return run_tree(a) - run_tree(b)
+        return a- b
     elif operator == '*':
-        return run_tree(a) * run_tree(b)
+        return a * b
     elif operator == '/':
-        return run_tree(a) / run_tree(b)
+        return a / b
     elif operator == '//':
-        return run_tree(a) // run_tree(b)
+        return a // b
     elif operator == '%':
-        return run_tree(a) % run_tree(b)
+        return a % b
     elif operator == '^':
-        return pow(run_tree(a), run_tree(b))
+        return pow(a, b)
     else:
         errorList.append("ArithmeticError in line {0}!".format(line))
         return "Error aritmetico"
 
 
 """ ###################################### Asignacion de variables ################################################### """
+
+
+
+
+def exe_range_operation(line, num, param, procedure_name):
+    # [10, 'RANGE', expresion, params]
+    num = run_tree(num, procedure_name)
+    param = run_tree(param)
+
+    if num is None:
+        # errorList.append("Error en la linea {0}, no se logra procesar la operacion {1}".format(linea[0], linea[3]))
+        return
+
+    tmp = []
+    i=1
+    for i in range(num):
+        tmp.append(param)
+
+    print("[EJECUTADO CORRECTAMENTE]\t➤\t", "RANGE     ", "\t→\t", tmp)
+    return tmp
+
+def exe_len_operation(line, valor, procedure_name):
+    # Example [10, 'LEN', [1,2,3]]
+    # Example [10, 'LEN', 'a']
+    valor = run_tree(valor, procedure_name)
+    if valor is None:
+        return
+
+    return len(valor)
+
+
+
+
+
+
 
 
 def var_assign_operation(line, procedure, ID, value):
@@ -247,7 +287,7 @@ def var_assign_operation(line, procedure, ID, value):
         setVariable(procedure, key, val)
         return getVariable(ID, procedure)
     else:
-        return tmp
+        return True
 
 
 # Funcion para operar la asignacion de las variables.
@@ -268,9 +308,7 @@ def var_assign_operation_aux(line, procedure, ID, value):
             tmp = var_assign_operation(line, procedure, ID[i], value[i])
             if tmp is False:
                 return False
-            # Asignación
-            procedure[tmp[0]] = tmp[1]
-        return procedure
+        return True
 
     # Si es solo una variable.
     # [line, ID, value, dict]
@@ -301,17 +339,6 @@ def individual_assign_validation(line, procedure, ID, value):
 
     # Si la variable es una lista, obtener el valor si es una operacion.
     if type(value) == list:
-        print("valueeee", value)
-        # Si es una variable.
-        if value[1] in arithmetic_operators:
-            var1 = value[2]
-            if type(var1) == str:
-                value[2] = [line, 'var', var1, procedure]
-            var2 = value[3]
-            if type(var2) == str:
-                value[3] = [line, 'var', var2, procedure]
-
-        print("value", value)
         value = run_tree(value, procedure)
 
     # Si no es una variable valida.
@@ -322,6 +349,7 @@ def individual_assign_validation(line, procedure, ID, value):
     # Si se cumplen todas las validaciones.
     # print("-> {0} : {1}".format(ID, procedure[ID]))
     return [ID, value]
+
 
 
 def get_sublist(procedure, sublist):
@@ -1176,14 +1204,13 @@ def exe_var_declaration(linea, procedure_name):
 
 def exe_orden(linea, procedure_name):
     # ESTO EJECUTA LAS DECLARACIONES
-    if linea[1] in accionesConDict or linea[1] in arithmetic_operators:
-        # print("----------------EJECUTANDO DECLARACION------------------")
-        exe_var_declaration(linea, procedure_name)
+    # print("----------------EJECUTANDO DECLARACION------------------")
+    exe_var_declaration(linea, procedure_name)
 
-        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DECLARATION     ", "\t→\t", linea)
-        # print("----------------FIN DE DECLARACION------------------\n")
+    print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DECLARATION     ", "\t→\t", linea)
+    # print("----------------FIN DE DECLARACION------------------\n")
 
-    elif linea[1] == 'CALL':
+    if linea[1] == 'CALL':
         print("[EJECUTADO CORRECTAMENTE]\t➤\t", "CALL     ", "\t→\t", linea)
         procedure_execute(linea[2], linea[3])
 
@@ -1583,7 +1610,7 @@ def exe_neg(linea, procedure_name):
 
     # [5, 'NEG', 'matriz', 1],     len 4
     if len(linea) == 4:
-        if is_matriz(var):
+        if is_matriz(var):  # negar toda la fila
 
             l = linea[3]
 
@@ -1655,7 +1682,7 @@ def exe_F(linea, procedure_name):
 
     if var is None:
         errorList.append("Error en la linea {0}, no se ha encontrado la variable {1}".format(linea[0], id))
-        print("------------------------ FIN DEL NEG, SE PRODUJO UN ERROR --------------------------")
+        print("------------------------ FIN DEL F, SE PRODUJO UN ERROR --------------------------")
         return
 
     if is_matriz(var) and len(var) == 0:
@@ -1706,7 +1733,21 @@ def exe_F(linea, procedure_name):
         if type(var) == list:
             if is_matriz(var):  # es matriz, negar toda la fila
 
-                pass
+                l = linea[3]
+
+                for index in range(len(var[0])):
+
+                    if type(var[l][index]) == int:
+                        if var[l][index] == 1 or var[l][index] == 0:
+                            var[l][index] = 0
+                        else:
+                            errorList.append(
+                                "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(
+                                    linea[0]))
+                    elif type(var[l][index]) == bool:
+                        var[l][index] = False
+
+
             else:  # es una lista, negar indice
                 if not linea[3] >= len(var):
 
@@ -1728,24 +1769,152 @@ def exe_F(linea, procedure_name):
                         "------------------------ FIN DEL F, SE PRODUJO UN ERROR --------------------------")
                     return
 
-        pass
-
     if len(linea) == 5:
-        pass
+        if is_matriz(var):
+            try:
+
+                if type(var[linea[3]][linea[4]]) == int:
+                    if var[linea[3]][linea[4]] == 1 or var[linea[3]][linea[4]] == 0:
+                        var[linea[3]][linea[4]] = 0
+                    else:
+                        errorList.append(
+                            "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(linea[0]))
+                elif type(var[linea[3]][linea[4]]) == bool:
+                    var[linea[3]][linea[4]] = False
 
 
+            except Exception:
+                errorList.append(
+                    "Error en la linea {0}, el indice supera el limite del tamaño de la matriz {1}".format(linea[0],
+                                                                                                           id))
+
+    print("------------------- F EJECUTADO CORRECTAMENTE ---------------------------")
 
 
 """
-lista.F;
-lista[1].F;
-lista[1][1].F;
-[14, 'F', 'lista'],
-[15, 'F', 'lista', 1],
-[16, 'F', 'lista', 1, 1],
+lista.T;
+lista[1]T;
+lista[1][1].T;
+[14, 'T', 'lista'],
+[15, 'T', 'lista', 1],
+[16, 'T', 'lista', 1, 1],
 """
 def exe_T(linea, procedure_name):
-    pass
+
+    print("------------------- EJECUTANDO T ---------------------------")
+
+    id = linea[2]
+    var = buscar_variable(id, procedure_name)
+
+    if var is None:
+        errorList.append("Error en la linea {0}, no se ha encontrado la variable {1}".format(linea[0], id))
+        print("------------------------ FIN DEL T, SE PRODUJO UN ERROR --------------------------")
+        return
+
+    if is_matriz(var) and len(var) == 0:
+        errorList.append("Error en la linea {0}, la matriz {1} esta vacia".format(linea[0], id))
+        return
+
+    if len(linea) == 3:
+
+        if type(var) == list:
+            if is_matriz(var): # es una matriz
+
+                for filas in range(len(var)):
+                    for columnas in range(len(var[0])):
+
+                        if type(var[filas][columnas]) == bool:
+                                var[filas][columnas] = True
+                        elif type(var[filas][columnas]) == int:
+                            if var[filas][columnas] == 0 or var[filas][columnas] == 1:
+                                var[filas][columnas] = 1
+                            else:
+                                errorList.append(
+                                    "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(
+                                        linea[0]))
+                                print(
+                                    "------------------------ FIN DEL T, SE PRODUJO UN ERROR --------------------------")
+
+            else:  # es una lista
+
+                for i in range(len(var)):
+
+                    if type(var[i]) == bool:
+                        var[i] = True
+                    elif type(var[i]) == int and (var[i] == 1 or var[i] == 0):
+                        var[i] = 1
+                    else:
+                        errorList.append("Error en la linea {0}, la lista {1} contiene valores que no se pueden negar".format(linea[0], id))
+                        print(
+                            "------------------------ FIN DEL T, SE PRODUJO UN ERROR --------------------------")
+                        return
+
+                print("-------------- T ejecutado correctamente -------------")
+                return
+
+    # [12, 'T', 'lista', 1],
+
+    if len(linea) == 4:
+
+        if type(var) == list:
+            if is_matriz(var):  # es matriz, negar toda la fila
+
+                l = linea[3]
+
+                for index in range(len(var[0])):
+
+                    if type(var[l][index]) == int:
+                        if var[l][index] == 1 or var[l][index] == 0:
+                            var[l][index] = 1
+                        else:
+                            errorList.append(
+                                "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(
+                                    linea[0]))
+                    elif type(var[l][index]) == bool:
+                        var[l][index] = True
+
+
+            else:  # es una lista, negar indice
+                if not linea[3] >= len(var):
+
+                    if type(var[linea[3]]) == bool:
+                        var[linea[3]] = True
+                    elif type(var[linea[3]]) == int and (var[linea[3]] == 1 or var[linea[3]] == 0):
+                        var[linea[3]] = 1
+                    else:
+                        errorList.append("Error en la linea {0}, la lista {1} contiene valores que no se pueden negar".format(linea[0], id))
+                        print(
+                            "------------------------ FIN DEL T, SE PRODUJO UN ERROR --------------------------")
+                        return
+
+                else:
+                    errorList.append(
+                        "Error en la linea {0}, el indice excede los limites de la lista {1}".format(linea[0],
+                                                                                                             id))
+                    print(
+                        "------------------------ FIN DEL T, SE PRODUJO UN ERROR --------------------------")
+                    return
+
+    if len(linea) == 5:
+        if is_matriz(var):
+            try:
+
+                if type(var[linea[3]][linea[4]]) == int:
+                    if var[linea[3]][linea[4]] == 1 or var[linea[3]][linea[4]] == 0:
+                        var[linea[3]][linea[4]] = 1
+                    else:
+                        errorList.append(
+                            "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(linea[0]))
+                elif type(var[linea[3]][linea[4]]) == bool:
+                    var[linea[3]][linea[4]] = True
+
+
+            except Exception:
+                errorList.append(
+                    "Error en la linea {0}, el indice supera el limite del tamaño de la matriz {1}".format(linea[0],
+                                                                                                           id))
+
+    print("------------------- T EJECUTADO CORRECTAMENTE ---------------------------")
 
 
 """##################################### Operaciones booleanas ###################################################"""
