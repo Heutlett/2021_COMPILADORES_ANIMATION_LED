@@ -1333,6 +1333,24 @@ def exe_orden(linea, procedure_name):
         """
         print(linea, "  ----->   DELETE_MATRIX")
 
+    elif linea[1] == '=sf':
+        """
+        a = matriz.shapeF;
+        [37, 'sf', 'a', 'matriz']
+        """
+        print(linea, "  ----->   DELETE_MATRIX")
+        exe_def_shapef(linea, procedure_name)
+
+    elif linea[1] == '=sc':
+        """
+        a = matriz.shapeC;
+        [37, 'sc', 'a', 'matriz']
+        """
+        print(linea, "  ----->   DELETE_MATRIX")
+        exe_def_shapec(linea, procedure_name)
+
+
+
     elif linea[1] == '=sublist':
         ID_a_sublist(linea[0], linea[2], linea[3], procedure_name)
 
@@ -1363,6 +1381,30 @@ def exe_len(linea, procedure_name):
 """##################################### Métodos matrices ##########################################################"""
 
 """
+a = matriz.shapeF;
+[37, 'sf', 'a', 'matriz']
+"""
+def exe_def_shapef(linea, procedure_name):
+
+    id = linea[2]
+
+    var = buscar_variable(id, procedure_name)
+    mat = buscar_variable(linea[3], procedure_name)
+
+    if mat is None:
+        errorList.append("Error en la linea {0}, no se ha encontrado la matriz {1}".format(linea[0], linea[3]))
+        return
+
+    value = exe_shapef([linea[0], linea[1], linea[3]], procedure_name)
+
+    if var is None:
+        exe_var_declaration([0, '=', id, value], procedure_name)
+    else:
+        setVariable(procedure_name, id, value)
+
+
+
+"""
 matriz.shapeF;
 [37, 'SHAPEF', 'matriz']
 """
@@ -1378,7 +1420,11 @@ def exe_shapef(linea, procedure_name):
     if type(var) == list:
 
         if is_matriz(var):
-            return len(var)
+            if len(var) == 0:
+                errorList.append("Error en la linea {0}, la matriz {1} esta vacia".format(linea[0], id))
+                return
+            else:
+                return len(var)
         else:
             errorList.append("Error en la linea {0}, la variable {1} no es una matriz".format(linea[0], id))
             return
@@ -1387,15 +1433,61 @@ def exe_shapef(linea, procedure_name):
         errorList.append("Error en la linea {0}, la variable {1} no es una matriz".format(linea[0], id))
         return
 
+
+"""
+a = matriz.shapeC;
+[37, 'sc', 'a', 'matriz']
+"""
+def exe_def_shapec(linea, procedure_name):
+
+    id = linea[2]
+
+    var = buscar_variable(id, procedure_name)
+    mat = buscar_variable(linea[3], procedure_name)
+
+    if mat is None:
+        errorList.append("Error en la linea {0}, no se ha encontrado la matriz {1}".format(linea[0], linea[3]))
+        return
+
+    value = exe_shapec([linea[0], linea[1], linea[3]], procedure_name)
+
+    if var is None:
+        exe_var_declaration([0, '=', id, value], procedure_name)
+    else:
+        setVariable(procedure_name, id, value)
+
+
+
 """
 matriz.shapeC;
 [39, 'SHAPEC', 'matriz']
 """
 def exe_shapec(linea, procedure_name):
+    id = linea[2]
+    var = buscar_variable(id, procedure_name)
 
+    if var is None:
+        errorList.append("Error en la linea {0}, no se ha encontrado la variable {1}".format(linea[0], id))
+        return
 
+    if type(var) == list:
 
-    pass
+        if is_matriz(var):
+
+            if len(var) > 0:
+                return len(var[0])
+            else:
+                errorList.append("Error en la linea {0}, la matriz {1} esta vacia".format(linea[0], id))
+                return
+
+        else:
+            errorList.append("Error en la linea {0}, la variable {1} no es una matriz".format(linea[0], id))
+            return
+
+    else:
+        errorList.append("Error en la linea {0}, la variable {1} no es una matriz".format(linea[0], id))
+        return
+
 
 """##################################### Métodos matrices ##########################################################"""
 
@@ -1405,7 +1497,7 @@ def exe_shapec(linea, procedure_name):
 
 
 def is_matriz(var):
-    if len(var) > 0:
+    if type(var) == list and len(var) > 0:
         if type(var[0]) is list:  # es una matriz
             return True
     return False
@@ -1430,11 +1522,36 @@ def exe_neg(linea, procedure_name):
         print("------------------------ FIN DEL NEG, SE PRODUJO UN ERROR --------------------------")
         return
 
+    if is_matriz(var) and len(var) == 0:
+        errorList.append("Error en la linea {0}, la matriz {1} esta vacia".format(linea[0], id))
+        return
+
     if len(linea) == 3:
 
         if type(var) == list:
             if is_matriz(var): # Es una matriz    FALTA IMPLEMENTAR SHAPEC Y SHAPEF
-                pass
+
+                for filas in range(len(var)):
+                    for columnas in range(len(var[0])):
+
+                        if type(var[filas][columnas]) == bool:
+                            if var[filas][columnas] == True:
+                                var[filas][columnas] = False
+                            elif var[filas][columnas] == False:
+                                var[filas][columnas] = True
+                        elif type(var[filas][columnas]) == int:
+                            if var[filas][columnas] == 0:
+                                var[filas][columnas] = 1
+                            elif var[filas][columnas] == 1:
+                                var[filas][columnas] = 0
+                            else:
+                                errorList.append(
+                                    "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(
+                                        linea[0]))
+                                print(
+                                    "------------------------ FIN DEL NEG, SE PRODUJO UN ERROR --------------------------")
+
+
             else:  # Es una lista
                 for i in range(len(var)):
 
@@ -1467,23 +1584,58 @@ def exe_neg(linea, procedure_name):
 
     # [5, 'NEG', 'matriz', 1],     len 4
     if len(linea) == 4:
-        if type(var[linea[3]]) == bool:
-            var[linea[3]] = not var[linea[3]]
-        elif type(var[linea[3]]) == int:
-            if var[linea[3]] == 0:
-                var[linea[3]] = 1
-            elif var[linea[3]] == 1:
-                var[linea[3]] = 0
-            else:
-                errorList.append(
-                    "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(linea[0]))
-                print(
-                    "------------------------ FIN DEL NEG, SE PRODUJO UN ERROR --------------------------")
+        if is_matriz(var):
+
+            l = linea[3]
+
+            for index in range(len(var[0])):
+
+                if type(var[l][index]) == int:
+                    if var[l][index] == 1:
+                        var[l][index] = 0
+                    elif var[l][index] == 0:
+                        var[l][index] = 1
+                    else:
+                        errorList.append(
+                            "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(linea[0]))
+                elif type(var[l][index]) == bool:
+                    var[l][index] = not var[l][index]
+
+
+        elif type(var) == list:
+            if type(var[linea[3]]) == bool:
+                var[linea[3]] = not var[linea[3]]
+            elif type(var[linea[3]]) == int:
+                if var[linea[3]] == 0:
+                    var[linea[3]] = 1
+                elif var[linea[3]] == 1:
+                    var[linea[3]] = 0
+                else:
+                    errorList.append(
+                        "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(linea[0]))
+                    print(
+                        "------------------------ FIN DEL NEG, SE PRODUJO UN ERROR --------------------------")
 
     # [6, 'NEG', 'matriz', 1, 1]   len 5
     if len(linea) == 5:
-        pass
+        if is_matriz(var):
+            try:
 
+                if type(var[linea[3]][linea[4]]) == int:
+                    if var[linea[3]][linea[4]] == 1:
+                        var[linea[3]][linea[4]] = 0
+                    elif var[linea[3]][linea[4]] == 0:
+                        var[linea[3]][linea[4]] = 1
+                    else:
+                        errorList.append(
+                            "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(linea[0]))
+                elif type(var[linea[3]][linea[4]]) == bool:
+                    var[linea[3]][linea[4]] = not var[linea[3]][linea[4]]
+
+
+            except Exception:
+                errorList.append(
+                    "Error en la linea {0}, el indice supera el limite del tamaño de la matriz {1}".format(linea[0], id))
 
     print("------------------- NEG EJECUTADO CORRECTAMENTE ---------------------------")
 

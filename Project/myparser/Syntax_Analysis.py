@@ -546,6 +546,16 @@ def p_for(p):
 
 ####################################### MATRICES ########################################################
 
+def p_def_shapef(p):
+
+    '''
+    funcionreservada : ID IGUAL ID PUNTO SHAPEF PYC
+    '''
+
+    # [p.lineno(1), 'NEG', ID, INDICE]
+
+    p[0] = [p.lineno(1), '=sf', p[1], p[3]]
+
 
 def p_shapeF(p):
 
@@ -556,6 +566,17 @@ def p_shapeF(p):
     # [p.lineno(1), 'NEG', ID, INDICE]
 
     p[0] = [p.lineno(1), 'SHAPEF', p[1]]
+
+
+def p_def_shapec(p):
+
+    '''
+    funcionreservada : ID IGUAL ID PUNTO SHAPEC PYC
+    '''
+
+    # [p.lineno(1), 'NEG', ID, INDICE]
+
+    p[0] = [p.lineno(1), '=sc', p[1], p[3]]
 
 
 def p_shapeC(p):
