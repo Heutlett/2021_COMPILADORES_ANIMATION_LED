@@ -1,27 +1,45 @@
 import tkinter
 from tkinter import *
 from tkinter import scrolledtext
+from CopiaSemanticAdrian import compile_program  # CAMBIAR CAMBIAR CAMBIAR CAMBIAR
 
 
 
 class Ide(Frame):
+
+
 
     def __init__(self):
         super().__init__(bg="#333")
         self.initUI()
 
     def initUI(self):
+
+        self.contador = 1
+
         self.master.title("IDE")
         self.pack(fill=BOTH, expand=1)
 
         self.labelOutput = Label(self.master, text="Output")
         self.labelOutput.place(x=90, y=573)
 
+        self.labelLoad = Label(self.master, text="    Nombre del archivo a cargar  ")
+        self.labelLoad.place(x=281, y=100)
+
+        self.entryLoad = Entry(self.master, width=28)
+        self.entryLoad.place(x=281, y=130)
+
         self.buttonLoad = Button(self.master, text="Load", command=self.loadFunction, width=25, height=5)
         self.buttonLoad.place(x=90, y=65)
 
         self.buttonCompile = Button(self.master, text="Compile", command=self.compileFunction, width=25, height=5)
         self.buttonCompile.place(x=560, y=65)
+
+        self.labelCompile = Label(self.master, text="Nombre del archivo a compilar")
+        self.labelCompile.place(x=760, y=100)
+
+        self.entryCompile = Entry(self.master, width=28)
+        self.entryCompile.place(x=760, y=130)
 
         self.buttonCompileRun = Button(self.master, text="Compile and run",
                                        command=self.compileAndRunFunction, width=25, height=5)
@@ -41,7 +59,9 @@ class Ide(Frame):
         # self.txtInput.vbar
         self.inputTxt = txtInput
 
+        #self.inputTxt.bind("<B1-Leave>", lambda event: "break")
 
+        txtInput.vbar.bind_all("<MouseWheel>", self._on_mousewheel)
         txtInput.vbar.config(command=viewall)
 
         txtLineCount = Text(self.master, undo=True, width=7,
@@ -49,9 +69,13 @@ class Ide(Frame):
         txtLineCount['font'] = ('consolas', '12')
         txtLineCount.place(x=15, y=180)
 
+        self.lineCountTxt = txtLineCount
+
+        #self.txtInput.bind("<B1-Leave>", lambda event: "break")
+
         txtLineCount.configure(state=NORMAL)
         i = 1
-        for x in range(0, 1000):
+        for x in range(0, 200):
             txtInput.insert(INSERT, "\n")
             txtLineCount.insert(INSERT, str(i))
             txtLineCount.insert(INSERT, "\n")
@@ -68,24 +92,63 @@ class Ide(Frame):
 
         self.insertTextOutput("")
 
+    def _on_mousewheel(self, event):
+
+        self.lineCountTxt.yview_moveto(self.inputTxt.yview()[0])
+
+
+
+
     def loadFunction(self):
-        print("loading program")
-        # self.txtLineCount.vbar.set(self.txtInput.vbar.get()[0], self.txtInput.vbar.get()[1])
-        # self.update()
-        # print(self.txtInput.vbar.get()[1])
+        self.clearTextOutput()
+        self.insertTextOutput("loading program...\n\n")
+
+        nombre_archivo = self.entryLoad.get()
+
+        if nombre_archivo == "":
+            self.insertTextOutput("No se ha podido cargar el programa porque no se ha insertado el nombre del archivo")
+            return
+
+        nombre_archivo = "./saved/" + nombre_archivo + ".txt"
+
+        try:
+            with open(nombre_archivo, "r") as file:
+
+                texto = ""
+
+                for linea in file.readlines():
+                    texto = texto + linea
+
+                self.inputTxt.insert("1.0", texto)
+                file.close()
+                self.insertTextOutput("El programa se ha cargado correctamente!\n\n")
+
+
+        except Exception:
+            self.insertTextOutput("Error: no existe un archivo con el nombre ingresado\n\n")
+
 
     def compileFunction(self):
         self.clearTextOutput()
-        print("compiling program...")
-        print()
-        file = open("insumo.txt", "w")
+        self.insertTextOutput("compiling program...\n\n")
+
+        nombre_archivo = self.entryCompile.get()
+
+        if nombre_archivo == "":
+            self.insertTextOutput("No se ha podido compilar el programa porque no se ha insertado el nombre del archivo")
+            return
+
+        nombre_archivo = "./saved/" + nombre_archivo + ".txt"
+
+        file = open(nombre_archivo, "w")
 
         file.write(self.inputTxt.get("1.0", tkinter.END))
+
         file.close()
 
-        from SemanticAnalysisAdrian import compile_program, errorList
 
-        errors = compile_program()
+
+        errors = compile_program(self.inputTxt.get("1.0", tkinter.END))
         if len(errors) == 0:
             self.insertTextOutput("El codigo se ha compilado correctamente sin errores")
         else:
@@ -95,7 +158,21 @@ class Ide(Frame):
 
 
     def compileAndRunFunction(self):
-        print("compiling and running program")
+        self.clearTextOutput()
+        self.insertTextOutput("compiling and running program...\n\n")
+
+        texto = self.inputTxt.get("1.0", tkinter.END)
+
+        vacio = True
+
+        for i in texto:
+            if i != "\n" and i != "" and i != " ":
+                vacio = False
+
+        if vacio:
+            self.insertTextOutput("Error: no se ha podido compilar porque el programa esta vacio\n\n")
+
+
 
     def insertTextOutput(self, text):
         self.txtOutput.configure(state=NORMAL)
