@@ -4,6 +4,7 @@
 from Syntax_Analysis import run_syntax_analysis
 import copy
 import pprint
+import ast
 
 # Lista de arboles sintacticos generados en el analisis sintactico
 sintacticList = []
@@ -1975,6 +1976,7 @@ def compile_program(insumo):
     global errorList
     global global_variables
     global local_variables
+    global instrucciones
 
     clear_all()
 
@@ -2015,11 +2017,13 @@ def compile_program(insumo):
     print("\n--------- Lista de variables locales de procedimientos ---------")
     pp.pprint(local_variables)
 
-    #print("\n--------- INSTRUCCIONES ARDUINO ---------")
-    #pp.pprint(instrucciones)
+    print("\n--------- INSTRUCCIONES ARDUINO ---------")
+    pp.pprint(instrucciones)
 
     print("\n--------- Errors ---------")
     pp.pprint(errorList)
+
+    instrucciones = convert_instructions_to_list(str(instrucciones))
 
     file = open("ArduinoCompiledOutput.txt", "w")
     if len(errorList) == 0:
@@ -2029,6 +2033,22 @@ def compile_program(insumo):
     file.close()
 
     return errorList
+
+
+def convert_instructions_to_list(instructions):
+
+    temp = ast.literal_eval(instructions)
+
+    for x in temp:
+        if x[0] == "PRINT":
+            x[1] = ast.literal_eval(x[1])
+
+
+    return temp
+
+
+
+
 
 # compile_program()
 
