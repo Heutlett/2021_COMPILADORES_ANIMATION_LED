@@ -315,49 +315,6 @@ def p_empty(p):
     p[0] = None
 
 
-# Condicion
-def p_condicion(p):
-    """ condicion : expression IGUALES valorIf
-                             | expression  MAYORQUE valorIf
-                             | expression  MENORQUE valorIf
-                             | expression  MENORIGUAL valorIf
-                             | expression  MAYORIGUAL valorIf
-                             | expression  DIFERENTE valorIf
-    """
-    p[0] = [p[1], p[2], p[3]]
-
-
-def p_valorIf(p):
-    """ valorIf : BOOLEAN
-              | INT
-    """
-    p[0] = p[1]
-
-
-# Definición de if
-def p_if(p):
-    """ funcionreservada : IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
-   """
-
-    p[0] = [p.lineno(1), 'IF', p[3], p[6]]
-
-
-def p_procedure(p):
-    '''
-    procedure : PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
-                | PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
-    '''
-
-    p[0] = [p.lineno(1), 'PROCEDURE', p[2], p[4], p[7]]
-
-
-def p_call(p):
-    '''
-    funcionreservada : CALL ID PARENTESISIZQ params PARENTESISDER PYC
-    '''
-
-    p[0] = [p.lineno(1), 'CALL', p[2], p[4]]
-
 
 def p_valor_param(p):
     """ valor_param : BOOLEAN
@@ -593,14 +550,80 @@ def p_shapeC(p):
     p[0] = [p.lineno(1), 'SHAPEC', p[1]]
 
 
-def p_delete(p):
+def p_insertMatrix(p):
+
     '''
-    funcionreservada : ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
-   '''
+    funcionreservada : ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+                        |   ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    '''
+
+    # [p.lineno(1), 'NEG', ID, INDICE]
+
+    if len(p) == 12:
+        p[0] = [p.lineno(1), 'INSERT_MATRIX', p[1], p[5], p[7], p[9]]
+    else:
+        p[0] = [p.lineno(1), 'INSERT_MATRIX', p[1], p[5], p[7]]
+
+
+
+def p_deleteMatrix(p):
+    '''
+    funcionreservada : ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    '''
 
     # ['DEL', ID, INDICE, TIPOELIMINACION]
-    p[0] = [p.lineno(1), 'DEL', p[1], p[5], p[7]]
+    p[0] = [p.lineno(1), 'DELETE_MATRIX', p[1], p[5], p[7]]
 
+
+
+############################### BIFURCACION ###############################################
+
+
+
+# Condicion
+def p_condicion(p):
+    """ condicion : expression IGUALES valorIf
+                             | expression  MAYORQUE valorIf
+                             | expression  MENORQUE valorIf
+                             | expression  MENORIGUAL valorIf
+                             | expression  MAYORIGUAL valorIf
+                             | expression  DIFERENTE valorIf
+    """
+    p[0] = [p[1], p[2], p[3]]
+
+
+def p_valorIf(p):
+    """ valorIf : BOOLEAN
+              | INT
+    """
+    p[0] = p[1]
+
+
+# Definición de if
+def p_if(p):
+    """ funcionreservada : IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
+   """
+
+    p[0] = [p.lineno(1), 'IF', p[3], p[6]]
+
+
+###################################### PROCEDIMIENTOS ###############################################
+
+def p_procedure(p):
+    '''
+    procedure : PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
+                | PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
+    '''
+
+    p[0] = [p.lineno(1), 'PROCEDURE', p[2], p[4], p[7]]
+
+
+def p_call(p):
+    '''
+    funcionreservada : CALL ID PARENTESISIZQ params PARENTESISDER PYC
+    '''
+
+    p[0] = [p.lineno(1), 'CALL', p[2], p[4]]
 
 
 

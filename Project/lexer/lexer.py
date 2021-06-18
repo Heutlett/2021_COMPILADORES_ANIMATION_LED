@@ -19,19 +19,20 @@ TODO: Solucionar la detección de multiplicaciones
 # Lista de palabras reservadas, se hace aparte de los tokens para no generar una expresión regular para cada una
 palabras_reservadas = {
 
-    'type': 'TYPE',  # Es palabra reservada ?  type(mi_variable)
+    'type': 'TYPE',
     'range': 'RANGE',
     'list': 'LIST',
     'insert': 'INSERT',
-    'del': 'DEL',
+    'del': 'DEL',        # PARA LISTAS
+    'delete': 'DELETE',  # PARA MATRICES
     'len': 'LEN',
-    'Neg': 'NEG',   # Es palabra reservada ?
-    'T': 'T',     # Es palabra reservada ?
+    'Neg': 'NEG',
+    'T': 'T',
     'F': 'F',
     'Blink': 'BLINK',
-    'Seg': 'SEG', # Es palabra reservada ?
-    'Mil': 'MIL', # Es palabra reservada ?
-    'Min': 'MIN', # Es palabra reservada ?
+    'Seg': 'SEG',
+    'Mil': 'MIL',
+    'Min': 'MIN',
     'Delay': 'DELAY',
     'PrintLed': 'PRINTLED',
     'PrintLedX': 'PRINTLEDX',

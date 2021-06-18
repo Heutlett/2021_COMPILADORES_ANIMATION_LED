@@ -93,11 +93,13 @@ Rule 79    funcionreservada -> FOR expression IN INT STEP INT LLAVEIZQ ordenes L
 Rule 80    funcionreservada -> FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
 Rule 81    funcionreservada -> ID PUNTO SHAPEF PYC
 Rule 82    funcionreservada -> ID PUNTO SHAPEC PYC
-Rule 83    funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
-Rule 84    ordenes -> statement
-Rule 85    ordenes -> ordenes statement
-Rule 86    ordenes -> ordenes funcionreservada
-Rule 87    ordenes -> funcionreservada
+Rule 83    funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+Rule 84    funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+Rule 85    funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+Rule 86    ordenes -> statement
+Rule 87    ordenes -> ordenes statement
+Rule 88    ordenes -> ordenes funcionreservada
+Rule 89    ordenes -> funcionreservada
 
 Terminals, with rules where they appear
 
@@ -105,11 +107,12 @@ BEGIN                :
 BLINK                : 73
 BOOLEAN              : 11 57 63
 CALL                 : 62
-COMA                 : 16 22 34 36 66 67 83
+COMA                 : 16 22 34 36 66 67 83 83 84 85
 CORCHETEDER          : 29 33 34 35 36 37 37 70 71 72
 CORCHETEIZQ          : 29 33 34 35 36 37 37 70 71 72
-DEL                  : 68 83
+DEL                  : 68
 DELAY                : 74
+DELETE               : 85
 DIFERENTE            : 56
 DIVISION             : 43
 DIVISIONENTERA       : 42
@@ -118,13 +121,13 @@ END                  :
 EXPONENTE            : 39
 F                    : 72
 FOR                  : 77 78 79 80
-ID                   : 15 23 24 27 28 38 47 60 62 65 66 67 68 69 70 71 72 81 82 83
+ID                   : 15 23 24 27 28 38 47 60 62 65 66 67 68 69 70 71 72 81 82 83 84 85
 IF                   : 59
 IGUAL                : 23 24 25 26 27 66
 IGUALES              : 51
 IN                   : 77 78 79 80
-INSERT               : 67
-INT                  : 12 48 58 64 77 79 79 80 83 83
+INSERT               : 67 83 84
+INT                  : 12 48 58 64 77 79 79 80
 LEN                  : 69
 LIST                 : 66
 LLAVEDER             : 59 60 61 77 78 79 80
@@ -139,13 +142,13 @@ MIN                  :
 MODULO               : 40
 MULTIPLICACION       : 41
 NEG                  : 70
-PARENTESISDER        : 28 46 59 60 61 62 66 66 67 68 69 73 74 75 76 83
-PARENTESISIZQ        : 28 46 59 60 61 62 66 66 67 68 69 73 74 75 76 83
+PARENTESISDER        : 28 46 59 60 61 62 66 66 67 68 69 73 74 75 76 83 84 85
+PARENTESISIZQ        : 28 46 59 60 61 62 66 66 67 68 69 73 74 75 76 83 84 85
 PRINTLED             : 75
 PRINTLEDX            : 76
 PROCEDURE            : 60 61
-PUNTO                : 67 68 70 71 72 81 82 83
-PYC                  : 5 6 23 24 25 26 27 28 60 61 62 66 67 68 69 70 71 72 73 74 75 76 81 82 83
+PUNTO                : 67 68 70 71 72 81 82 83 84 85
+PYC                  : 5 6 23 24 25 26 27 28 60 61 62 66 67 68 69 70 71 72 73 74 75 76 81 82 83 84 85
 RANGE                : 66
 RESTA                : 45 49
 SEG                  : 
@@ -164,22 +167,22 @@ callable             : 6
 condicion            : 59
 empty                : 1 18
 error_string         : 10
-expression           : 5 19 23 33 34 35 35 36 36 37 37 39 39 40 40 41 41 42 42 43 43 44 44 45 45 46 49 51 52 53 54 55 56 70 71 72 77 78 78 79 80 80
-funcionreservada     : 8 86 87
+expression           : 5 19 23 33 34 35 35 36 36 37 37 39 39 40 40 41 41 42 42 43 43 44 44 45 45 46 49 51 52 53 54 55 56 70 71 72 77 78 78 79 80 80 83 83 84
+funcionreservada     : 8 88 89
 ids                  : 16 16 25
 index                : 31 32
 input                : 17 22 22
 list                 : 13
 multi_index          : 32 38
-ordenes              : 59 60 61 77 78 79 80 85 86
+ordenes              : 59 60 61 77 78 79 80 87 88
 params               : 25 26 29 60 61 62 73 74 75 76
 primitive            : 2 20 24
 procedure            : 9
-statement            : 3 4 84 85
+statement            : 3 4 86 87
 statements           : 4 0
 sublist              : 21 26 30
 valorIf              : 51 52 53 54 55 56
-valor_param          : 66 66 67 67 68
+valor_param          : 66 66 67 67 68 83 84 85 85
 var_assign           : 7
 
 Parsing method: LALR
@@ -239,7 +242,9 @@ state 0
     (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
     (81) funcionreservada -> . ID PUNTO SHAPEF PYC
     (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
     (60) procedure -> . PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
     (61) procedure -> . PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
     (27) error_string -> . ID IGUAL STRING PYC
@@ -355,7 +360,9 @@ state 1
     (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
     (81) funcionreservada -> . ID PUNTO SHAPEF PYC
     (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
     (60) procedure -> . PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
     (61) procedure -> . PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
     (27) error_string -> . ID IGUAL STRING PYC
@@ -715,7 +722,9 @@ state 17
     (72) funcionreservada -> ID . CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
     (81) funcionreservada -> ID . PUNTO SHAPEF PYC
     (82) funcionreservada -> ID . PUNTO SHAPEC PYC
-    (83) funcionreservada -> ID . PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+    (83) funcionreservada -> ID . PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> ID . PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> ID . PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
     (27) error_string -> ID . IGUAL STRING PYC
     (38) sublist -> ID . multi_index
     (15) ids -> ID .
@@ -1258,12 +1267,15 @@ state 46
     (68) funcionreservada -> ID PUNTO . DEL PARENTESISIZQ valor_param PARENTESISDER PYC
     (81) funcionreservada -> ID PUNTO . SHAPEF PYC
     (82) funcionreservada -> ID PUNTO . SHAPEC PYC
-    (83) funcionreservada -> ID PUNTO . DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+    (83) funcionreservada -> ID PUNTO . INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> ID PUNTO . INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> ID PUNTO . DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
 
     INSERT          shift and go to state 85
     DEL             shift and go to state 86
     SHAPEF          shift and go to state 87
     SHAPEC          shift and go to state 88
+    DELETE          shift and go to state 89
 
 
 state 47
@@ -1288,13 +1300,13 @@ state 47
     (48) expression -> . INT
     (49) expression -> . RESTA expression
 
-    DOSPUNTOS       shift and go to state 90
+    DOSPUNTOS       shift and go to state 91
     PARENTESISIZQ   shift and go to state 16
     ID              shift and go to state 44
     INT             shift and go to state 32
     RESTA           shift and go to state 19
 
-    expression                     shift and go to state 89
+    expression                     shift and go to state 90
 
 state 48
 
@@ -1324,16 +1336,16 @@ state 49
     COMA            reduce using rule 31 (multi_index -> index .)
     CORCHETEDER     reduce using rule 31 (multi_index -> index .)
     PARENTESISDER   reduce using rule 31 (multi_index -> index .)
-    CORCHETEIZQ     shift and go to state 92
+    CORCHETEIZQ     shift and go to state 93
 
     index                          shift and go to state 49
-    multi_index                    shift and go to state 91
+    multi_index                    shift and go to state 92
 
 state 50
 
     (29) list -> CORCHETEIZQ params . CORCHETEDER
 
-    CORCHETEDER     shift and go to state 93
+    CORCHETEDER     shift and go to state 94
 
 
 state 51
@@ -1344,7 +1356,7 @@ state 51
     CORCHETEDER     reduce using rule 17 (params -> input .)
     PYC             reduce using rule 17 (params -> input .)
     PARENTESISDER   reduce using rule 17 (params -> input .)
-    COMA            shift and go to state 94
+    COMA            shift and go to state 95
 
 
 state 52
@@ -1424,7 +1436,7 @@ state 56
     CORCHETEDER     reduce using rule 47 (expression -> ID .)
     PYC             reduce using rule 47 (expression -> ID .)
     PARENTESISDER   reduce using rule 47 (expression -> ID .)
-    CORCHETEIZQ     shift and go to state 92
+    CORCHETEIZQ     shift and go to state 93
 
     multi_index                    shift and go to state 48
     index                          shift and go to state 49
@@ -1537,7 +1549,7 @@ state 59
     CORCHETEIZQ     shift and go to state 18
 
     sublist                        shift and go to state 55
-    params                         shift and go to state 95
+    params                         shift and go to state 96
     input                          shift and go to state 51
     empty                          shift and go to state 52
     expression                     shift and go to state 53
@@ -1582,7 +1594,7 @@ state 60
     STRING          shift and go to state 8
     CORCHETEIZQ     shift and go to state 18
 
-    params                         shift and go to state 96
+    params                         shift and go to state 97
     input                          shift and go to state 51
     empty                          shift and go to state 52
     expression                     shift and go to state 53
@@ -1596,9 +1608,9 @@ state 61
     (15) ids -> . ID
     (16) ids -> . ids COMA ids
 
-    ID              shift and go to state 98
+    ID              shift and go to state 99
 
-    ids                            shift and go to state 97
+    ids                            shift and go to state 98
 
 state 62
 
@@ -1626,21 +1638,21 @@ state 62
     INT             shift and go to state 32
     RESTA           shift and go to state 19
 
-    condicion                      shift and go to state 99
-    expression                     shift and go to state 100
+    condicion                      shift and go to state 100
+    expression                     shift and go to state 101
 
 state 63
 
     (62) funcionreservada -> CALL ID . PARENTESISIZQ params PARENTESISDER PYC
 
-    PARENTESISIZQ   shift and go to state 101
+    PARENTESISIZQ   shift and go to state 102
 
 
 state 64
 
     (69) funcionreservada -> LEN PARENTESISIZQ . ID PARENTESISDER PYC
 
-    ID              shift and go to state 102
+    ID              shift and go to state 103
 
 
 state 65
@@ -1681,7 +1693,7 @@ state 65
     STRING          shift and go to state 8
     CORCHETEIZQ     shift and go to state 18
 
-    params                         shift and go to state 103
+    params                         shift and go to state 104
     input                          shift and go to state 51
     empty                          shift and go to state 52
     expression                     shift and go to state 53
@@ -1727,7 +1739,7 @@ state 66
     STRING          shift and go to state 8
     CORCHETEIZQ     shift and go to state 18
 
-    params                         shift and go to state 104
+    params                         shift and go to state 105
     input                          shift and go to state 51
     empty                          shift and go to state 52
     expression                     shift and go to state 53
@@ -1773,7 +1785,7 @@ state 67
     STRING          shift and go to state 8
     CORCHETEIZQ     shift and go to state 18
 
-    params                         shift and go to state 105
+    params                         shift and go to state 106
     input                          shift and go to state 51
     empty                          shift and go to state 52
     expression                     shift and go to state 53
@@ -1819,7 +1831,7 @@ state 68
     STRING          shift and go to state 8
     CORCHETEIZQ     shift and go to state 18
 
-    params                         shift and go to state 106
+    params                         shift and go to state 107
     input                          shift and go to state 51
     empty                          shift and go to state 52
     expression                     shift and go to state 53
@@ -1841,7 +1853,7 @@ state 69
     (44) expression -> expression . SUMA expression
     (45) expression -> expression . RESTA expression
 
-    IN              shift and go to state 107
+    IN              shift and go to state 108
     EXPONENTE       shift and go to state 34
     MODULO          shift and go to state 35
     MULTIPLICACION  shift and go to state 36
@@ -1855,14 +1867,14 @@ state 70
 
     (60) procedure -> PROCEDURE ID . PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
 
-    PARENTESISIZQ   shift and go to state 108
+    PARENTESISIZQ   shift and go to state 109
 
 
 state 71
 
     (61) procedure -> PROCEDURE MAIN . PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
 
-    PARENTESISIZQ   shift and go to state 109
+    PARENTESISIZQ   shift and go to state 110
 
 
 state 72
@@ -2163,7 +2175,7 @@ state 79
 
     (28) statement -> TYPE PARENTESISIZQ ID . PARENTESISDER PYC
 
-    PARENTESISDER   shift and go to state 110
+    PARENTESISDER   shift and go to state 111
 
 
 state 80
@@ -2204,7 +2216,7 @@ state 81
     (44) expression -> expression . SUMA expression
     (45) expression -> expression . RESTA expression
 
-    PYC             shift and go to state 111
+    PYC             shift and go to state 112
     EXPONENTE       shift and go to state 34
     MODULO          shift and go to state 35
     MULTIPLICACION  shift and go to state 36
@@ -2218,14 +2230,14 @@ state 82
 
     (24) var_assign -> ID IGUAL primitive . PYC
 
-    PYC             shift and go to state 112
+    PYC             shift and go to state 113
 
 
 state 83
 
     (66) var_assign -> ID IGUAL LIST . PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
 
-    PARENTESISIZQ   shift and go to state 113
+    PARENTESISIZQ   shift and go to state 114
 
 
 state 84
@@ -2234,7 +2246,7 @@ state 84
     (14) primitive -> STRING .
 
   ! shift/reduce conflict for PYC resolved as shift
-    PYC             shift and go to state 114
+    PYC             shift and go to state 115
 
   ! PYC             [ reduce using rule 14 (primitive -> STRING .) ]
 
@@ -2242,33 +2254,41 @@ state 84
 state 85
 
     (67) funcionreservada -> ID PUNTO INSERT . PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    (83) funcionreservada -> ID PUNTO INSERT . PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> ID PUNTO INSERT . PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
 
-    PARENTESISIZQ   shift and go to state 115
+    PARENTESISIZQ   shift and go to state 116
 
 
 state 86
 
     (68) funcionreservada -> ID PUNTO DEL . PARENTESISIZQ valor_param PARENTESISDER PYC
-    (83) funcionreservada -> ID PUNTO DEL . PARENTESISIZQ INT COMA INT PARENTESISDER PYC
 
-    PARENTESISIZQ   shift and go to state 116
+    PARENTESISIZQ   shift and go to state 117
 
 
 state 87
 
     (81) funcionreservada -> ID PUNTO SHAPEF . PYC
 
-    PYC             shift and go to state 117
+    PYC             shift and go to state 118
 
 
 state 88
 
     (82) funcionreservada -> ID PUNTO SHAPEC . PYC
 
-    PYC             shift and go to state 118
+    PYC             shift and go to state 119
 
 
 state 89
+
+    (85) funcionreservada -> ID PUNTO DELETE . PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+
+    PARENTESISIZQ   shift and go to state 120
+
+
+state 90
 
     (70) funcionreservada -> ID CORCHETEIZQ expression . CORCHETEDER PUNTO NEG PYC
     (71) funcionreservada -> ID CORCHETEIZQ expression . CORCHETEDER PUNTO T PYC
@@ -2285,9 +2305,9 @@ state 89
     (44) expression -> expression . SUMA expression
     (45) expression -> expression . RESTA expression
 
-    CORCHETEDER     shift and go to state 119
-    DOSPUNTOS       shift and go to state 120
-    COMA            shift and go to state 121
+    CORCHETEDER     shift and go to state 121
+    DOSPUNTOS       shift and go to state 122
+    COMA            shift and go to state 123
     EXPONENTE       shift and go to state 34
     MODULO          shift and go to state 35
     MULTIPLICACION  shift and go to state 36
@@ -2297,14 +2317,14 @@ state 89
     RESTA           shift and go to state 40
 
 
-state 90
+state 91
 
     (34) index -> CORCHETEIZQ DOSPUNTOS . COMA expression CORCHETEDER
 
-    COMA            shift and go to state 122
+    COMA            shift and go to state 124
 
 
-state 91
+state 92
 
     (32) multi_index -> index multi_index .
 
@@ -2315,7 +2335,7 @@ state 91
     PARENTESISDER   reduce using rule 32 (multi_index -> index multi_index .)
 
 
-state 92
+state 93
 
     (33) index -> CORCHETEIZQ . expression CORCHETEDER
     (34) index -> CORCHETEIZQ . DOSPUNTOS COMA expression CORCHETEDER
@@ -2334,15 +2354,15 @@ state 92
     (48) expression -> . INT
     (49) expression -> . RESTA expression
 
-    DOSPUNTOS       shift and go to state 90
+    DOSPUNTOS       shift and go to state 91
     PARENTESISIZQ   shift and go to state 16
     ID              shift and go to state 44
     INT             shift and go to state 32
     RESTA           shift and go to state 19
 
-    expression                     shift and go to state 123
+    expression                     shift and go to state 125
 
-state 93
+state 94
 
     (29) list -> CORCHETEIZQ params CORCHETEDER .
 
@@ -2367,7 +2387,7 @@ state 93
     PARENTESISDER   reduce using rule 29 (list -> CORCHETEIZQ params CORCHETEDER .)
 
 
-state 94
+state 95
 
     (22) input -> input COMA . input
     (18) input -> . empty
@@ -2406,28 +2426,28 @@ state 94
     STRING          shift and go to state 8
     CORCHETEIZQ     shift and go to state 18
 
-    input                          shift and go to state 124
+    input                          shift and go to state 126
     empty                          shift and go to state 52
     expression                     shift and go to state 53
     primitive                      shift and go to state 54
     sublist                        shift and go to state 55
     list                           shift and go to state 7
 
-state 95
+state 96
 
     (26) var_assign -> sublist IGUAL params . PYC
 
-    PYC             shift and go to state 125
-
-
-state 96
-
-    (25) var_assign -> ids IGUAL params . PYC
-
-    PYC             shift and go to state 126
+    PYC             shift and go to state 127
 
 
 state 97
+
+    (25) var_assign -> ids IGUAL params . PYC
+
+    PYC             shift and go to state 128
+
+
+state 98
 
     (16) ids -> ids COMA ids .
     (16) ids -> ids . COMA ids
@@ -2439,7 +2459,7 @@ state 97
   ! COMA            [ reduce using rule 16 (ids -> ids COMA ids .) ]
 
 
-state 98
+state 99
 
     (15) ids -> ID .
 
@@ -2447,14 +2467,14 @@ state 98
     IGUAL           reduce using rule 15 (ids -> ID .)
 
 
-state 99
+state 100
 
     (59) funcionreservada -> IF PARENTESISIZQ condicion . PARENTESISDER LLAVEIZQ ordenes LLAVEDER
 
-    PARENTESISDER   shift and go to state 127
+    PARENTESISDER   shift and go to state 129
 
 
-state 100
+state 101
 
     (51) condicion -> expression . IGUALES valorIf
     (52) condicion -> expression . MAYORQUE valorIf
@@ -2470,12 +2490,12 @@ state 100
     (44) expression -> expression . SUMA expression
     (45) expression -> expression . RESTA expression
 
-    IGUALES         shift and go to state 128
-    MAYORQUE        shift and go to state 129
-    MENORQUE        shift and go to state 130
-    MENORIGUAL      shift and go to state 131
-    MAYORIGUAL      shift and go to state 132
-    DIFERENTE       shift and go to state 133
+    IGUALES         shift and go to state 130
+    MAYORQUE        shift and go to state 131
+    MENORQUE        shift and go to state 132
+    MENORIGUAL      shift and go to state 133
+    MAYORIGUAL      shift and go to state 134
+    DIFERENTE       shift and go to state 135
     EXPONENTE       shift and go to state 34
     MODULO          shift and go to state 35
     MULTIPLICACION  shift and go to state 36
@@ -2485,7 +2505,7 @@ state 100
     RESTA           shift and go to state 40
 
 
-state 101
+state 102
 
     (62) funcionreservada -> CALL ID PARENTESISIZQ . params PARENTESISDER PYC
     (17) params -> . input
@@ -2523,7 +2543,7 @@ state 101
     STRING          shift and go to state 8
     CORCHETEIZQ     shift and go to state 18
 
-    params                         shift and go to state 134
+    params                         shift and go to state 136
     input                          shift and go to state 51
     empty                          shift and go to state 52
     expression                     shift and go to state 53
@@ -2531,42 +2551,42 @@ state 101
     sublist                        shift and go to state 55
     list                           shift and go to state 7
 
-state 102
-
-    (69) funcionreservada -> LEN PARENTESISIZQ ID . PARENTESISDER PYC
-
-    PARENTESISDER   shift and go to state 135
-
-
 state 103
 
-    (73) funcionreservada -> BLINK PARENTESISIZQ params . PARENTESISDER PYC
-
-    PARENTESISDER   shift and go to state 136
-
-
-state 104
-
-    (74) funcionreservada -> DELAY PARENTESISIZQ params . PARENTESISDER PYC
+    (69) funcionreservada -> LEN PARENTESISIZQ ID . PARENTESISDER PYC
 
     PARENTESISDER   shift and go to state 137
 
 
-state 105
+state 104
 
-    (75) funcionreservada -> PRINTLED PARENTESISIZQ params . PARENTESISDER PYC
+    (73) funcionreservada -> BLINK PARENTESISIZQ params . PARENTESISDER PYC
 
     PARENTESISDER   shift and go to state 138
 
 
-state 106
+state 105
 
-    (76) funcionreservada -> PRINTLEDX PARENTESISIZQ params . PARENTESISDER PYC
+    (74) funcionreservada -> DELAY PARENTESISIZQ params . PARENTESISDER PYC
 
     PARENTESISDER   shift and go to state 139
 
 
+state 106
+
+    (75) funcionreservada -> PRINTLED PARENTESISIZQ params . PARENTESISDER PYC
+
+    PARENTESISDER   shift and go to state 140
+
+
 state 107
+
+    (76) funcionreservada -> PRINTLEDX PARENTESISIZQ params . PARENTESISDER PYC
+
+    PARENTESISDER   shift and go to state 141
+
+
+state 108
 
     (77) funcionreservada -> FOR expression IN . INT LLAVEIZQ ordenes LLAVEDER
     (78) funcionreservada -> FOR expression IN . expression LLAVEIZQ ordenes LLAVEDER
@@ -2584,14 +2604,14 @@ state 107
     (48) expression -> . INT
     (49) expression -> . RESTA expression
 
-    INT             shift and go to state 141
+    INT             shift and go to state 143
     PARENTESISIZQ   shift and go to state 16
     ID              shift and go to state 44
     RESTA           shift and go to state 19
 
-    expression                     shift and go to state 140
+    expression                     shift and go to state 142
 
-state 108
+state 109
 
     (60) procedure -> PROCEDURE ID PARENTESISIZQ . params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
     (17) params -> . input
@@ -2629,7 +2649,7 @@ state 108
     STRING          shift and go to state 8
     CORCHETEIZQ     shift and go to state 18
 
-    params                         shift and go to state 142
+    params                         shift and go to state 144
     input                          shift and go to state 51
     empty                          shift and go to state 52
     expression                     shift and go to state 53
@@ -2637,7 +2657,7 @@ state 108
     sublist                        shift and go to state 55
     list                           shift and go to state 7
 
-state 109
+state 110
 
     (61) procedure -> PROCEDURE MAIN PARENTESISIZQ . params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
     (17) params -> . input
@@ -2675,7 +2695,7 @@ state 109
     STRING          shift and go to state 8
     CORCHETEIZQ     shift and go to state 18
 
-    params                         shift and go to state 143
+    params                         shift and go to state 145
     input                          shift and go to state 51
     empty                          shift and go to state 52
     expression                     shift and go to state 53
@@ -2683,14 +2703,14 @@ state 109
     sublist                        shift and go to state 55
     list                           shift and go to state 7
 
-state 110
+state 111
 
     (28) statement -> TYPE PARENTESISIZQ ID PARENTESISDER . PYC
 
-    PYC             shift and go to state 144
+    PYC             shift and go to state 146
 
 
-state 111
+state 112
 
     (23) var_assign -> ID IGUAL expression PYC .
 
@@ -2712,7 +2732,7 @@ state 111
     LLAVEDER        reduce using rule 23 (var_assign -> ID IGUAL expression PYC .)
 
 
-state 112
+state 113
 
     (24) var_assign -> ID IGUAL primitive PYC .
 
@@ -2734,14 +2754,14 @@ state 112
     LLAVEDER        reduce using rule 24 (var_assign -> ID IGUAL primitive PYC .)
 
 
-state 113
+state 114
 
     (66) var_assign -> ID IGUAL LIST PARENTESISIZQ . RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
 
-    RANGE           shift and go to state 145
+    RANGE           shift and go to state 147
 
 
-state 114
+state 115
 
     (27) error_string -> ID IGUAL STRING PYC .
 
@@ -2763,34 +2783,35 @@ state 114
     LLAVEDER        reduce using rule 27 (error_string -> ID IGUAL STRING PYC .)
 
 
-state 115
-
-    (67) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ . valor_param COMA valor_param PARENTESISDER PYC
-    (63) valor_param -> . BOOLEAN
-    (64) valor_param -> . INT
-    (65) valor_param -> . ID
-
-    BOOLEAN         shift and go to state 148
-    INT             shift and go to state 149
-    ID              shift and go to state 146
-
-    valor_param                    shift and go to state 147
-
 state 116
 
-    (68) funcionreservada -> ID PUNTO DEL PARENTESISIZQ . valor_param PARENTESISDER PYC
-    (83) funcionreservada -> ID PUNTO DEL PARENTESISIZQ . INT COMA INT PARENTESISDER PYC
+    (67) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ . valor_param COMA valor_param PARENTESISDER PYC
+    (83) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ . valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ . valor_param COMA expression PARENTESISDER PYC
     (63) valor_param -> . BOOLEAN
     (64) valor_param -> . INT
     (65) valor_param -> . ID
 
+    BOOLEAN         shift and go to state 150
     INT             shift and go to state 151
-    BOOLEAN         shift and go to state 148
-    ID              shift and go to state 146
+    ID              shift and go to state 148
 
-    valor_param                    shift and go to state 150
+    valor_param                    shift and go to state 149
 
 state 117
+
+    (68) funcionreservada -> ID PUNTO DEL PARENTESISIZQ . valor_param PARENTESISDER PYC
+    (63) valor_param -> . BOOLEAN
+    (64) valor_param -> . INT
+    (65) valor_param -> . ID
+
+    BOOLEAN         shift and go to state 150
+    INT             shift and go to state 151
+    ID              shift and go to state 148
+
+    valor_param                    shift and go to state 152
+
+state 118
 
     (81) funcionreservada -> ID PUNTO SHAPEF PYC .
 
@@ -2812,7 +2833,7 @@ state 117
     LLAVEDER        reduce using rule 81 (funcionreservada -> ID PUNTO SHAPEF PYC .)
 
 
-state 118
+state 119
 
     (82) funcionreservada -> ID PUNTO SHAPEC PYC .
 
@@ -2834,7 +2855,20 @@ state 118
     LLAVEDER        reduce using rule 82 (funcionreservada -> ID PUNTO SHAPEC PYC .)
 
 
-state 119
+state 120
+
+    (85) funcionreservada -> ID PUNTO DELETE PARENTESISIZQ . valor_param COMA valor_param PARENTESISDER PYC
+    (63) valor_param -> . BOOLEAN
+    (64) valor_param -> . INT
+    (65) valor_param -> . ID
+
+    BOOLEAN         shift and go to state 150
+    INT             shift and go to state 151
+    ID              shift and go to state 148
+
+    valor_param                    shift and go to state 153
+
+state 121
 
     (70) funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER . PUNTO NEG PYC
     (71) funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER . PUNTO T PYC
@@ -2843,61 +2877,17 @@ state 119
     (37) index -> CORCHETEIZQ expression CORCHETEDER . CORCHETEIZQ expression CORCHETEDER
 
   ! shift/reduce conflict for CORCHETEIZQ resolved as shift
-    PUNTO           shift and go to state 153
+    PUNTO           shift and go to state 155
     IGUAL           reduce using rule 33 (index -> CORCHETEIZQ expression CORCHETEDER .)
     PYC             reduce using rule 33 (index -> CORCHETEIZQ expression CORCHETEDER .)
-    CORCHETEIZQ     shift and go to state 152
+    CORCHETEIZQ     shift and go to state 154
 
   ! CORCHETEIZQ     [ reduce using rule 33 (index -> CORCHETEIZQ expression CORCHETEDER .) ]
 
 
-state 120
-
-    (35) index -> CORCHETEIZQ expression DOSPUNTOS . expression CORCHETEDER
-    (39) expression -> . expression EXPONENTE expression
-    (40) expression -> . expression MODULO expression
-    (41) expression -> . expression MULTIPLICACION expression
-    (42) expression -> . expression DIVISIONENTERA expression
-    (43) expression -> . expression DIVISION expression
-    (44) expression -> . expression SUMA expression
-    (45) expression -> . expression RESTA expression
-    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (47) expression -> . ID
-    (48) expression -> . INT
-    (49) expression -> . RESTA expression
-
-    PARENTESISIZQ   shift and go to state 16
-    ID              shift and go to state 44
-    INT             shift and go to state 32
-    RESTA           shift and go to state 19
-
-    expression                     shift and go to state 154
-
-state 121
-
-    (36) index -> CORCHETEIZQ expression COMA . expression CORCHETEDER
-    (39) expression -> . expression EXPONENTE expression
-    (40) expression -> . expression MODULO expression
-    (41) expression -> . expression MULTIPLICACION expression
-    (42) expression -> . expression DIVISIONENTERA expression
-    (43) expression -> . expression DIVISION expression
-    (44) expression -> . expression SUMA expression
-    (45) expression -> . expression RESTA expression
-    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (47) expression -> . ID
-    (48) expression -> . INT
-    (49) expression -> . RESTA expression
-
-    PARENTESISIZQ   shift and go to state 16
-    ID              shift and go to state 44
-    INT             shift and go to state 32
-    RESTA           shift and go to state 19
-
-    expression                     shift and go to state 155
-
 state 122
 
-    (34) index -> CORCHETEIZQ DOSPUNTOS COMA . expression CORCHETEDER
+    (35) index -> CORCHETEIZQ expression DOSPUNTOS . expression CORCHETEDER
     (39) expression -> . expression EXPONENTE expression
     (40) expression -> . expression MODULO expression
     (41) expression -> . expression MULTIPLICACION expression
@@ -2919,6 +2909,50 @@ state 122
 
 state 123
 
+    (36) index -> CORCHETEIZQ expression COMA . expression CORCHETEDER
+    (39) expression -> . expression EXPONENTE expression
+    (40) expression -> . expression MODULO expression
+    (41) expression -> . expression MULTIPLICACION expression
+    (42) expression -> . expression DIVISIONENTERA expression
+    (43) expression -> . expression DIVISION expression
+    (44) expression -> . expression SUMA expression
+    (45) expression -> . expression RESTA expression
+    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (47) expression -> . ID
+    (48) expression -> . INT
+    (49) expression -> . RESTA expression
+
+    PARENTESISIZQ   shift and go to state 16
+    ID              shift and go to state 44
+    INT             shift and go to state 32
+    RESTA           shift and go to state 19
+
+    expression                     shift and go to state 157
+
+state 124
+
+    (34) index -> CORCHETEIZQ DOSPUNTOS COMA . expression CORCHETEDER
+    (39) expression -> . expression EXPONENTE expression
+    (40) expression -> . expression MODULO expression
+    (41) expression -> . expression MULTIPLICACION expression
+    (42) expression -> . expression DIVISIONENTERA expression
+    (43) expression -> . expression DIVISION expression
+    (44) expression -> . expression SUMA expression
+    (45) expression -> . expression RESTA expression
+    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (47) expression -> . ID
+    (48) expression -> . INT
+    (49) expression -> . RESTA expression
+
+    PARENTESISIZQ   shift and go to state 16
+    ID              shift and go to state 44
+    INT             shift and go to state 32
+    RESTA           shift and go to state 19
+
+    expression                     shift and go to state 158
+
+state 125
+
     (33) index -> CORCHETEIZQ expression . CORCHETEDER
     (35) index -> CORCHETEIZQ expression . DOSPUNTOS expression CORCHETEDER
     (36) index -> CORCHETEIZQ expression . COMA expression CORCHETEDER
@@ -2931,9 +2965,9 @@ state 123
     (44) expression -> expression . SUMA expression
     (45) expression -> expression . RESTA expression
 
-    CORCHETEDER     shift and go to state 157
-    DOSPUNTOS       shift and go to state 120
-    COMA            shift and go to state 121
+    CORCHETEDER     shift and go to state 159
+    DOSPUNTOS       shift and go to state 122
+    COMA            shift and go to state 123
     EXPONENTE       shift and go to state 34
     MODULO          shift and go to state 35
     MULTIPLICACION  shift and go to state 36
@@ -2943,7 +2977,7 @@ state 123
     RESTA           shift and go to state 40
 
 
-state 124
+state 126
 
     (22) input -> input COMA input .
     (22) input -> input . COMA input
@@ -2952,12 +2986,12 @@ state 124
     CORCHETEDER     reduce using rule 22 (input -> input COMA input .)
     PYC             reduce using rule 22 (input -> input COMA input .)
     PARENTESISDER   reduce using rule 22 (input -> input COMA input .)
-    COMA            shift and go to state 94
+    COMA            shift and go to state 95
 
   ! COMA            [ reduce using rule 22 (input -> input COMA input .) ]
 
 
-state 125
+state 127
 
     (26) var_assign -> sublist IGUAL params PYC .
 
@@ -2979,7 +3013,7 @@ state 125
     LLAVEDER        reduce using rule 26 (var_assign -> sublist IGUAL params PYC .)
 
 
-state 126
+state 128
 
     (25) var_assign -> ids IGUAL params PYC .
 
@@ -3001,122 +3035,122 @@ state 126
     LLAVEDER        reduce using rule 25 (var_assign -> ids IGUAL params PYC .)
 
 
-state 127
+state 129
 
     (59) funcionreservada -> IF PARENTESISIZQ condicion PARENTESISDER . LLAVEIZQ ordenes LLAVEDER
 
-    LLAVEIZQ        shift and go to state 158
+    LLAVEIZQ        shift and go to state 160
 
 
-state 128
+state 130
 
     (51) condicion -> expression IGUALES . valorIf
     (57) valorIf -> . BOOLEAN
     (58) valorIf -> . INT
 
-    BOOLEAN         shift and go to state 160
-    INT             shift and go to state 161
+    BOOLEAN         shift and go to state 162
+    INT             shift and go to state 163
 
-    valorIf                        shift and go to state 159
+    valorIf                        shift and go to state 161
 
-state 129
+state 131
 
     (52) condicion -> expression MAYORQUE . valorIf
     (57) valorIf -> . BOOLEAN
     (58) valorIf -> . INT
 
-    BOOLEAN         shift and go to state 160
-    INT             shift and go to state 161
-
-    valorIf                        shift and go to state 162
-
-state 130
-
-    (53) condicion -> expression MENORQUE . valorIf
-    (57) valorIf -> . BOOLEAN
-    (58) valorIf -> . INT
-
-    BOOLEAN         shift and go to state 160
-    INT             shift and go to state 161
-
-    valorIf                        shift and go to state 163
-
-state 131
-
-    (54) condicion -> expression MENORIGUAL . valorIf
-    (57) valorIf -> . BOOLEAN
-    (58) valorIf -> . INT
-
-    BOOLEAN         shift and go to state 160
-    INT             shift and go to state 161
+    BOOLEAN         shift and go to state 162
+    INT             shift and go to state 163
 
     valorIf                        shift and go to state 164
 
 state 132
 
-    (55) condicion -> expression MAYORIGUAL . valorIf
+    (53) condicion -> expression MENORQUE . valorIf
     (57) valorIf -> . BOOLEAN
     (58) valorIf -> . INT
 
-    BOOLEAN         shift and go to state 160
-    INT             shift and go to state 161
+    BOOLEAN         shift and go to state 162
+    INT             shift and go to state 163
 
     valorIf                        shift and go to state 165
 
 state 133
 
-    (56) condicion -> expression DIFERENTE . valorIf
+    (54) condicion -> expression MENORIGUAL . valorIf
     (57) valorIf -> . BOOLEAN
     (58) valorIf -> . INT
 
-    BOOLEAN         shift and go to state 160
-    INT             shift and go to state 161
+    BOOLEAN         shift and go to state 162
+    INT             shift and go to state 163
 
     valorIf                        shift and go to state 166
 
 state 134
 
-    (62) funcionreservada -> CALL ID PARENTESISIZQ params . PARENTESISDER PYC
+    (55) condicion -> expression MAYORIGUAL . valorIf
+    (57) valorIf -> . BOOLEAN
+    (58) valorIf -> . INT
 
-    PARENTESISDER   shift and go to state 167
+    BOOLEAN         shift and go to state 162
+    INT             shift and go to state 163
 
+    valorIf                        shift and go to state 167
 
 state 135
 
-    (69) funcionreservada -> LEN PARENTESISIZQ ID PARENTESISDER . PYC
+    (56) condicion -> expression DIFERENTE . valorIf
+    (57) valorIf -> . BOOLEAN
+    (58) valorIf -> . INT
 
-    PYC             shift and go to state 168
+    BOOLEAN         shift and go to state 162
+    INT             shift and go to state 163
 
+    valorIf                        shift and go to state 168
 
 state 136
 
-    (73) funcionreservada -> BLINK PARENTESISIZQ params PARENTESISDER . PYC
+    (62) funcionreservada -> CALL ID PARENTESISIZQ params . PARENTESISDER PYC
 
-    PYC             shift and go to state 169
+    PARENTESISDER   shift and go to state 169
 
 
 state 137
 
-    (74) funcionreservada -> DELAY PARENTESISIZQ params PARENTESISDER . PYC
+    (69) funcionreservada -> LEN PARENTESISIZQ ID PARENTESISDER . PYC
 
     PYC             shift and go to state 170
 
 
 state 138
 
-    (75) funcionreservada -> PRINTLED PARENTESISIZQ params PARENTESISDER . PYC
+    (73) funcionreservada -> BLINK PARENTESISIZQ params PARENTESISDER . PYC
 
     PYC             shift and go to state 171
 
 
 state 139
 
-    (76) funcionreservada -> PRINTLEDX PARENTESISIZQ params PARENTESISDER . PYC
+    (74) funcionreservada -> DELAY PARENTESISIZQ params PARENTESISDER . PYC
 
     PYC             shift and go to state 172
 
 
 state 140
+
+    (75) funcionreservada -> PRINTLED PARENTESISIZQ params PARENTESISDER . PYC
+
+    PYC             shift and go to state 173
+
+
+state 141
+
+    (76) funcionreservada -> PRINTLEDX PARENTESISIZQ params PARENTESISDER . PYC
+
+    PYC             shift and go to state 174
+
+
+state 142
 
     (78) funcionreservada -> FOR expression IN expression . LLAVEIZQ ordenes LLAVEDER
     (80) funcionreservada -> FOR expression IN expression . STEP INT LLAVEIZQ ordenes LLAVEDER
@@ -3128,8 +3162,8 @@ state 140
     (44) expression -> expression . SUMA expression
     (45) expression -> expression . RESTA expression
 
-    LLAVEIZQ        shift and go to state 173
-    STEP            shift and go to state 174
+    LLAVEIZQ        shift and go to state 175
+    STEP            shift and go to state 176
     EXPONENTE       shift and go to state 34
     MODULO          shift and go to state 35
     MULTIPLICACION  shift and go to state 36
@@ -3139,7 +3173,7 @@ state 140
     RESTA           shift and go to state 40
 
 
-state 141
+state 143
 
     (77) funcionreservada -> FOR expression IN INT . LLAVEIZQ ordenes LLAVEDER
     (79) funcionreservada -> FOR expression IN INT . STEP INT LLAVEIZQ ordenes LLAVEDER
@@ -3147,8 +3181,8 @@ state 141
 
   ! shift/reduce conflict for LLAVEIZQ resolved as shift
   ! shift/reduce conflict for STEP resolved as shift
-    LLAVEIZQ        shift and go to state 175
-    STEP            shift and go to state 176
+    LLAVEIZQ        shift and go to state 177
+    STEP            shift and go to state 178
     EXPONENTE       reduce using rule 48 (expression -> INT .)
     MODULO          reduce using rule 48 (expression -> INT .)
     MULTIPLICACION  reduce using rule 48 (expression -> INT .)
@@ -3161,21 +3195,21 @@ state 141
   ! STEP            [ reduce using rule 48 (expression -> INT .) ]
 
 
-state 142
+state 144
 
     (60) procedure -> PROCEDURE ID PARENTESISIZQ params . PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
 
-    PARENTESISDER   shift and go to state 177
+    PARENTESISDER   shift and go to state 179
 
 
-state 143
+state 145
 
     (61) procedure -> PROCEDURE MAIN PARENTESISIZQ params . PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
 
-    PARENTESISDER   shift and go to state 178
+    PARENTESISDER   shift and go to state 180
 
 
-state 144
+state 146
 
     (28) statement -> TYPE PARENTESISIZQ ID PARENTESISDER PYC .
 
@@ -3197,14 +3231,14 @@ state 144
     LLAVEDER        reduce using rule 28 (statement -> TYPE PARENTESISIZQ ID PARENTESISDER PYC .)
 
 
-state 145
+state 147
 
     (66) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE . PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
 
-    PARENTESISIZQ   shift and go to state 179
+    PARENTESISIZQ   shift and go to state 181
 
 
-state 146
+state 148
 
     (65) valor_param -> ID .
 
@@ -3212,14 +3246,16 @@ state 146
     PARENTESISDER   reduce using rule 65 (valor_param -> ID .)
 
 
-state 147
+state 149
 
     (67) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param . COMA valor_param PARENTESISDER PYC
+    (83) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param . COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param . COMA expression PARENTESISDER PYC
 
-    COMA            shift and go to state 180
+    COMA            shift and go to state 182
 
 
-state 148
+state 150
 
     (63) valor_param -> BOOLEAN .
 
@@ -3227,7 +3263,7 @@ state 148
     PARENTESISDER   reduce using rule 63 (valor_param -> BOOLEAN .)
 
 
-state 149
+state 151
 
     (64) valor_param -> INT .
 
@@ -3235,23 +3271,21 @@ state 149
     PARENTESISDER   reduce using rule 64 (valor_param -> INT .)
 
 
-state 150
+state 152
 
     (68) funcionreservada -> ID PUNTO DEL PARENTESISIZQ valor_param . PARENTESISDER PYC
 
-    PARENTESISDER   shift and go to state 181
+    PARENTESISDER   shift and go to state 183
 
 
-state 151
+state 153
 
-    (83) funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT . COMA INT PARENTESISDER PYC
-    (64) valor_param -> INT .
+    (85) funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param . COMA valor_param PARENTESISDER PYC
 
-    COMA            shift and go to state 182
-    PARENTESISDER   reduce using rule 64 (valor_param -> INT .)
+    COMA            shift and go to state 184
 
 
-state 152
+state 154
 
     (37) index -> CORCHETEIZQ expression CORCHETEDER CORCHETEIZQ . expression CORCHETEDER
     (39) expression -> . expression EXPONENTE expression
@@ -3271,64 +3305,22 @@ state 152
     INT             shift and go to state 32
     RESTA           shift and go to state 19
 
-    expression                     shift and go to state 183
+    expression                     shift and go to state 185
 
-state 153
+state 155
 
     (70) funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO . NEG PYC
     (71) funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO . T PYC
     (72) funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO . F PYC
 
-    NEG             shift and go to state 184
-    T               shift and go to state 185
-    F               shift and go to state 186
-
-
-state 154
-
-    (35) index -> CORCHETEIZQ expression DOSPUNTOS expression . CORCHETEDER
-    (39) expression -> expression . EXPONENTE expression
-    (40) expression -> expression . MODULO expression
-    (41) expression -> expression . MULTIPLICACION expression
-    (42) expression -> expression . DIVISIONENTERA expression
-    (43) expression -> expression . DIVISION expression
-    (44) expression -> expression . SUMA expression
-    (45) expression -> expression . RESTA expression
-
-    CORCHETEDER     shift and go to state 187
-    EXPONENTE       shift and go to state 34
-    MODULO          shift and go to state 35
-    MULTIPLICACION  shift and go to state 36
-    DIVISIONENTERA  shift and go to state 37
-    DIVISION        shift and go to state 38
-    SUMA            shift and go to state 39
-    RESTA           shift and go to state 40
-
-
-state 155
-
-    (36) index -> CORCHETEIZQ expression COMA expression . CORCHETEDER
-    (39) expression -> expression . EXPONENTE expression
-    (40) expression -> expression . MODULO expression
-    (41) expression -> expression . MULTIPLICACION expression
-    (42) expression -> expression . DIVISIONENTERA expression
-    (43) expression -> expression . DIVISION expression
-    (44) expression -> expression . SUMA expression
-    (45) expression -> expression . RESTA expression
-
-    CORCHETEDER     shift and go to state 188
-    EXPONENTE       shift and go to state 34
-    MODULO          shift and go to state 35
-    MULTIPLICACION  shift and go to state 36
-    DIVISIONENTERA  shift and go to state 37
-    DIVISION        shift and go to state 38
-    SUMA            shift and go to state 39
-    RESTA           shift and go to state 40
+    NEG             shift and go to state 186
+    T               shift and go to state 187
+    F               shift and go to state 188
 
 
 state 156
 
-    (34) index -> CORCHETEIZQ DOSPUNTOS COMA expression . CORCHETEDER
+    (35) index -> CORCHETEIZQ expression DOSPUNTOS expression . CORCHETEDER
     (39) expression -> expression . EXPONENTE expression
     (40) expression -> expression . MODULO expression
     (41) expression -> expression . MULTIPLICACION expression
@@ -3349,6 +3341,48 @@ state 156
 
 state 157
 
+    (36) index -> CORCHETEIZQ expression COMA expression . CORCHETEDER
+    (39) expression -> expression . EXPONENTE expression
+    (40) expression -> expression . MODULO expression
+    (41) expression -> expression . MULTIPLICACION expression
+    (42) expression -> expression . DIVISIONENTERA expression
+    (43) expression -> expression . DIVISION expression
+    (44) expression -> expression . SUMA expression
+    (45) expression -> expression . RESTA expression
+
+    CORCHETEDER     shift and go to state 190
+    EXPONENTE       shift and go to state 34
+    MODULO          shift and go to state 35
+    MULTIPLICACION  shift and go to state 36
+    DIVISIONENTERA  shift and go to state 37
+    DIVISION        shift and go to state 38
+    SUMA            shift and go to state 39
+    RESTA           shift and go to state 40
+
+
+state 158
+
+    (34) index -> CORCHETEIZQ DOSPUNTOS COMA expression . CORCHETEDER
+    (39) expression -> expression . EXPONENTE expression
+    (40) expression -> expression . MODULO expression
+    (41) expression -> expression . MULTIPLICACION expression
+    (42) expression -> expression . DIVISIONENTERA expression
+    (43) expression -> expression . DIVISION expression
+    (44) expression -> expression . SUMA expression
+    (45) expression -> expression . RESTA expression
+
+    CORCHETEDER     shift and go to state 191
+    EXPONENTE       shift and go to state 34
+    MODULO          shift and go to state 35
+    MULTIPLICACION  shift and go to state 36
+    DIVISIONENTERA  shift and go to state 37
+    DIVISION        shift and go to state 38
+    SUMA            shift and go to state 39
+    RESTA           shift and go to state 40
+
+
+state 159
+
     (33) index -> CORCHETEIZQ expression CORCHETEDER .
     (37) index -> CORCHETEIZQ expression CORCHETEDER . CORCHETEIZQ expression CORCHETEDER
 
@@ -3358,18 +3392,18 @@ state 157
     COMA            reduce using rule 33 (index -> CORCHETEIZQ expression CORCHETEDER .)
     CORCHETEDER     reduce using rule 33 (index -> CORCHETEIZQ expression CORCHETEDER .)
     PARENTESISDER   reduce using rule 33 (index -> CORCHETEIZQ expression CORCHETEDER .)
-    CORCHETEIZQ     shift and go to state 152
+    CORCHETEIZQ     shift and go to state 154
 
   ! CORCHETEIZQ     [ reduce using rule 33 (index -> CORCHETEIZQ expression CORCHETEDER .) ]
 
 
-state 158
+state 160
 
     (59) funcionreservada -> IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ . ordenes LLAVEDER
-    (84) ordenes -> . statement
-    (85) ordenes -> . ordenes statement
-    (86) ordenes -> . ordenes funcionreservada
-    (87) ordenes -> . funcionreservada
+    (86) ordenes -> . statement
+    (87) ordenes -> . ordenes statement
+    (88) ordenes -> . ordenes funcionreservada
+    (89) ordenes -> . funcionreservada
     (5) statement -> . expression PYC
     (6) statement -> . callable PYC
     (7) statement -> . var_assign
@@ -3395,7 +3429,9 @@ state 158
     (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
     (81) funcionreservada -> . ID PUNTO SHAPEF PYC
     (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
     (39) expression -> . expression EXPONENTE expression
     (40) expression -> . expression MODULO expression
     (41) expression -> . expression MULTIPLICACION expression
@@ -3423,7 +3459,7 @@ state 158
     TYPE            shift and go to state 15
     IF              shift and go to state 22
     CALL            shift and go to state 23
-    ID              shift and go to state 193
+    ID              shift and go to state 195
     LEN             shift and go to state 24
     BLINK           shift and go to state 25
     DELAY           shift and go to state 26
@@ -3435,9 +3471,9 @@ state 158
     RESTA           shift and go to state 19
     PROCEDURE       shift and go to state 30
 
-    ordenes                        shift and go to state 190
-    statement                      shift and go to state 191
-    funcionreservada               shift and go to state 192
+    ordenes                        shift and go to state 192
+    statement                      shift and go to state 193
+    funcionreservada               shift and go to state 194
     expression                     shift and go to state 9
     callable                       shift and go to state 10
     var_assign                     shift and go to state 11
@@ -3446,70 +3482,70 @@ state 158
     sublist                        shift and go to state 20
     ids                            shift and go to state 21
 
-state 159
+state 161
 
     (51) condicion -> expression IGUALES valorIf .
 
     PARENTESISDER   reduce using rule 51 (condicion -> expression IGUALES valorIf .)
 
 
-state 160
+state 162
 
     (57) valorIf -> BOOLEAN .
 
     PARENTESISDER   reduce using rule 57 (valorIf -> BOOLEAN .)
 
 
-state 161
+state 163
 
     (58) valorIf -> INT .
 
     PARENTESISDER   reduce using rule 58 (valorIf -> INT .)
 
 
-state 162
+state 164
 
     (52) condicion -> expression MAYORQUE valorIf .
 
     PARENTESISDER   reduce using rule 52 (condicion -> expression MAYORQUE valorIf .)
 
 
-state 163
+state 165
 
     (53) condicion -> expression MENORQUE valorIf .
 
     PARENTESISDER   reduce using rule 53 (condicion -> expression MENORQUE valorIf .)
 
 
-state 164
+state 166
 
     (54) condicion -> expression MENORIGUAL valorIf .
 
     PARENTESISDER   reduce using rule 54 (condicion -> expression MENORIGUAL valorIf .)
 
 
-state 165
+state 167
 
     (55) condicion -> expression MAYORIGUAL valorIf .
 
     PARENTESISDER   reduce using rule 55 (condicion -> expression MAYORIGUAL valorIf .)
 
 
-state 166
+state 168
 
     (56) condicion -> expression DIFERENTE valorIf .
 
     PARENTESISDER   reduce using rule 56 (condicion -> expression DIFERENTE valorIf .)
 
 
-state 167
+state 169
 
     (62) funcionreservada -> CALL ID PARENTESISIZQ params PARENTESISDER . PYC
 
-    PYC             shift and go to state 194
+    PYC             shift and go to state 196
 
 
-state 168
+state 170
 
     (69) funcionreservada -> LEN PARENTESISIZQ ID PARENTESISDER PYC .
 
@@ -3531,7 +3567,7 @@ state 168
     LLAVEDER        reduce using rule 69 (funcionreservada -> LEN PARENTESISIZQ ID PARENTESISDER PYC .)
 
 
-state 169
+state 171
 
     (73) funcionreservada -> BLINK PARENTESISIZQ params PARENTESISDER PYC .
 
@@ -3553,7 +3589,7 @@ state 169
     LLAVEDER        reduce using rule 73 (funcionreservada -> BLINK PARENTESISIZQ params PARENTESISDER PYC .)
 
 
-state 170
+state 172
 
     (74) funcionreservada -> DELAY PARENTESISIZQ params PARENTESISDER PYC .
 
@@ -3575,7 +3611,7 @@ state 170
     LLAVEDER        reduce using rule 74 (funcionreservada -> DELAY PARENTESISIZQ params PARENTESISDER PYC .)
 
 
-state 171
+state 173
 
     (75) funcionreservada -> PRINTLED PARENTESISIZQ params PARENTESISDER PYC .
 
@@ -3597,7 +3633,7 @@ state 171
     LLAVEDER        reduce using rule 75 (funcionreservada -> PRINTLED PARENTESISIZQ params PARENTESISDER PYC .)
 
 
-state 172
+state 174
 
     (76) funcionreservada -> PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC .
 
@@ -3619,103 +3655,13 @@ state 172
     LLAVEDER        reduce using rule 76 (funcionreservada -> PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC .)
 
 
-state 173
-
-    (78) funcionreservada -> FOR expression IN expression LLAVEIZQ . ordenes LLAVEDER
-    (84) ordenes -> . statement
-    (85) ordenes -> . ordenes statement
-    (86) ordenes -> . ordenes funcionreservada
-    (87) ordenes -> . funcionreservada
-    (5) statement -> . expression PYC
-    (6) statement -> . callable PYC
-    (7) statement -> . var_assign
-    (8) statement -> . funcionreservada
-    (9) statement -> . procedure
-    (10) statement -> . error_string
-    (28) statement -> . TYPE PARENTESISIZQ ID PARENTESISDER PYC
-    (59) funcionreservada -> . IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
-    (62) funcionreservada -> . CALL ID PARENTESISIZQ params PARENTESISDER PYC
-    (67) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
-    (68) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC
-    (69) funcionreservada -> . LEN PARENTESISIZQ ID PARENTESISDER PYC
-    (70) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
-    (71) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
-    (72) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
-    (73) funcionreservada -> . BLINK PARENTESISIZQ params PARENTESISDER PYC
-    (74) funcionreservada -> . DELAY PARENTESISIZQ params PARENTESISDER PYC
-    (75) funcionreservada -> . PRINTLED PARENTESISIZQ params PARENTESISDER PYC
-    (76) funcionreservada -> . PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC
-    (77) funcionreservada -> . FOR expression IN INT LLAVEIZQ ordenes LLAVEDER
-    (78) funcionreservada -> . FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
-    (79) funcionreservada -> . FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
-    (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
-    (81) funcionreservada -> . ID PUNTO SHAPEF PYC
-    (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
-    (39) expression -> . expression EXPONENTE expression
-    (40) expression -> . expression MODULO expression
-    (41) expression -> . expression MULTIPLICACION expression
-    (42) expression -> . expression DIVISIONENTERA expression
-    (43) expression -> . expression DIVISION expression
-    (44) expression -> . expression SUMA expression
-    (45) expression -> . expression RESTA expression
-    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (47) expression -> . ID
-    (48) expression -> . INT
-    (49) expression -> . RESTA expression
-    (30) callable -> . sublist
-    (23) var_assign -> . ID IGUAL expression PYC
-    (24) var_assign -> . ID IGUAL primitive PYC
-    (25) var_assign -> . ids IGUAL params PYC
-    (26) var_assign -> . sublist IGUAL params PYC
-    (66) var_assign -> . ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
-    (60) procedure -> . PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
-    (61) procedure -> . PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
-    (27) error_string -> . ID IGUAL STRING PYC
-    (38) sublist -> . ID multi_index
-    (15) ids -> . ID
-    (16) ids -> . ids COMA ids
-
-    TYPE            shift and go to state 15
-    IF              shift and go to state 22
-    CALL            shift and go to state 23
-    ID              shift and go to state 193
-    LEN             shift and go to state 24
-    BLINK           shift and go to state 25
-    DELAY           shift and go to state 26
-    PRINTLED        shift and go to state 27
-    PRINTLEDX       shift and go to state 28
-    FOR             shift and go to state 29
-    PARENTESISIZQ   shift and go to state 16
-    INT             shift and go to state 32
-    RESTA           shift and go to state 19
-    PROCEDURE       shift and go to state 30
-
-    expression                     shift and go to state 9
-    ordenes                        shift and go to state 195
-    statement                      shift and go to state 191
-    funcionreservada               shift and go to state 192
-    callable                       shift and go to state 10
-    var_assign                     shift and go to state 11
-    procedure                      shift and go to state 13
-    error_string                   shift and go to state 14
-    sublist                        shift and go to state 20
-    ids                            shift and go to state 21
-
-state 174
-
-    (80) funcionreservada -> FOR expression IN expression STEP . INT LLAVEIZQ ordenes LLAVEDER
-
-    INT             shift and go to state 196
-
-
 state 175
 
-    (77) funcionreservada -> FOR expression IN INT LLAVEIZQ . ordenes LLAVEDER
-    (84) ordenes -> . statement
-    (85) ordenes -> . ordenes statement
-    (86) ordenes -> . ordenes funcionreservada
-    (87) ordenes -> . funcionreservada
+    (78) funcionreservada -> FOR expression IN expression LLAVEIZQ . ordenes LLAVEDER
+    (86) ordenes -> . statement
+    (87) ordenes -> . ordenes statement
+    (88) ordenes -> . ordenes funcionreservada
+    (89) ordenes -> . funcionreservada
     (5) statement -> . expression PYC
     (6) statement -> . callable PYC
     (7) statement -> . var_assign
@@ -3741,7 +3687,9 @@ state 175
     (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
     (81) funcionreservada -> . ID PUNTO SHAPEF PYC
     (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
     (39) expression -> . expression EXPONENTE expression
     (40) expression -> . expression MODULO expression
     (41) expression -> . expression MULTIPLICACION expression
@@ -3769,7 +3717,7 @@ state 175
     TYPE            shift and go to state 15
     IF              shift and go to state 22
     CALL            shift and go to state 23
-    ID              shift and go to state 193
+    ID              shift and go to state 195
     LEN             shift and go to state 24
     BLINK           shift and go to state 25
     DELAY           shift and go to state 26
@@ -3783,8 +3731,8 @@ state 175
 
     expression                     shift and go to state 9
     ordenes                        shift and go to state 197
-    statement                      shift and go to state 191
-    funcionreservada               shift and go to state 192
+    statement                      shift and go to state 193
+    funcionreservada               shift and go to state 194
     callable                       shift and go to state 10
     var_assign                     shift and go to state 11
     procedure                      shift and go to state 13
@@ -3794,148 +3742,18 @@ state 175
 
 state 176
 
-    (79) funcionreservada -> FOR expression IN INT STEP . INT LLAVEIZQ ordenes LLAVEDER
+    (80) funcionreservada -> FOR expression IN expression STEP . INT LLAVEIZQ ordenes LLAVEDER
 
     INT             shift and go to state 198
 
 
 state 177
 
-    (60) procedure -> PROCEDURE ID PARENTESISIZQ params PARENTESISDER . LLAVEIZQ ordenes LLAVEDER PYC
-
-    LLAVEIZQ        shift and go to state 199
-
-
-state 178
-
-    (61) procedure -> PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER . LLAVEIZQ ordenes LLAVEDER PYC
-
-    LLAVEIZQ        shift and go to state 200
-
-
-state 179
-
-    (66) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ . valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
-    (63) valor_param -> . BOOLEAN
-    (64) valor_param -> . INT
-    (65) valor_param -> . ID
-
-    BOOLEAN         shift and go to state 148
-    INT             shift and go to state 149
-    ID              shift and go to state 146
-
-    valor_param                    shift and go to state 201
-
-state 180
-
-    (67) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA . valor_param PARENTESISDER PYC
-    (63) valor_param -> . BOOLEAN
-    (64) valor_param -> . INT
-    (65) valor_param -> . ID
-
-    BOOLEAN         shift and go to state 148
-    INT             shift and go to state 149
-    ID              shift and go to state 146
-
-    valor_param                    shift and go to state 202
-
-state 181
-
-    (68) funcionreservada -> ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER . PYC
-
-    PYC             shift and go to state 203
-
-
-state 182
-
-    (83) funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA . INT PARENTESISDER PYC
-
-    INT             shift and go to state 204
-
-
-state 183
-
-    (37) index -> CORCHETEIZQ expression CORCHETEDER CORCHETEIZQ expression . CORCHETEDER
-    (39) expression -> expression . EXPONENTE expression
-    (40) expression -> expression . MODULO expression
-    (41) expression -> expression . MULTIPLICACION expression
-    (42) expression -> expression . DIVISIONENTERA expression
-    (43) expression -> expression . DIVISION expression
-    (44) expression -> expression . SUMA expression
-    (45) expression -> expression . RESTA expression
-
-    CORCHETEDER     shift and go to state 205
-    EXPONENTE       shift and go to state 34
-    MODULO          shift and go to state 35
-    MULTIPLICACION  shift and go to state 36
-    DIVISIONENTERA  shift and go to state 37
-    DIVISION        shift and go to state 38
-    SUMA            shift and go to state 39
-    RESTA           shift and go to state 40
-
-
-state 184
-
-    (70) funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG . PYC
-
-    PYC             shift and go to state 206
-
-
-state 185
-
-    (71) funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO T . PYC
-
-    PYC             shift and go to state 207
-
-
-state 186
-
-    (72) funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO F . PYC
-
-    PYC             shift and go to state 208
-
-
-state 187
-
-    (35) index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .
-
-    CORCHETEIZQ     reduce using rule 35 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
-    IGUAL           reduce using rule 35 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
-    PYC             reduce using rule 35 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
-    COMA            reduce using rule 35 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
-    CORCHETEDER     reduce using rule 35 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
-    PARENTESISDER   reduce using rule 35 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
-
-
-state 188
-
-    (36) index -> CORCHETEIZQ expression COMA expression CORCHETEDER .
-
-    CORCHETEIZQ     reduce using rule 36 (index -> CORCHETEIZQ expression COMA expression CORCHETEDER .)
-    IGUAL           reduce using rule 36 (index -> CORCHETEIZQ expression COMA expression CORCHETEDER .)
-    PYC             reduce using rule 36 (index -> CORCHETEIZQ expression COMA expression CORCHETEDER .)
-    COMA            reduce using rule 36 (index -> CORCHETEIZQ expression COMA expression CORCHETEDER .)
-    CORCHETEDER     reduce using rule 36 (index -> CORCHETEIZQ expression COMA expression CORCHETEDER .)
-    PARENTESISDER   reduce using rule 36 (index -> CORCHETEIZQ expression COMA expression CORCHETEDER .)
-
-
-state 189
-
-    (34) index -> CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER .
-
-    CORCHETEIZQ     reduce using rule 34 (index -> CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER .)
-    IGUAL           reduce using rule 34 (index -> CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER .)
-    PYC             reduce using rule 34 (index -> CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER .)
-    COMA            reduce using rule 34 (index -> CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER .)
-    CORCHETEDER     reduce using rule 34 (index -> CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER .)
-    PARENTESISDER   reduce using rule 34 (index -> CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER .)
-
-
-state 190
-
-    (59) funcionreservada -> IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes . LLAVEDER
-    (85) ordenes -> ordenes . statement
-    (86) ordenes -> ordenes . funcionreservada
+    (77) funcionreservada -> FOR expression IN INT LLAVEIZQ . ordenes LLAVEDER
+    (86) ordenes -> . statement
+    (87) ordenes -> . ordenes statement
+    (88) ordenes -> . ordenes funcionreservada
+    (89) ordenes -> . funcionreservada
     (5) statement -> . expression PYC
     (6) statement -> . callable PYC
     (7) statement -> . var_assign
@@ -3961,7 +3779,9 @@ state 190
     (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
     (81) funcionreservada -> . ID PUNTO SHAPEF PYC
     (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
     (39) expression -> . expression EXPONENTE expression
     (40) expression -> . expression MODULO expression
     (41) expression -> . expression MULTIPLICACION expression
@@ -3986,11 +3806,10 @@ state 190
     (15) ids -> . ID
     (16) ids -> . ids COMA ids
 
-    LLAVEDER        shift and go to state 209
     TYPE            shift and go to state 15
     IF              shift and go to state 22
     CALL            shift and go to state 23
-    ID              shift and go to state 193
+    ID              shift and go to state 195
     LEN             shift and go to state 24
     BLINK           shift and go to state 25
     DELAY           shift and go to state 26
@@ -4002,8 +3821,253 @@ state 190
     RESTA           shift and go to state 19
     PROCEDURE       shift and go to state 30
 
-    statement                      shift and go to state 210
-    funcionreservada               shift and go to state 211
+    expression                     shift and go to state 9
+    ordenes                        shift and go to state 199
+    statement                      shift and go to state 193
+    funcionreservada               shift and go to state 194
+    callable                       shift and go to state 10
+    var_assign                     shift and go to state 11
+    procedure                      shift and go to state 13
+    error_string                   shift and go to state 14
+    sublist                        shift and go to state 20
+    ids                            shift and go to state 21
+
+state 178
+
+    (79) funcionreservada -> FOR expression IN INT STEP . INT LLAVEIZQ ordenes LLAVEDER
+
+    INT             shift and go to state 200
+
+
+state 179
+
+    (60) procedure -> PROCEDURE ID PARENTESISIZQ params PARENTESISDER . LLAVEIZQ ordenes LLAVEDER PYC
+
+    LLAVEIZQ        shift and go to state 201
+
+
+state 180
+
+    (61) procedure -> PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER . LLAVEIZQ ordenes LLAVEDER PYC
+
+    LLAVEIZQ        shift and go to state 202
+
+
+state 181
+
+    (66) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ . valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
+    (63) valor_param -> . BOOLEAN
+    (64) valor_param -> . INT
+    (65) valor_param -> . ID
+
+    BOOLEAN         shift and go to state 150
+    INT             shift and go to state 151
+    ID              shift and go to state 148
+
+    valor_param                    shift and go to state 203
+
+state 182
+
+    (67) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA . valor_param PARENTESISDER PYC
+    (83) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA . expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA . expression PARENTESISDER PYC
+    (63) valor_param -> . BOOLEAN
+    (64) valor_param -> . INT
+    (65) valor_param -> . ID
+    (39) expression -> . expression EXPONENTE expression
+    (40) expression -> . expression MODULO expression
+    (41) expression -> . expression MULTIPLICACION expression
+    (42) expression -> . expression DIVISIONENTERA expression
+    (43) expression -> . expression DIVISION expression
+    (44) expression -> . expression SUMA expression
+    (45) expression -> . expression RESTA expression
+    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (47) expression -> . ID
+    (48) expression -> . INT
+    (49) expression -> . RESTA expression
+
+    BOOLEAN         shift and go to state 150
+    INT             shift and go to state 207
+    ID              shift and go to state 204
+    PARENTESISIZQ   shift and go to state 16
+    RESTA           shift and go to state 19
+
+    valor_param                    shift and go to state 205
+    expression                     shift and go to state 206
+
+state 183
+
+    (68) funcionreservada -> ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER . PYC
+
+    PYC             shift and go to state 208
+
+
+state 184
+
+    (85) funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA . valor_param PARENTESISDER PYC
+    (63) valor_param -> . BOOLEAN
+    (64) valor_param -> . INT
+    (65) valor_param -> . ID
+
+    BOOLEAN         shift and go to state 150
+    INT             shift and go to state 151
+    ID              shift and go to state 148
+
+    valor_param                    shift and go to state 209
+
+state 185
+
+    (37) index -> CORCHETEIZQ expression CORCHETEDER CORCHETEIZQ expression . CORCHETEDER
+    (39) expression -> expression . EXPONENTE expression
+    (40) expression -> expression . MODULO expression
+    (41) expression -> expression . MULTIPLICACION expression
+    (42) expression -> expression . DIVISIONENTERA expression
+    (43) expression -> expression . DIVISION expression
+    (44) expression -> expression . SUMA expression
+    (45) expression -> expression . RESTA expression
+
+    CORCHETEDER     shift and go to state 210
+    EXPONENTE       shift and go to state 34
+    MODULO          shift and go to state 35
+    MULTIPLICACION  shift and go to state 36
+    DIVISIONENTERA  shift and go to state 37
+    DIVISION        shift and go to state 38
+    SUMA            shift and go to state 39
+    RESTA           shift and go to state 40
+
+
+state 186
+
+    (70) funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG . PYC
+
+    PYC             shift and go to state 211
+
+
+state 187
+
+    (71) funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO T . PYC
+
+    PYC             shift and go to state 212
+
+
+state 188
+
+    (72) funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO F . PYC
+
+    PYC             shift and go to state 213
+
+
+state 189
+
+    (35) index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .
+
+    CORCHETEIZQ     reduce using rule 35 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
+    IGUAL           reduce using rule 35 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
+    PYC             reduce using rule 35 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
+    COMA            reduce using rule 35 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
+    CORCHETEDER     reduce using rule 35 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
+    PARENTESISDER   reduce using rule 35 (index -> CORCHETEIZQ expression DOSPUNTOS expression CORCHETEDER .)
+
+
+state 190
+
+    (36) index -> CORCHETEIZQ expression COMA expression CORCHETEDER .
+
+    CORCHETEIZQ     reduce using rule 36 (index -> CORCHETEIZQ expression COMA expression CORCHETEDER .)
+    IGUAL           reduce using rule 36 (index -> CORCHETEIZQ expression COMA expression CORCHETEDER .)
+    PYC             reduce using rule 36 (index -> CORCHETEIZQ expression COMA expression CORCHETEDER .)
+    COMA            reduce using rule 36 (index -> CORCHETEIZQ expression COMA expression CORCHETEDER .)
+    CORCHETEDER     reduce using rule 36 (index -> CORCHETEIZQ expression COMA expression CORCHETEDER .)
+    PARENTESISDER   reduce using rule 36 (index -> CORCHETEIZQ expression COMA expression CORCHETEDER .)
+
+
+state 191
+
+    (34) index -> CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER .
+
+    CORCHETEIZQ     reduce using rule 34 (index -> CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER .)
+    IGUAL           reduce using rule 34 (index -> CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER .)
+    PYC             reduce using rule 34 (index -> CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER .)
+    COMA            reduce using rule 34 (index -> CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER .)
+    CORCHETEDER     reduce using rule 34 (index -> CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER .)
+    PARENTESISDER   reduce using rule 34 (index -> CORCHETEIZQ DOSPUNTOS COMA expression CORCHETEDER .)
+
+
+state 192
+
+    (59) funcionreservada -> IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes . LLAVEDER
+    (87) ordenes -> ordenes . statement
+    (88) ordenes -> ordenes . funcionreservada
+    (5) statement -> . expression PYC
+    (6) statement -> . callable PYC
+    (7) statement -> . var_assign
+    (8) statement -> . funcionreservada
+    (9) statement -> . procedure
+    (10) statement -> . error_string
+    (28) statement -> . TYPE PARENTESISIZQ ID PARENTESISDER PYC
+    (59) funcionreservada -> . IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
+    (62) funcionreservada -> . CALL ID PARENTESISIZQ params PARENTESISDER PYC
+    (67) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    (68) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC
+    (69) funcionreservada -> . LEN PARENTESISIZQ ID PARENTESISDER PYC
+    (70) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
+    (71) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
+    (72) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
+    (73) funcionreservada -> . BLINK PARENTESISIZQ params PARENTESISDER PYC
+    (74) funcionreservada -> . DELAY PARENTESISIZQ params PARENTESISDER PYC
+    (75) funcionreservada -> . PRINTLED PARENTESISIZQ params PARENTESISDER PYC
+    (76) funcionreservada -> . PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC
+    (77) funcionreservada -> . FOR expression IN INT LLAVEIZQ ordenes LLAVEDER
+    (78) funcionreservada -> . FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
+    (79) funcionreservada -> . FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
+    (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
+    (81) funcionreservada -> . ID PUNTO SHAPEF PYC
+    (82) funcionreservada -> . ID PUNTO SHAPEC PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    (39) expression -> . expression EXPONENTE expression
+    (40) expression -> . expression MODULO expression
+    (41) expression -> . expression MULTIPLICACION expression
+    (42) expression -> . expression DIVISIONENTERA expression
+    (43) expression -> . expression DIVISION expression
+    (44) expression -> . expression SUMA expression
+    (45) expression -> . expression RESTA expression
+    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (47) expression -> . ID
+    (48) expression -> . INT
+    (49) expression -> . RESTA expression
+    (30) callable -> . sublist
+    (23) var_assign -> . ID IGUAL expression PYC
+    (24) var_assign -> . ID IGUAL primitive PYC
+    (25) var_assign -> . ids IGUAL params PYC
+    (26) var_assign -> . sublist IGUAL params PYC
+    (66) var_assign -> . ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
+    (60) procedure -> . PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
+    (61) procedure -> . PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
+    (27) error_string -> . ID IGUAL STRING PYC
+    (38) sublist -> . ID multi_index
+    (15) ids -> . ID
+    (16) ids -> . ids COMA ids
+
+    LLAVEDER        shift and go to state 214
+    TYPE            shift and go to state 15
+    IF              shift and go to state 22
+    CALL            shift and go to state 23
+    ID              shift and go to state 195
+    LEN             shift and go to state 24
+    BLINK           shift and go to state 25
+    DELAY           shift and go to state 26
+    PRINTLED        shift and go to state 27
+    PRINTLEDX       shift and go to state 28
+    FOR             shift and go to state 29
+    PARENTESISIZQ   shift and go to state 16
+    INT             shift and go to state 32
+    RESTA           shift and go to state 19
+    PROCEDURE       shift and go to state 30
+
+    statement                      shift and go to state 215
+    funcionreservada               shift and go to state 216
     expression                     shift and go to state 9
     callable                       shift and go to state 10
     var_assign                     shift and go to state 11
@@ -4012,30 +4076,30 @@ state 190
     sublist                        shift and go to state 20
     ids                            shift and go to state 21
 
-state 191
+state 193
 
-    (84) ordenes -> statement .
+    (86) ordenes -> statement .
 
-    LLAVEDER        reduce using rule 84 (ordenes -> statement .)
-    TYPE            reduce using rule 84 (ordenes -> statement .)
-    IF              reduce using rule 84 (ordenes -> statement .)
-    CALL            reduce using rule 84 (ordenes -> statement .)
-    ID              reduce using rule 84 (ordenes -> statement .)
-    LEN             reduce using rule 84 (ordenes -> statement .)
-    BLINK           reduce using rule 84 (ordenes -> statement .)
-    DELAY           reduce using rule 84 (ordenes -> statement .)
-    PRINTLED        reduce using rule 84 (ordenes -> statement .)
-    PRINTLEDX       reduce using rule 84 (ordenes -> statement .)
-    FOR             reduce using rule 84 (ordenes -> statement .)
-    PARENTESISIZQ   reduce using rule 84 (ordenes -> statement .)
-    INT             reduce using rule 84 (ordenes -> statement .)
-    RESTA           reduce using rule 84 (ordenes -> statement .)
-    PROCEDURE       reduce using rule 84 (ordenes -> statement .)
+    LLAVEDER        reduce using rule 86 (ordenes -> statement .)
+    TYPE            reduce using rule 86 (ordenes -> statement .)
+    IF              reduce using rule 86 (ordenes -> statement .)
+    CALL            reduce using rule 86 (ordenes -> statement .)
+    ID              reduce using rule 86 (ordenes -> statement .)
+    LEN             reduce using rule 86 (ordenes -> statement .)
+    BLINK           reduce using rule 86 (ordenes -> statement .)
+    DELAY           reduce using rule 86 (ordenes -> statement .)
+    PRINTLED        reduce using rule 86 (ordenes -> statement .)
+    PRINTLEDX       reduce using rule 86 (ordenes -> statement .)
+    FOR             reduce using rule 86 (ordenes -> statement .)
+    PARENTESISIZQ   reduce using rule 86 (ordenes -> statement .)
+    INT             reduce using rule 86 (ordenes -> statement .)
+    RESTA           reduce using rule 86 (ordenes -> statement .)
+    PROCEDURE       reduce using rule 86 (ordenes -> statement .)
 
 
-state 192
+state 194
 
-    (87) ordenes -> funcionreservada .
+    (89) ordenes -> funcionreservada .
     (8) statement -> funcionreservada .
 
   ! reduce/reduce conflict for LLAVEDER resolved using rule 8 (statement -> funcionreservada .)
@@ -4069,24 +4133,24 @@ state 192
     RESTA           reduce using rule 8 (statement -> funcionreservada .)
     PROCEDURE       reduce using rule 8 (statement -> funcionreservada .)
 
-  ! LLAVEDER        [ reduce using rule 87 (ordenes -> funcionreservada .) ]
-  ! TYPE            [ reduce using rule 87 (ordenes -> funcionreservada .) ]
-  ! IF              [ reduce using rule 87 (ordenes -> funcionreservada .) ]
-  ! CALL            [ reduce using rule 87 (ordenes -> funcionreservada .) ]
-  ! ID              [ reduce using rule 87 (ordenes -> funcionreservada .) ]
-  ! LEN             [ reduce using rule 87 (ordenes -> funcionreservada .) ]
-  ! BLINK           [ reduce using rule 87 (ordenes -> funcionreservada .) ]
-  ! DELAY           [ reduce using rule 87 (ordenes -> funcionreservada .) ]
-  ! PRINTLED        [ reduce using rule 87 (ordenes -> funcionreservada .) ]
-  ! PRINTLEDX       [ reduce using rule 87 (ordenes -> funcionreservada .) ]
-  ! FOR             [ reduce using rule 87 (ordenes -> funcionreservada .) ]
-  ! PARENTESISIZQ   [ reduce using rule 87 (ordenes -> funcionreservada .) ]
-  ! INT             [ reduce using rule 87 (ordenes -> funcionreservada .) ]
-  ! RESTA           [ reduce using rule 87 (ordenes -> funcionreservada .) ]
-  ! PROCEDURE       [ reduce using rule 87 (ordenes -> funcionreservada .) ]
+  ! LLAVEDER        [ reduce using rule 89 (ordenes -> funcionreservada .) ]
+  ! TYPE            [ reduce using rule 89 (ordenes -> funcionreservada .) ]
+  ! IF              [ reduce using rule 89 (ordenes -> funcionreservada .) ]
+  ! CALL            [ reduce using rule 89 (ordenes -> funcionreservada .) ]
+  ! ID              [ reduce using rule 89 (ordenes -> funcionreservada .) ]
+  ! LEN             [ reduce using rule 89 (ordenes -> funcionreservada .) ]
+  ! BLINK           [ reduce using rule 89 (ordenes -> funcionreservada .) ]
+  ! DELAY           [ reduce using rule 89 (ordenes -> funcionreservada .) ]
+  ! PRINTLED        [ reduce using rule 89 (ordenes -> funcionreservada .) ]
+  ! PRINTLEDX       [ reduce using rule 89 (ordenes -> funcionreservada .) ]
+  ! FOR             [ reduce using rule 89 (ordenes -> funcionreservada .) ]
+  ! PARENTESISIZQ   [ reduce using rule 89 (ordenes -> funcionreservada .) ]
+  ! INT             [ reduce using rule 89 (ordenes -> funcionreservada .) ]
+  ! RESTA           [ reduce using rule 89 (ordenes -> funcionreservada .) ]
+  ! PROCEDURE       [ reduce using rule 89 (ordenes -> funcionreservada .) ]
 
 
-state 193
+state 195
 
     (67) funcionreservada -> ID . PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
     (68) funcionreservada -> ID . PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC
@@ -4095,7 +4159,9 @@ state 193
     (72) funcionreservada -> ID . CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
     (81) funcionreservada -> ID . PUNTO SHAPEF PYC
     (82) funcionreservada -> ID . PUNTO SHAPEC PYC
-    (83) funcionreservada -> ID . PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+    (83) funcionreservada -> ID . PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> ID . PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> ID . PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
     (47) expression -> ID .
     (23) var_assign -> ID . IGUAL expression PYC
     (24) var_assign -> ID . IGUAL primitive PYC
@@ -4130,7 +4196,7 @@ state 193
     multi_index                    shift and go to state 48
     index                          shift and go to state 49
 
-state 194
+state 196
 
     (62) funcionreservada -> CALL ID PARENTESISIZQ params PARENTESISDER PYC .
 
@@ -4152,99 +4218,11 @@ state 194
     LLAVEDER        reduce using rule 62 (funcionreservada -> CALL ID PARENTESISIZQ params PARENTESISDER PYC .)
 
 
-state 195
-
-    (78) funcionreservada -> FOR expression IN expression LLAVEIZQ ordenes . LLAVEDER
-    (85) ordenes -> ordenes . statement
-    (86) ordenes -> ordenes . funcionreservada
-    (5) statement -> . expression PYC
-    (6) statement -> . callable PYC
-    (7) statement -> . var_assign
-    (8) statement -> . funcionreservada
-    (9) statement -> . procedure
-    (10) statement -> . error_string
-    (28) statement -> . TYPE PARENTESISIZQ ID PARENTESISDER PYC
-    (59) funcionreservada -> . IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
-    (62) funcionreservada -> . CALL ID PARENTESISIZQ params PARENTESISDER PYC
-    (67) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
-    (68) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC
-    (69) funcionreservada -> . LEN PARENTESISIZQ ID PARENTESISDER PYC
-    (70) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
-    (71) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
-    (72) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
-    (73) funcionreservada -> . BLINK PARENTESISIZQ params PARENTESISDER PYC
-    (74) funcionreservada -> . DELAY PARENTESISIZQ params PARENTESISDER PYC
-    (75) funcionreservada -> . PRINTLED PARENTESISIZQ params PARENTESISDER PYC
-    (76) funcionreservada -> . PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC
-    (77) funcionreservada -> . FOR expression IN INT LLAVEIZQ ordenes LLAVEDER
-    (78) funcionreservada -> . FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
-    (79) funcionreservada -> . FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
-    (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
-    (81) funcionreservada -> . ID PUNTO SHAPEF PYC
-    (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
-    (39) expression -> . expression EXPONENTE expression
-    (40) expression -> . expression MODULO expression
-    (41) expression -> . expression MULTIPLICACION expression
-    (42) expression -> . expression DIVISIONENTERA expression
-    (43) expression -> . expression DIVISION expression
-    (44) expression -> . expression SUMA expression
-    (45) expression -> . expression RESTA expression
-    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (47) expression -> . ID
-    (48) expression -> . INT
-    (49) expression -> . RESTA expression
-    (30) callable -> . sublist
-    (23) var_assign -> . ID IGUAL expression PYC
-    (24) var_assign -> . ID IGUAL primitive PYC
-    (25) var_assign -> . ids IGUAL params PYC
-    (26) var_assign -> . sublist IGUAL params PYC
-    (66) var_assign -> . ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
-    (60) procedure -> . PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
-    (61) procedure -> . PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
-    (27) error_string -> . ID IGUAL STRING PYC
-    (38) sublist -> . ID multi_index
-    (15) ids -> . ID
-    (16) ids -> . ids COMA ids
-
-    LLAVEDER        shift and go to state 212
-    TYPE            shift and go to state 15
-    IF              shift and go to state 22
-    CALL            shift and go to state 23
-    ID              shift and go to state 193
-    LEN             shift and go to state 24
-    BLINK           shift and go to state 25
-    DELAY           shift and go to state 26
-    PRINTLED        shift and go to state 27
-    PRINTLEDX       shift and go to state 28
-    FOR             shift and go to state 29
-    PARENTESISIZQ   shift and go to state 16
-    INT             shift and go to state 32
-    RESTA           shift and go to state 19
-    PROCEDURE       shift and go to state 30
-
-    expression                     shift and go to state 9
-    statement                      shift and go to state 210
-    funcionreservada               shift and go to state 211
-    callable                       shift and go to state 10
-    var_assign                     shift and go to state 11
-    procedure                      shift and go to state 13
-    error_string                   shift and go to state 14
-    sublist                        shift and go to state 20
-    ids                            shift and go to state 21
-
-state 196
-
-    (80) funcionreservada -> FOR expression IN expression STEP INT . LLAVEIZQ ordenes LLAVEDER
-
-    LLAVEIZQ        shift and go to state 213
-
-
 state 197
 
-    (77) funcionreservada -> FOR expression IN INT LLAVEIZQ ordenes . LLAVEDER
-    (85) ordenes -> ordenes . statement
-    (86) ordenes -> ordenes . funcionreservada
+    (78) funcionreservada -> FOR expression IN expression LLAVEIZQ ordenes . LLAVEDER
+    (87) ordenes -> ordenes . statement
+    (88) ordenes -> ordenes . funcionreservada
     (5) statement -> . expression PYC
     (6) statement -> . callable PYC
     (7) statement -> . var_assign
@@ -4270,7 +4248,9 @@ state 197
     (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
     (81) funcionreservada -> . ID PUNTO SHAPEF PYC
     (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
     (39) expression -> . expression EXPONENTE expression
     (40) expression -> . expression MODULO expression
     (41) expression -> . expression MULTIPLICACION expression
@@ -4295,11 +4275,11 @@ state 197
     (15) ids -> . ID
     (16) ids -> . ids COMA ids
 
-    LLAVEDER        shift and go to state 214
+    LLAVEDER        shift and go to state 217
     TYPE            shift and go to state 15
     IF              shift and go to state 22
     CALL            shift and go to state 23
-    ID              shift and go to state 193
+    ID              shift and go to state 195
     LEN             shift and go to state 24
     BLINK           shift and go to state 25
     DELAY           shift and go to state 26
@@ -4312,8 +4292,8 @@ state 197
     PROCEDURE       shift and go to state 30
 
     expression                     shift and go to state 9
-    statement                      shift and go to state 210
-    funcionreservada               shift and go to state 211
+    statement                      shift and go to state 215
+    funcionreservada               shift and go to state 216
     callable                       shift and go to state 10
     var_assign                     shift and go to state 11
     procedure                      shift and go to state 13
@@ -4323,18 +4303,16 @@ state 197
 
 state 198
 
-    (79) funcionreservada -> FOR expression IN INT STEP INT . LLAVEIZQ ordenes LLAVEDER
+    (80) funcionreservada -> FOR expression IN expression STEP INT . LLAVEIZQ ordenes LLAVEDER
 
-    LLAVEIZQ        shift and go to state 215
+    LLAVEIZQ        shift and go to state 218
 
 
 state 199
 
-    (60) procedure -> PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ . ordenes LLAVEDER PYC
-    (84) ordenes -> . statement
-    (85) ordenes -> . ordenes statement
-    (86) ordenes -> . ordenes funcionreservada
-    (87) ordenes -> . funcionreservada
+    (77) funcionreservada -> FOR expression IN INT LLAVEIZQ ordenes . LLAVEDER
+    (87) ordenes -> ordenes . statement
+    (88) ordenes -> ordenes . funcionreservada
     (5) statement -> . expression PYC
     (6) statement -> . callable PYC
     (7) statement -> . var_assign
@@ -4360,7 +4338,9 @@ state 199
     (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
     (81) funcionreservada -> . ID PUNTO SHAPEF PYC
     (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
     (39) expression -> . expression EXPONENTE expression
     (40) expression -> . expression MODULO expression
     (41) expression -> . expression MULTIPLICACION expression
@@ -4385,10 +4365,11 @@ state 199
     (15) ids -> . ID
     (16) ids -> . ids COMA ids
 
+    LLAVEDER        shift and go to state 219
     TYPE            shift and go to state 15
     IF              shift and go to state 22
     CALL            shift and go to state 23
-    ID              shift and go to state 193
+    ID              shift and go to state 195
     LEN             shift and go to state 24
     BLINK           shift and go to state 25
     DELAY           shift and go to state 26
@@ -4400,10 +4381,9 @@ state 199
     RESTA           shift and go to state 19
     PROCEDURE       shift and go to state 30
 
-    ordenes                        shift and go to state 216
-    statement                      shift and go to state 191
-    funcionreservada               shift and go to state 192
     expression                     shift and go to state 9
+    statement                      shift and go to state 215
+    funcionreservada               shift and go to state 216
     callable                       shift and go to state 10
     var_assign                     shift and go to state 11
     procedure                      shift and go to state 13
@@ -4413,11 +4393,18 @@ state 199
 
 state 200
 
-    (61) procedure -> PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ . ordenes LLAVEDER PYC
-    (84) ordenes -> . statement
-    (85) ordenes -> . ordenes statement
-    (86) ordenes -> . ordenes funcionreservada
-    (87) ordenes -> . funcionreservada
+    (79) funcionreservada -> FOR expression IN INT STEP INT . LLAVEIZQ ordenes LLAVEDER
+
+    LLAVEIZQ        shift and go to state 220
+
+
+state 201
+
+    (60) procedure -> PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ . ordenes LLAVEDER PYC
+    (86) ordenes -> . statement
+    (87) ordenes -> . ordenes statement
+    (88) ordenes -> . ordenes funcionreservada
+    (89) ordenes -> . funcionreservada
     (5) statement -> . expression PYC
     (6) statement -> . callable PYC
     (7) statement -> . var_assign
@@ -4443,7 +4430,9 @@ state 200
     (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
     (81) funcionreservada -> . ID PUNTO SHAPEF PYC
     (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
     (39) expression -> . expression EXPONENTE expression
     (40) expression -> . expression MODULO expression
     (41) expression -> . expression MULTIPLICACION expression
@@ -4471,7 +4460,7 @@ state 200
     TYPE            shift and go to state 15
     IF              shift and go to state 22
     CALL            shift and go to state 23
-    ID              shift and go to state 193
+    ID              shift and go to state 195
     LEN             shift and go to state 24
     BLINK           shift and go to state 25
     DELAY           shift and go to state 26
@@ -4483,9 +4472,9 @@ state 200
     RESTA           shift and go to state 19
     PROCEDURE       shift and go to state 30
 
-    ordenes                        shift and go to state 217
-    statement                      shift and go to state 191
-    funcionreservada               shift and go to state 192
+    ordenes                        shift and go to state 221
+    statement                      shift and go to state 193
+    funcionreservada               shift and go to state 194
     expression                     shift and go to state 9
     callable                       shift and go to state 10
     var_assign                     shift and go to state 11
@@ -4494,21 +4483,167 @@ state 200
     sublist                        shift and go to state 20
     ids                            shift and go to state 21
 
-state 201
+state 202
+
+    (61) procedure -> PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ . ordenes LLAVEDER PYC
+    (86) ordenes -> . statement
+    (87) ordenes -> . ordenes statement
+    (88) ordenes -> . ordenes funcionreservada
+    (89) ordenes -> . funcionreservada
+    (5) statement -> . expression PYC
+    (6) statement -> . callable PYC
+    (7) statement -> . var_assign
+    (8) statement -> . funcionreservada
+    (9) statement -> . procedure
+    (10) statement -> . error_string
+    (28) statement -> . TYPE PARENTESISIZQ ID PARENTESISDER PYC
+    (59) funcionreservada -> . IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
+    (62) funcionreservada -> . CALL ID PARENTESISIZQ params PARENTESISDER PYC
+    (67) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    (68) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC
+    (69) funcionreservada -> . LEN PARENTESISIZQ ID PARENTESISDER PYC
+    (70) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
+    (71) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
+    (72) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
+    (73) funcionreservada -> . BLINK PARENTESISIZQ params PARENTESISDER PYC
+    (74) funcionreservada -> . DELAY PARENTESISIZQ params PARENTESISDER PYC
+    (75) funcionreservada -> . PRINTLED PARENTESISIZQ params PARENTESISDER PYC
+    (76) funcionreservada -> . PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC
+    (77) funcionreservada -> . FOR expression IN INT LLAVEIZQ ordenes LLAVEDER
+    (78) funcionreservada -> . FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
+    (79) funcionreservada -> . FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
+    (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
+    (81) funcionreservada -> . ID PUNTO SHAPEF PYC
+    (82) funcionreservada -> . ID PUNTO SHAPEC PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    (39) expression -> . expression EXPONENTE expression
+    (40) expression -> . expression MODULO expression
+    (41) expression -> . expression MULTIPLICACION expression
+    (42) expression -> . expression DIVISIONENTERA expression
+    (43) expression -> . expression DIVISION expression
+    (44) expression -> . expression SUMA expression
+    (45) expression -> . expression RESTA expression
+    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (47) expression -> . ID
+    (48) expression -> . INT
+    (49) expression -> . RESTA expression
+    (30) callable -> . sublist
+    (23) var_assign -> . ID IGUAL expression PYC
+    (24) var_assign -> . ID IGUAL primitive PYC
+    (25) var_assign -> . ids IGUAL params PYC
+    (26) var_assign -> . sublist IGUAL params PYC
+    (66) var_assign -> . ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
+    (60) procedure -> . PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
+    (61) procedure -> . PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
+    (27) error_string -> . ID IGUAL STRING PYC
+    (38) sublist -> . ID multi_index
+    (15) ids -> . ID
+    (16) ids -> . ids COMA ids
+
+    TYPE            shift and go to state 15
+    IF              shift and go to state 22
+    CALL            shift and go to state 23
+    ID              shift and go to state 195
+    LEN             shift and go to state 24
+    BLINK           shift and go to state 25
+    DELAY           shift and go to state 26
+    PRINTLED        shift and go to state 27
+    PRINTLEDX       shift and go to state 28
+    FOR             shift and go to state 29
+    PARENTESISIZQ   shift and go to state 16
+    INT             shift and go to state 32
+    RESTA           shift and go to state 19
+    PROCEDURE       shift and go to state 30
+
+    ordenes                        shift and go to state 222
+    statement                      shift and go to state 193
+    funcionreservada               shift and go to state 194
+    expression                     shift and go to state 9
+    callable                       shift and go to state 10
+    var_assign                     shift and go to state 11
+    procedure                      shift and go to state 13
+    error_string                   shift and go to state 14
+    sublist                        shift and go to state 20
+    ids                            shift and go to state 21
+
+state 203
 
     (66) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param . COMA valor_param PARENTESISDER PARENTESISDER PYC
 
-    COMA            shift and go to state 218
+    COMA            shift and go to state 223
 
 
-state 202
+state 204
+
+    (65) valor_param -> ID .
+    (47) expression -> ID .
+
+  ! reduce/reduce conflict for PARENTESISDER resolved using rule 47 (expression -> ID .)
+    COMA            reduce using rule 47 (expression -> ID .)
+    PARENTESISDER   reduce using rule 47 (expression -> ID .)
+    EXPONENTE       reduce using rule 47 (expression -> ID .)
+    MODULO          reduce using rule 47 (expression -> ID .)
+    MULTIPLICACION  reduce using rule 47 (expression -> ID .)
+    DIVISIONENTERA  reduce using rule 47 (expression -> ID .)
+    DIVISION        reduce using rule 47 (expression -> ID .)
+    SUMA            reduce using rule 47 (expression -> ID .)
+    RESTA           reduce using rule 47 (expression -> ID .)
+
+  ! PARENTESISDER   [ reduce using rule 65 (valor_param -> ID .) ]
+
+
+state 205
 
     (67) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param . PARENTESISDER PYC
 
-    PARENTESISDER   shift and go to state 219
+    PARENTESISDER   shift and go to state 224
 
 
-state 203
+state 206
+
+    (83) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression . COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression . PARENTESISDER PYC
+    (39) expression -> expression . EXPONENTE expression
+    (40) expression -> expression . MODULO expression
+    (41) expression -> expression . MULTIPLICACION expression
+    (42) expression -> expression . DIVISIONENTERA expression
+    (43) expression -> expression . DIVISION expression
+    (44) expression -> expression . SUMA expression
+    (45) expression -> expression . RESTA expression
+
+    COMA            shift and go to state 225
+    PARENTESISDER   shift and go to state 226
+    EXPONENTE       shift and go to state 34
+    MODULO          shift and go to state 35
+    MULTIPLICACION  shift and go to state 36
+    DIVISIONENTERA  shift and go to state 37
+    DIVISION        shift and go to state 38
+    SUMA            shift and go to state 39
+    RESTA           shift and go to state 40
+
+
+state 207
+
+    (64) valor_param -> INT .
+    (48) expression -> INT .
+
+  ! reduce/reduce conflict for PARENTESISDER resolved using rule 48 (expression -> INT .)
+    COMA            reduce using rule 48 (expression -> INT .)
+    PARENTESISDER   reduce using rule 48 (expression -> INT .)
+    EXPONENTE       reduce using rule 48 (expression -> INT .)
+    MODULO          reduce using rule 48 (expression -> INT .)
+    MULTIPLICACION  reduce using rule 48 (expression -> INT .)
+    DIVISIONENTERA  reduce using rule 48 (expression -> INT .)
+    DIVISION        reduce using rule 48 (expression -> INT .)
+    SUMA            reduce using rule 48 (expression -> INT .)
+    RESTA           reduce using rule 48 (expression -> INT .)
+
+  ! PARENTESISDER   [ reduce using rule 64 (valor_param -> INT .) ]
+
+
+state 208
 
     (68) funcionreservada -> ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC .
 
@@ -4530,14 +4665,14 @@ state 203
     LLAVEDER        reduce using rule 68 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC .)
 
 
-state 204
+state 209
 
-    (83) funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT . PARENTESISDER PYC
+    (85) funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param . PARENTESISDER PYC
 
-    PARENTESISDER   shift and go to state 220
+    PARENTESISDER   shift and go to state 227
 
 
-state 205
+state 210
 
     (37) index -> CORCHETEIZQ expression CORCHETEDER CORCHETEIZQ expression CORCHETEDER .
 
@@ -4549,7 +4684,7 @@ state 205
     PARENTESISDER   reduce using rule 37 (index -> CORCHETEIZQ expression CORCHETEDER CORCHETEIZQ expression CORCHETEDER .)
 
 
-state 206
+state 211
 
     (70) funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC .
 
@@ -4571,7 +4706,7 @@ state 206
     LLAVEDER        reduce using rule 70 (funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC .)
 
 
-state 207
+state 212
 
     (71) funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC .
 
@@ -4593,7 +4728,7 @@ state 207
     LLAVEDER        reduce using rule 71 (funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC .)
 
 
-state 208
+state 213
 
     (72) funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC .
 
@@ -4615,7 +4750,7 @@ state 208
     LLAVEDER        reduce using rule 72 (funcionreservada -> ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC .)
 
 
-state 209
+state 214
 
     (59) funcionreservada -> IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER .
 
@@ -4637,30 +4772,30 @@ state 209
     LLAVEDER        reduce using rule 59 (funcionreservada -> IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER .)
 
 
-state 210
+state 215
 
-    (85) ordenes -> ordenes statement .
+    (87) ordenes -> ordenes statement .
 
-    LLAVEDER        reduce using rule 85 (ordenes -> ordenes statement .)
-    TYPE            reduce using rule 85 (ordenes -> ordenes statement .)
-    IF              reduce using rule 85 (ordenes -> ordenes statement .)
-    CALL            reduce using rule 85 (ordenes -> ordenes statement .)
-    ID              reduce using rule 85 (ordenes -> ordenes statement .)
-    LEN             reduce using rule 85 (ordenes -> ordenes statement .)
-    BLINK           reduce using rule 85 (ordenes -> ordenes statement .)
-    DELAY           reduce using rule 85 (ordenes -> ordenes statement .)
-    PRINTLED        reduce using rule 85 (ordenes -> ordenes statement .)
-    PRINTLEDX       reduce using rule 85 (ordenes -> ordenes statement .)
-    FOR             reduce using rule 85 (ordenes -> ordenes statement .)
-    PARENTESISIZQ   reduce using rule 85 (ordenes -> ordenes statement .)
-    INT             reduce using rule 85 (ordenes -> ordenes statement .)
-    RESTA           reduce using rule 85 (ordenes -> ordenes statement .)
-    PROCEDURE       reduce using rule 85 (ordenes -> ordenes statement .)
+    LLAVEDER        reduce using rule 87 (ordenes -> ordenes statement .)
+    TYPE            reduce using rule 87 (ordenes -> ordenes statement .)
+    IF              reduce using rule 87 (ordenes -> ordenes statement .)
+    CALL            reduce using rule 87 (ordenes -> ordenes statement .)
+    ID              reduce using rule 87 (ordenes -> ordenes statement .)
+    LEN             reduce using rule 87 (ordenes -> ordenes statement .)
+    BLINK           reduce using rule 87 (ordenes -> ordenes statement .)
+    DELAY           reduce using rule 87 (ordenes -> ordenes statement .)
+    PRINTLED        reduce using rule 87 (ordenes -> ordenes statement .)
+    PRINTLEDX       reduce using rule 87 (ordenes -> ordenes statement .)
+    FOR             reduce using rule 87 (ordenes -> ordenes statement .)
+    PARENTESISIZQ   reduce using rule 87 (ordenes -> ordenes statement .)
+    INT             reduce using rule 87 (ordenes -> ordenes statement .)
+    RESTA           reduce using rule 87 (ordenes -> ordenes statement .)
+    PROCEDURE       reduce using rule 87 (ordenes -> ordenes statement .)
 
 
-state 211
+state 216
 
-    (86) ordenes -> ordenes funcionreservada .
+    (88) ordenes -> ordenes funcionreservada .
     (8) statement -> funcionreservada .
 
   ! reduce/reduce conflict for LLAVEDER resolved using rule 8 (statement -> funcionreservada .)
@@ -4694,24 +4829,24 @@ state 211
     RESTA           reduce using rule 8 (statement -> funcionreservada .)
     PROCEDURE       reduce using rule 8 (statement -> funcionreservada .)
 
-  ! LLAVEDER        [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
-  ! TYPE            [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
-  ! IF              [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
-  ! CALL            [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
-  ! ID              [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
-  ! LEN             [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
-  ! BLINK           [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
-  ! DELAY           [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
-  ! PRINTLED        [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
-  ! PRINTLEDX       [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
-  ! FOR             [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
-  ! PARENTESISIZQ   [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
-  ! INT             [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
-  ! RESTA           [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
-  ! PROCEDURE       [ reduce using rule 86 (ordenes -> ordenes funcionreservada .) ]
+  ! LLAVEDER        [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
+  ! TYPE            [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
+  ! IF              [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
+  ! CALL            [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
+  ! ID              [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
+  ! LEN             [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
+  ! BLINK           [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
+  ! DELAY           [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
+  ! PRINTLED        [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
+  ! PRINTLEDX       [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
+  ! FOR             [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
+  ! PARENTESISIZQ   [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
+  ! INT             [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
+  ! RESTA           [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
+  ! PROCEDURE       [ reduce using rule 88 (ordenes -> ordenes funcionreservada .) ]
 
 
-state 212
+state 217
 
     (78) funcionreservada -> FOR expression IN expression LLAVEIZQ ordenes LLAVEDER .
 
@@ -4733,13 +4868,13 @@ state 212
     LLAVEDER        reduce using rule 78 (funcionreservada -> FOR expression IN expression LLAVEIZQ ordenes LLAVEDER .)
 
 
-state 213
+state 218
 
     (80) funcionreservada -> FOR expression IN expression STEP INT LLAVEIZQ . ordenes LLAVEDER
-    (84) ordenes -> . statement
-    (85) ordenes -> . ordenes statement
-    (86) ordenes -> . ordenes funcionreservada
-    (87) ordenes -> . funcionreservada
+    (86) ordenes -> . statement
+    (87) ordenes -> . ordenes statement
+    (88) ordenes -> . ordenes funcionreservada
+    (89) ordenes -> . funcionreservada
     (5) statement -> . expression PYC
     (6) statement -> . callable PYC
     (7) statement -> . var_assign
@@ -4765,7 +4900,9 @@ state 213
     (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
     (81) funcionreservada -> . ID PUNTO SHAPEF PYC
     (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
     (39) expression -> . expression EXPONENTE expression
     (40) expression -> . expression MODULO expression
     (41) expression -> . expression MULTIPLICACION expression
@@ -4793,7 +4930,7 @@ state 213
     TYPE            shift and go to state 15
     IF              shift and go to state 22
     CALL            shift and go to state 23
-    ID              shift and go to state 193
+    ID              shift and go to state 195
     LEN             shift and go to state 24
     BLINK           shift and go to state 25
     DELAY           shift and go to state 26
@@ -4806,9 +4943,9 @@ state 213
     PROCEDURE       shift and go to state 30
 
     expression                     shift and go to state 9
-    ordenes                        shift and go to state 221
-    statement                      shift and go to state 191
-    funcionreservada               shift and go to state 192
+    ordenes                        shift and go to state 228
+    statement                      shift and go to state 193
+    funcionreservada               shift and go to state 194
     callable                       shift and go to state 10
     var_assign                     shift and go to state 11
     procedure                      shift and go to state 13
@@ -4816,7 +4953,7 @@ state 213
     sublist                        shift and go to state 20
     ids                            shift and go to state 21
 
-state 214
+state 219
 
     (77) funcionreservada -> FOR expression IN INT LLAVEIZQ ordenes LLAVEDER .
 
@@ -4838,283 +4975,96 @@ state 214
     LLAVEDER        reduce using rule 77 (funcionreservada -> FOR expression IN INT LLAVEIZQ ordenes LLAVEDER .)
 
 
-state 215
-
-    (79) funcionreservada -> FOR expression IN INT STEP INT LLAVEIZQ . ordenes LLAVEDER
-    (84) ordenes -> . statement
-    (85) ordenes -> . ordenes statement
-    (86) ordenes -> . ordenes funcionreservada
-    (87) ordenes -> . funcionreservada
-    (5) statement -> . expression PYC
-    (6) statement -> . callable PYC
-    (7) statement -> . var_assign
-    (8) statement -> . funcionreservada
-    (9) statement -> . procedure
-    (10) statement -> . error_string
-    (28) statement -> . TYPE PARENTESISIZQ ID PARENTESISDER PYC
-    (59) funcionreservada -> . IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
-    (62) funcionreservada -> . CALL ID PARENTESISIZQ params PARENTESISDER PYC
-    (67) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
-    (68) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC
-    (69) funcionreservada -> . LEN PARENTESISIZQ ID PARENTESISDER PYC
-    (70) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
-    (71) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
-    (72) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
-    (73) funcionreservada -> . BLINK PARENTESISIZQ params PARENTESISDER PYC
-    (74) funcionreservada -> . DELAY PARENTESISIZQ params PARENTESISDER PYC
-    (75) funcionreservada -> . PRINTLED PARENTESISIZQ params PARENTESISDER PYC
-    (76) funcionreservada -> . PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC
-    (77) funcionreservada -> . FOR expression IN INT LLAVEIZQ ordenes LLAVEDER
-    (78) funcionreservada -> . FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
-    (79) funcionreservada -> . FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
-    (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
-    (81) funcionreservada -> . ID PUNTO SHAPEF PYC
-    (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
-    (39) expression -> . expression EXPONENTE expression
-    (40) expression -> . expression MODULO expression
-    (41) expression -> . expression MULTIPLICACION expression
-    (42) expression -> . expression DIVISIONENTERA expression
-    (43) expression -> . expression DIVISION expression
-    (44) expression -> . expression SUMA expression
-    (45) expression -> . expression RESTA expression
-    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (47) expression -> . ID
-    (48) expression -> . INT
-    (49) expression -> . RESTA expression
-    (30) callable -> . sublist
-    (23) var_assign -> . ID IGUAL expression PYC
-    (24) var_assign -> . ID IGUAL primitive PYC
-    (25) var_assign -> . ids IGUAL params PYC
-    (26) var_assign -> . sublist IGUAL params PYC
-    (66) var_assign -> . ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
-    (60) procedure -> . PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
-    (61) procedure -> . PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
-    (27) error_string -> . ID IGUAL STRING PYC
-    (38) sublist -> . ID multi_index
-    (15) ids -> . ID
-    (16) ids -> . ids COMA ids
-
-    TYPE            shift and go to state 15
-    IF              shift and go to state 22
-    CALL            shift and go to state 23
-    ID              shift and go to state 193
-    LEN             shift and go to state 24
-    BLINK           shift and go to state 25
-    DELAY           shift and go to state 26
-    PRINTLED        shift and go to state 27
-    PRINTLEDX       shift and go to state 28
-    FOR             shift and go to state 29
-    PARENTESISIZQ   shift and go to state 16
-    INT             shift and go to state 32
-    RESTA           shift and go to state 19
-    PROCEDURE       shift and go to state 30
-
-    expression                     shift and go to state 9
-    ordenes                        shift and go to state 222
-    statement                      shift and go to state 191
-    funcionreservada               shift and go to state 192
-    callable                       shift and go to state 10
-    var_assign                     shift and go to state 11
-    procedure                      shift and go to state 13
-    error_string                   shift and go to state 14
-    sublist                        shift and go to state 20
-    ids                            shift and go to state 21
-
-state 216
-
-    (60) procedure -> PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes . LLAVEDER PYC
-    (85) ordenes -> ordenes . statement
-    (86) ordenes -> ordenes . funcionreservada
-    (5) statement -> . expression PYC
-    (6) statement -> . callable PYC
-    (7) statement -> . var_assign
-    (8) statement -> . funcionreservada
-    (9) statement -> . procedure
-    (10) statement -> . error_string
-    (28) statement -> . TYPE PARENTESISIZQ ID PARENTESISDER PYC
-    (59) funcionreservada -> . IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
-    (62) funcionreservada -> . CALL ID PARENTESISIZQ params PARENTESISDER PYC
-    (67) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
-    (68) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC
-    (69) funcionreservada -> . LEN PARENTESISIZQ ID PARENTESISDER PYC
-    (70) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
-    (71) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
-    (72) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
-    (73) funcionreservada -> . BLINK PARENTESISIZQ params PARENTESISDER PYC
-    (74) funcionreservada -> . DELAY PARENTESISIZQ params PARENTESISDER PYC
-    (75) funcionreservada -> . PRINTLED PARENTESISIZQ params PARENTESISDER PYC
-    (76) funcionreservada -> . PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC
-    (77) funcionreservada -> . FOR expression IN INT LLAVEIZQ ordenes LLAVEDER
-    (78) funcionreservada -> . FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
-    (79) funcionreservada -> . FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
-    (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
-    (81) funcionreservada -> . ID PUNTO SHAPEF PYC
-    (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
-    (39) expression -> . expression EXPONENTE expression
-    (40) expression -> . expression MODULO expression
-    (41) expression -> . expression MULTIPLICACION expression
-    (42) expression -> . expression DIVISIONENTERA expression
-    (43) expression -> . expression DIVISION expression
-    (44) expression -> . expression SUMA expression
-    (45) expression -> . expression RESTA expression
-    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (47) expression -> . ID
-    (48) expression -> . INT
-    (49) expression -> . RESTA expression
-    (30) callable -> . sublist
-    (23) var_assign -> . ID IGUAL expression PYC
-    (24) var_assign -> . ID IGUAL primitive PYC
-    (25) var_assign -> . ids IGUAL params PYC
-    (26) var_assign -> . sublist IGUAL params PYC
-    (66) var_assign -> . ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
-    (60) procedure -> . PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
-    (61) procedure -> . PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
-    (27) error_string -> . ID IGUAL STRING PYC
-    (38) sublist -> . ID multi_index
-    (15) ids -> . ID
-    (16) ids -> . ids COMA ids
-
-    LLAVEDER        shift and go to state 223
-    TYPE            shift and go to state 15
-    IF              shift and go to state 22
-    CALL            shift and go to state 23
-    ID              shift and go to state 193
-    LEN             shift and go to state 24
-    BLINK           shift and go to state 25
-    DELAY           shift and go to state 26
-    PRINTLED        shift and go to state 27
-    PRINTLEDX       shift and go to state 28
-    FOR             shift and go to state 29
-    PARENTESISIZQ   shift and go to state 16
-    INT             shift and go to state 32
-    RESTA           shift and go to state 19
-    PROCEDURE       shift and go to state 30
-
-    statement                      shift and go to state 210
-    funcionreservada               shift and go to state 211
-    expression                     shift and go to state 9
-    callable                       shift and go to state 10
-    var_assign                     shift and go to state 11
-    procedure                      shift and go to state 13
-    error_string                   shift and go to state 14
-    sublist                        shift and go to state 20
-    ids                            shift and go to state 21
-
-state 217
-
-    (61) procedure -> PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes . LLAVEDER PYC
-    (85) ordenes -> ordenes . statement
-    (86) ordenes -> ordenes . funcionreservada
-    (5) statement -> . expression PYC
-    (6) statement -> . callable PYC
-    (7) statement -> . var_assign
-    (8) statement -> . funcionreservada
-    (9) statement -> . procedure
-    (10) statement -> . error_string
-    (28) statement -> . TYPE PARENTESISIZQ ID PARENTESISDER PYC
-    (59) funcionreservada -> . IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
-    (62) funcionreservada -> . CALL ID PARENTESISIZQ params PARENTESISDER PYC
-    (67) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
-    (68) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC
-    (69) funcionreservada -> . LEN PARENTESISIZQ ID PARENTESISDER PYC
-    (70) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
-    (71) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
-    (72) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
-    (73) funcionreservada -> . BLINK PARENTESISIZQ params PARENTESISDER PYC
-    (74) funcionreservada -> . DELAY PARENTESISIZQ params PARENTESISDER PYC
-    (75) funcionreservada -> . PRINTLED PARENTESISIZQ params PARENTESISDER PYC
-    (76) funcionreservada -> . PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC
-    (77) funcionreservada -> . FOR expression IN INT LLAVEIZQ ordenes LLAVEDER
-    (78) funcionreservada -> . FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
-    (79) funcionreservada -> . FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
-    (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
-    (81) funcionreservada -> . ID PUNTO SHAPEF PYC
-    (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
-    (39) expression -> . expression EXPONENTE expression
-    (40) expression -> . expression MODULO expression
-    (41) expression -> . expression MULTIPLICACION expression
-    (42) expression -> . expression DIVISIONENTERA expression
-    (43) expression -> . expression DIVISION expression
-    (44) expression -> . expression SUMA expression
-    (45) expression -> . expression RESTA expression
-    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
-    (47) expression -> . ID
-    (48) expression -> . INT
-    (49) expression -> . RESTA expression
-    (30) callable -> . sublist
-    (23) var_assign -> . ID IGUAL expression PYC
-    (24) var_assign -> . ID IGUAL primitive PYC
-    (25) var_assign -> . ids IGUAL params PYC
-    (26) var_assign -> . sublist IGUAL params PYC
-    (66) var_assign -> . ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
-    (60) procedure -> . PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
-    (61) procedure -> . PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
-    (27) error_string -> . ID IGUAL STRING PYC
-    (38) sublist -> . ID multi_index
-    (15) ids -> . ID
-    (16) ids -> . ids COMA ids
-
-    LLAVEDER        shift and go to state 224
-    TYPE            shift and go to state 15
-    IF              shift and go to state 22
-    CALL            shift and go to state 23
-    ID              shift and go to state 193
-    LEN             shift and go to state 24
-    BLINK           shift and go to state 25
-    DELAY           shift and go to state 26
-    PRINTLED        shift and go to state 27
-    PRINTLEDX       shift and go to state 28
-    FOR             shift and go to state 29
-    PARENTESISIZQ   shift and go to state 16
-    INT             shift and go to state 32
-    RESTA           shift and go to state 19
-    PROCEDURE       shift and go to state 30
-
-    statement                      shift and go to state 210
-    funcionreservada               shift and go to state 211
-    expression                     shift and go to state 9
-    callable                       shift and go to state 10
-    var_assign                     shift and go to state 11
-    procedure                      shift and go to state 13
-    error_string                   shift and go to state 14
-    sublist                        shift and go to state 20
-    ids                            shift and go to state 21
-
-state 218
-
-    (66) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA . valor_param PARENTESISDER PARENTESISDER PYC
-    (63) valor_param -> . BOOLEAN
-    (64) valor_param -> . INT
-    (65) valor_param -> . ID
-
-    BOOLEAN         shift and go to state 148
-    INT             shift and go to state 149
-    ID              shift and go to state 146
-
-    valor_param                    shift and go to state 225
-
-state 219
-
-    (67) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER . PYC
-
-    PYC             shift and go to state 226
-
-
 state 220
 
-    (83) funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER . PYC
+    (79) funcionreservada -> FOR expression IN INT STEP INT LLAVEIZQ . ordenes LLAVEDER
+    (86) ordenes -> . statement
+    (87) ordenes -> . ordenes statement
+    (88) ordenes -> . ordenes funcionreservada
+    (89) ordenes -> . funcionreservada
+    (5) statement -> . expression PYC
+    (6) statement -> . callable PYC
+    (7) statement -> . var_assign
+    (8) statement -> . funcionreservada
+    (9) statement -> . procedure
+    (10) statement -> . error_string
+    (28) statement -> . TYPE PARENTESISIZQ ID PARENTESISDER PYC
+    (59) funcionreservada -> . IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
+    (62) funcionreservada -> . CALL ID PARENTESISIZQ params PARENTESISDER PYC
+    (67) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    (68) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC
+    (69) funcionreservada -> . LEN PARENTESISIZQ ID PARENTESISDER PYC
+    (70) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
+    (71) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
+    (72) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
+    (73) funcionreservada -> . BLINK PARENTESISIZQ params PARENTESISDER PYC
+    (74) funcionreservada -> . DELAY PARENTESISIZQ params PARENTESISDER PYC
+    (75) funcionreservada -> . PRINTLED PARENTESISIZQ params PARENTESISDER PYC
+    (76) funcionreservada -> . PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC
+    (77) funcionreservada -> . FOR expression IN INT LLAVEIZQ ordenes LLAVEDER
+    (78) funcionreservada -> . FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
+    (79) funcionreservada -> . FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
+    (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
+    (81) funcionreservada -> . ID PUNTO SHAPEF PYC
+    (82) funcionreservada -> . ID PUNTO SHAPEC PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    (39) expression -> . expression EXPONENTE expression
+    (40) expression -> . expression MODULO expression
+    (41) expression -> . expression MULTIPLICACION expression
+    (42) expression -> . expression DIVISIONENTERA expression
+    (43) expression -> . expression DIVISION expression
+    (44) expression -> . expression SUMA expression
+    (45) expression -> . expression RESTA expression
+    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (47) expression -> . ID
+    (48) expression -> . INT
+    (49) expression -> . RESTA expression
+    (30) callable -> . sublist
+    (23) var_assign -> . ID IGUAL expression PYC
+    (24) var_assign -> . ID IGUAL primitive PYC
+    (25) var_assign -> . ids IGUAL params PYC
+    (26) var_assign -> . sublist IGUAL params PYC
+    (66) var_assign -> . ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
+    (60) procedure -> . PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
+    (61) procedure -> . PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
+    (27) error_string -> . ID IGUAL STRING PYC
+    (38) sublist -> . ID multi_index
+    (15) ids -> . ID
+    (16) ids -> . ids COMA ids
 
-    PYC             shift and go to state 227
+    TYPE            shift and go to state 15
+    IF              shift and go to state 22
+    CALL            shift and go to state 23
+    ID              shift and go to state 195
+    LEN             shift and go to state 24
+    BLINK           shift and go to state 25
+    DELAY           shift and go to state 26
+    PRINTLED        shift and go to state 27
+    PRINTLEDX       shift and go to state 28
+    FOR             shift and go to state 29
+    PARENTESISIZQ   shift and go to state 16
+    INT             shift and go to state 32
+    RESTA           shift and go to state 19
+    PROCEDURE       shift and go to state 30
 
+    expression                     shift and go to state 9
+    ordenes                        shift and go to state 229
+    statement                      shift and go to state 193
+    funcionreservada               shift and go to state 194
+    callable                       shift and go to state 10
+    var_assign                     shift and go to state 11
+    procedure                      shift and go to state 13
+    error_string                   shift and go to state 14
+    sublist                        shift and go to state 20
+    ids                            shift and go to state 21
 
 state 221
 
-    (80) funcionreservada -> FOR expression IN expression STEP INT LLAVEIZQ ordenes . LLAVEDER
-    (85) ordenes -> ordenes . statement
-    (86) ordenes -> ordenes . funcionreservada
+    (60) procedure -> PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes . LLAVEDER PYC
+    (87) ordenes -> ordenes . statement
+    (88) ordenes -> ordenes . funcionreservada
     (5) statement -> . expression PYC
     (6) statement -> . callable PYC
     (7) statement -> . var_assign
@@ -5140,7 +5090,9 @@ state 221
     (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
     (81) funcionreservada -> . ID PUNTO SHAPEF PYC
     (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
     (39) expression -> . expression EXPONENTE expression
     (40) expression -> . expression MODULO expression
     (41) expression -> . expression MULTIPLICACION expression
@@ -5165,11 +5117,11 @@ state 221
     (15) ids -> . ID
     (16) ids -> . ids COMA ids
 
-    LLAVEDER        shift and go to state 228
+    LLAVEDER        shift and go to state 230
     TYPE            shift and go to state 15
     IF              shift and go to state 22
     CALL            shift and go to state 23
-    ID              shift and go to state 193
+    ID              shift and go to state 195
     LEN             shift and go to state 24
     BLINK           shift and go to state 25
     DELAY           shift and go to state 26
@@ -5181,9 +5133,9 @@ state 221
     RESTA           shift and go to state 19
     PROCEDURE       shift and go to state 30
 
+    statement                      shift and go to state 215
+    funcionreservada               shift and go to state 216
     expression                     shift and go to state 9
-    statement                      shift and go to state 210
-    funcionreservada               shift and go to state 211
     callable                       shift and go to state 10
     var_assign                     shift and go to state 11
     procedure                      shift and go to state 13
@@ -5193,9 +5145,9 @@ state 221
 
 state 222
 
-    (79) funcionreservada -> FOR expression IN INT STEP INT LLAVEIZQ ordenes . LLAVEDER
-    (85) ordenes -> ordenes . statement
-    (86) ordenes -> ordenes . funcionreservada
+    (61) procedure -> PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes . LLAVEDER PYC
+    (87) ordenes -> ordenes . statement
+    (88) ordenes -> ordenes . funcionreservada
     (5) statement -> . expression PYC
     (6) statement -> . callable PYC
     (7) statement -> . var_assign
@@ -5221,7 +5173,9 @@ state 222
     (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
     (81) funcionreservada -> . ID PUNTO SHAPEF PYC
     (82) funcionreservada -> . ID PUNTO SHAPEC PYC
-    (83) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
     (39) expression -> . expression EXPONENTE expression
     (40) expression -> . expression MODULO expression
     (41) expression -> . expression MULTIPLICACION expression
@@ -5246,11 +5200,150 @@ state 222
     (15) ids -> . ID
     (16) ids -> . ids COMA ids
 
-    LLAVEDER        shift and go to state 229
+    LLAVEDER        shift and go to state 231
     TYPE            shift and go to state 15
     IF              shift and go to state 22
     CALL            shift and go to state 23
-    ID              shift and go to state 193
+    ID              shift and go to state 195
+    LEN             shift and go to state 24
+    BLINK           shift and go to state 25
+    DELAY           shift and go to state 26
+    PRINTLED        shift and go to state 27
+    PRINTLEDX       shift and go to state 28
+    FOR             shift and go to state 29
+    PARENTESISIZQ   shift and go to state 16
+    INT             shift and go to state 32
+    RESTA           shift and go to state 19
+    PROCEDURE       shift and go to state 30
+
+    statement                      shift and go to state 215
+    funcionreservada               shift and go to state 216
+    expression                     shift and go to state 9
+    callable                       shift and go to state 10
+    var_assign                     shift and go to state 11
+    procedure                      shift and go to state 13
+    error_string                   shift and go to state 14
+    sublist                        shift and go to state 20
+    ids                            shift and go to state 21
+
+state 223
+
+    (66) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA . valor_param PARENTESISDER PARENTESISDER PYC
+    (63) valor_param -> . BOOLEAN
+    (64) valor_param -> . INT
+    (65) valor_param -> . ID
+
+    BOOLEAN         shift and go to state 150
+    INT             shift and go to state 151
+    ID              shift and go to state 148
+
+    valor_param                    shift and go to state 232
+
+state 224
+
+    (67) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER . PYC
+
+    PYC             shift and go to state 233
+
+
+state 225
+
+    (83) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA . expression PARENTESISDER PYC
+    (39) expression -> . expression EXPONENTE expression
+    (40) expression -> . expression MODULO expression
+    (41) expression -> . expression MULTIPLICACION expression
+    (42) expression -> . expression DIVISIONENTERA expression
+    (43) expression -> . expression DIVISION expression
+    (44) expression -> . expression SUMA expression
+    (45) expression -> . expression RESTA expression
+    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (47) expression -> . ID
+    (48) expression -> . INT
+    (49) expression -> . RESTA expression
+
+    PARENTESISIZQ   shift and go to state 16
+    ID              shift and go to state 44
+    INT             shift and go to state 32
+    RESTA           shift and go to state 19
+
+    expression                     shift and go to state 234
+
+state 226
+
+    (84) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER . PYC
+
+    PYC             shift and go to state 235
+
+
+state 227
+
+    (85) funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER . PYC
+
+    PYC             shift and go to state 236
+
+
+state 228
+
+    (80) funcionreservada -> FOR expression IN expression STEP INT LLAVEIZQ ordenes . LLAVEDER
+    (87) ordenes -> ordenes . statement
+    (88) ordenes -> ordenes . funcionreservada
+    (5) statement -> . expression PYC
+    (6) statement -> . callable PYC
+    (7) statement -> . var_assign
+    (8) statement -> . funcionreservada
+    (9) statement -> . procedure
+    (10) statement -> . error_string
+    (28) statement -> . TYPE PARENTESISIZQ ID PARENTESISDER PYC
+    (59) funcionreservada -> . IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
+    (62) funcionreservada -> . CALL ID PARENTESISIZQ params PARENTESISDER PYC
+    (67) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    (68) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC
+    (69) funcionreservada -> . LEN PARENTESISIZQ ID PARENTESISDER PYC
+    (70) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
+    (71) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
+    (72) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
+    (73) funcionreservada -> . BLINK PARENTESISIZQ params PARENTESISDER PYC
+    (74) funcionreservada -> . DELAY PARENTESISIZQ params PARENTESISDER PYC
+    (75) funcionreservada -> . PRINTLED PARENTESISIZQ params PARENTESISDER PYC
+    (76) funcionreservada -> . PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC
+    (77) funcionreservada -> . FOR expression IN INT LLAVEIZQ ordenes LLAVEDER
+    (78) funcionreservada -> . FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
+    (79) funcionreservada -> . FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
+    (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
+    (81) funcionreservada -> . ID PUNTO SHAPEF PYC
+    (82) funcionreservada -> . ID PUNTO SHAPEC PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    (39) expression -> . expression EXPONENTE expression
+    (40) expression -> . expression MODULO expression
+    (41) expression -> . expression MULTIPLICACION expression
+    (42) expression -> . expression DIVISIONENTERA expression
+    (43) expression -> . expression DIVISION expression
+    (44) expression -> . expression SUMA expression
+    (45) expression -> . expression RESTA expression
+    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (47) expression -> . ID
+    (48) expression -> . INT
+    (49) expression -> . RESTA expression
+    (30) callable -> . sublist
+    (23) var_assign -> . ID IGUAL expression PYC
+    (24) var_assign -> . ID IGUAL primitive PYC
+    (25) var_assign -> . ids IGUAL params PYC
+    (26) var_assign -> . sublist IGUAL params PYC
+    (66) var_assign -> . ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
+    (60) procedure -> . PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
+    (61) procedure -> . PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
+    (27) error_string -> . ID IGUAL STRING PYC
+    (38) sublist -> . ID multi_index
+    (15) ids -> . ID
+    (16) ids -> . ids COMA ids
+
+    LLAVEDER        shift and go to state 237
+    TYPE            shift and go to state 15
+    IF              shift and go to state 22
+    CALL            shift and go to state 23
+    ID              shift and go to state 195
     LEN             shift and go to state 24
     BLINK           shift and go to state 25
     DELAY           shift and go to state 26
@@ -5263,8 +5356,8 @@ state 222
     PROCEDURE       shift and go to state 30
 
     expression                     shift and go to state 9
-    statement                      shift and go to state 210
-    funcionreservada               shift and go to state 211
+    statement                      shift and go to state 215
+    funcionreservada               shift and go to state 216
     callable                       shift and go to state 10
     var_assign                     shift and go to state 11
     procedure                      shift and go to state 13
@@ -5272,28 +5365,111 @@ state 222
     sublist                        shift and go to state 20
     ids                            shift and go to state 21
 
-state 223
+state 229
+
+    (79) funcionreservada -> FOR expression IN INT STEP INT LLAVEIZQ ordenes . LLAVEDER
+    (87) ordenes -> ordenes . statement
+    (88) ordenes -> ordenes . funcionreservada
+    (5) statement -> . expression PYC
+    (6) statement -> . callable PYC
+    (7) statement -> . var_assign
+    (8) statement -> . funcionreservada
+    (9) statement -> . procedure
+    (10) statement -> . error_string
+    (28) statement -> . TYPE PARENTESISIZQ ID PARENTESISDER PYC
+    (59) funcionreservada -> . IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
+    (62) funcionreservada -> . CALL ID PARENTESISIZQ params PARENTESISDER PYC
+    (67) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    (68) funcionreservada -> . ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC
+    (69) funcionreservada -> . LEN PARENTESISIZQ ID PARENTESISDER PYC
+    (70) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
+    (71) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
+    (72) funcionreservada -> . ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
+    (73) funcionreservada -> . BLINK PARENTESISIZQ params PARENTESISDER PYC
+    (74) funcionreservada -> . DELAY PARENTESISIZQ params PARENTESISDER PYC
+    (75) funcionreservada -> . PRINTLED PARENTESISIZQ params PARENTESISDER PYC
+    (76) funcionreservada -> . PRINTLEDX PARENTESISIZQ params PARENTESISDER PYC
+    (77) funcionreservada -> . FOR expression IN INT LLAVEIZQ ordenes LLAVEDER
+    (78) funcionreservada -> . FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
+    (79) funcionreservada -> . FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
+    (80) funcionreservada -> . FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
+    (81) funcionreservada -> . ID PUNTO SHAPEF PYC
+    (82) funcionreservada -> . ID PUNTO SHAPEC PYC
+    (83) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+    (84) funcionreservada -> . ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    (85) funcionreservada -> . ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    (39) expression -> . expression EXPONENTE expression
+    (40) expression -> . expression MODULO expression
+    (41) expression -> . expression MULTIPLICACION expression
+    (42) expression -> . expression DIVISIONENTERA expression
+    (43) expression -> . expression DIVISION expression
+    (44) expression -> . expression SUMA expression
+    (45) expression -> . expression RESTA expression
+    (46) expression -> . PARENTESISIZQ expression PARENTESISDER
+    (47) expression -> . ID
+    (48) expression -> . INT
+    (49) expression -> . RESTA expression
+    (30) callable -> . sublist
+    (23) var_assign -> . ID IGUAL expression PYC
+    (24) var_assign -> . ID IGUAL primitive PYC
+    (25) var_assign -> . ids IGUAL params PYC
+    (26) var_assign -> . sublist IGUAL params PYC
+    (66) var_assign -> . ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
+    (60) procedure -> . PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
+    (61) procedure -> . PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
+    (27) error_string -> . ID IGUAL STRING PYC
+    (38) sublist -> . ID multi_index
+    (15) ids -> . ID
+    (16) ids -> . ids COMA ids
+
+    LLAVEDER        shift and go to state 238
+    TYPE            shift and go to state 15
+    IF              shift and go to state 22
+    CALL            shift and go to state 23
+    ID              shift and go to state 195
+    LEN             shift and go to state 24
+    BLINK           shift and go to state 25
+    DELAY           shift and go to state 26
+    PRINTLED        shift and go to state 27
+    PRINTLEDX       shift and go to state 28
+    FOR             shift and go to state 29
+    PARENTESISIZQ   shift and go to state 16
+    INT             shift and go to state 32
+    RESTA           shift and go to state 19
+    PROCEDURE       shift and go to state 30
+
+    expression                     shift and go to state 9
+    statement                      shift and go to state 215
+    funcionreservada               shift and go to state 216
+    callable                       shift and go to state 10
+    var_assign                     shift and go to state 11
+    procedure                      shift and go to state 13
+    error_string                   shift and go to state 14
+    sublist                        shift and go to state 20
+    ids                            shift and go to state 21
+
+state 230
 
     (60) procedure -> PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER . PYC
 
-    PYC             shift and go to state 230
+    PYC             shift and go to state 239
 
 
-state 224
+state 231
 
     (61) procedure -> PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER . PYC
 
-    PYC             shift and go to state 231
+    PYC             shift and go to state 240
 
 
-state 225
+state 232
 
     (66) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param . PARENTESISDER PARENTESISDER PYC
 
-    PARENTESISDER   shift and go to state 232
+    PARENTESISDER   shift and go to state 241
 
 
-state 226
+state 233
 
     (67) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .
 
@@ -5315,29 +5491,72 @@ state 226
     LLAVEDER        reduce using rule 67 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
 
 
-state 227
+state 234
 
-    (83) funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .
+    (83) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression . PARENTESISDER PYC
+    (39) expression -> expression . EXPONENTE expression
+    (40) expression -> expression . MODULO expression
+    (41) expression -> expression . MULTIPLICACION expression
+    (42) expression -> expression . DIVISIONENTERA expression
+    (43) expression -> expression . DIVISION expression
+    (44) expression -> expression . SUMA expression
+    (45) expression -> expression . RESTA expression
 
-    TYPE            reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    PARENTESISIZQ   reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    ID              reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    INT             reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    RESTA           reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    IF              reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    CALL            reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    LEN             reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    BLINK           reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    DELAY           reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    PRINTLED        reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    PRINTLEDX       reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    FOR             reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    PROCEDURE       reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    $end            reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
-    LLAVEDER        reduce using rule 83 (funcionreservada -> ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC .)
+    PARENTESISDER   shift and go to state 242
+    EXPONENTE       shift and go to state 34
+    MODULO          shift and go to state 35
+    MULTIPLICACION  shift and go to state 36
+    DIVISIONENTERA  shift and go to state 37
+    DIVISION        shift and go to state 38
+    SUMA            shift and go to state 39
+    RESTA           shift and go to state 40
 
 
-state 228
+state 235
+
+    (84) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .
+
+    TYPE            reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    PARENTESISIZQ   reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    ID              reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    INT             reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    RESTA           reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    IF              reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    CALL            reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    LEN             reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    BLINK           reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    DELAY           reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    PRINTLED        reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    PRINTLEDX       reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    FOR             reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    PROCEDURE       reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    $end            reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+    LLAVEDER        reduce using rule 84 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC .)
+
+
+state 236
+
+    (85) funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .
+
+    TYPE            reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    PARENTESISIZQ   reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    ID              reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    INT             reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    RESTA           reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    IF              reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    CALL            reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    LEN             reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    BLINK           reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    DELAY           reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    PRINTLED        reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    PRINTLEDX       reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    FOR             reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    PROCEDURE       reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    $end            reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+    LLAVEDER        reduce using rule 85 (funcionreservada -> ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC .)
+
+
+state 237
 
     (80) funcionreservada -> FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER .
 
@@ -5359,7 +5578,7 @@ state 228
     LLAVEDER        reduce using rule 80 (funcionreservada -> FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER .)
 
 
-state 229
+state 238
 
     (79) funcionreservada -> FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER .
 
@@ -5381,7 +5600,7 @@ state 229
     LLAVEDER        reduce using rule 79 (funcionreservada -> FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER .)
 
 
-state 230
+state 239
 
     (60) procedure -> PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC .
 
@@ -5403,7 +5622,7 @@ state 230
     LLAVEDER        reduce using rule 60 (procedure -> PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC .)
 
 
-state 231
+state 240
 
     (61) procedure -> PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC .
 
@@ -5425,21 +5644,50 @@ state 231
     LLAVEDER        reduce using rule 61 (procedure -> PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC .)
 
 
-state 232
+state 241
 
     (66) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER . PARENTESISDER PYC
 
-    PARENTESISDER   shift and go to state 233
+    PARENTESISDER   shift and go to state 243
 
 
-state 233
+state 242
+
+    (83) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER . PYC
+
+    PYC             shift and go to state 244
+
+
+state 243
 
     (66) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER . PYC
 
-    PYC             shift and go to state 234
+    PYC             shift and go to state 245
 
 
-state 234
+state 244
+
+    (83) funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .
+
+    TYPE            reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    PARENTESISIZQ   reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    ID              reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    INT             reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    RESTA           reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    IF              reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    CALL            reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    LEN             reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    BLINK           reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    DELAY           reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    PRINTLED        reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    PRINTLEDX       reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    FOR             reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    PROCEDURE       reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    $end            reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+    LLAVEDER        reduce using rule 83 (funcionreservada -> ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC .)
+
+
+state 245
 
     (66) var_assign -> ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC .
 
@@ -5479,20 +5727,24 @@ WARNING: shift/reduce conflict for FOR in state 0 resolved as shift
 WARNING: shift/reduce conflict for PROCEDURE in state 0 resolved as shift
 WARNING: shift/reduce conflict for IGUAL in state 17 resolved as shift
 WARNING: shift/reduce conflict for PYC in state 84 resolved as shift
-WARNING: shift/reduce conflict for COMA in state 97 resolved as shift
-WARNING: shift/reduce conflict for CORCHETEIZQ in state 119 resolved as shift
-WARNING: shift/reduce conflict for COMA in state 124 resolved as shift
-WARNING: shift/reduce conflict for LLAVEIZQ in state 141 resolved as shift
-WARNING: shift/reduce conflict for STEP in state 141 resolved as shift
-WARNING: shift/reduce conflict for CORCHETEIZQ in state 157 resolved as shift
-WARNING: shift/reduce conflict for IGUAL in state 193 resolved as shift
+WARNING: shift/reduce conflict for COMA in state 98 resolved as shift
+WARNING: shift/reduce conflict for CORCHETEIZQ in state 121 resolved as shift
+WARNING: shift/reduce conflict for COMA in state 126 resolved as shift
+WARNING: shift/reduce conflict for LLAVEIZQ in state 143 resolved as shift
+WARNING: shift/reduce conflict for STEP in state 143 resolved as shift
+WARNING: shift/reduce conflict for CORCHETEIZQ in state 159 resolved as shift
+WARNING: shift/reduce conflict for IGUAL in state 195 resolved as shift
 WARNING: reduce/reduce conflict in state 6 resolved using rule (primitive -> INT)
 WARNING: rejected rule (expression -> INT) in state 6
 WARNING: reduce/reduce conflict in state 57 resolved using rule (primitive -> INT)
 WARNING: rejected rule (expression -> INT) in state 57
-WARNING: reduce/reduce conflict in state 192 resolved using rule (statement -> funcionreservada)
-WARNING: rejected rule (ordenes -> funcionreservada) in state 192
-WARNING: reduce/reduce conflict in state 211 resolved using rule (statement -> funcionreservada)
-WARNING: rejected rule (ordenes -> ordenes funcionreservada) in state 211
+WARNING: reduce/reduce conflict in state 194 resolved using rule (statement -> funcionreservada)
+WARNING: rejected rule (ordenes -> funcionreservada) in state 194
+WARNING: reduce/reduce conflict in state 204 resolved using rule (expression -> ID)
+WARNING: rejected rule (valor_param -> ID) in state 204
+WARNING: reduce/reduce conflict in state 207 resolved using rule (expression -> INT)
+WARNING: rejected rule (valor_param -> INT) in state 207
+WARNING: reduce/reduce conflict in state 216 resolved using rule (statement -> funcionreservada)
+WARNING: rejected rule (ordenes -> ordenes funcionreservada) in state 216
 WARNING: Rule (ordenes -> funcionreservada) is never reduced
 WARNING: Rule (ordenes -> ordenes funcionreservada) is never reduced
