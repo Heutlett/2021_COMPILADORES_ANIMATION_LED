@@ -44,15 +44,38 @@ instrucciones = []
 pp = pprint.PrettyPrinter(indent=2)
 
 
-# Funcion para obtener una de las variables del dictionario recibido
-def getVariable(key, variables_dict):
-    return variables_dict.get(key)
 
+# Funcion para obtener una de las variables del dictionario recibido
+def getVariable(key, procedure):
+    '''
+    Funcion que retorna el valor de un key en el diccionario recibido, si no se encuentra en
+    el diccionario recibido se busca en el diccionario global.
+    :param key: key de la variable en el diccionario
+    :param procedure: diccionario en donde se debe buscar
+    :return: Value del key correspondiente, si no se encuentra retorna None.
+    '''
+
+    # print("Procedure", procedure)
+
+    if procedure.lower() == "main":
+        if key in global_variables.keys():
+            return global_variables.get(key)
+    else:
+        print("Key", key)
+        print("Procedure", procedure)
+        if key in local_variables[procedure].keys():
+            return local_variables[procedure].get(key)
+        elif key in global_variables.keys():
+            return global_variables.get(key)
+
+    return None
 
 # Funcion para asignar a una variables del dictionario recibido
-def setVariable(key, variables_dict, value):
-    variables_dict[key] = value
-
+def setVariable(procedure, key, value):
+    if procedure.lower() == "main":
+        global_variables[key] = value
+    else:
+        local_variables[procedure][key] = value
 
 # Verifica si ID existe en el diccionario.
 def isGlobalDeclared(var, variables_dic):
@@ -74,7 +97,7 @@ sublist_operators = ['row', 'row,col', 'col', 'sublist']
 
 
 def get_var(line, var, varDict):
-    val = getByID(var, varDict)
+    val = getVariable(var, varDict)
     if val is None:
         errors.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, var))
     # print("Val", val)
@@ -89,11 +112,16 @@ def run_tree(p):
     '''
 
     global arithmetic_operators
-    print("P  :", p)
+
+    # print()
+    # print()
+    # print("✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ")
+    # print("TREE  :", p)
+
     if equalsType(p, list):
 
         if p[1] in arithmetic_operators:  # OPERACIONES ARITMETICAS
-            return arithmetic_operation(p[0], p[1], p[2], p[3], p[4])
+            return arithmetic_operation(p[0], p[1], p[2], p[3])
 
         elif p[1] == '=':
             return var_assign_operation(p[0], p[2], p[3], p[4])
@@ -101,10 +129,12 @@ def run_tree(p):
         elif p[1] == '[]':
             indexes = p[3]
             # print()
-            return get_sublist(p[0], False, indexes[0], indexes, p[2], p[3], p[4])
+            procedure = p[2]
+            p.remove(p[2])
+            return get_sublist(procedure, p)
 
         elif p[1] == '[]*':
-            return var_assign_operation(p[0], p[1], p[2], p[3])
+            return var_assign_operation(p[0], p[2], p[3], p[4])
 
         elif p[1] == 'var':  # DEFINIR UNA VARIABLE
             return get_var(p[0], p[2], p[3])
@@ -149,7 +179,7 @@ def run_tree(p):
 """ ###################################### Operaciones aritmeticas ################################################### """
 
 
-def arithmetic_operation(line, operator, a, b, dictionary):
+def arithmetic_operation(line, operator, a, b):
     '''
     Funcion auxiliar para operar los calculos aritmeticos por aparte.
     Funciona como switch case para la operacion que se debe realizar.
@@ -189,35 +219,39 @@ def arithmetic_operation(line, operator, a, b, dictionary):
 """ ###################################### Asignacion de variables ################################################### """
 
 
-def var_assign_operation(line, ID, value, variables_dict):
+def var_assign_operation(line, procedure, ID, value):
     '''
     Funcion que asigna una variable y realiza las verificaciones necesarias.
     :param line: linea en donde se encuentra el lector.
     :param ID:  lista de los ids o ID individual
     :param value:  lista de los valores o valor individual.
-    :param variables_dict: diccionario en donde se está trabajando la asignación.
+    :param procedure: diccionario en donde se está trabajando la asignación.
     :return: asignacion de la variable deseada en el diccionario deseado.
     '''
     # Si es más de una variable.
     if type(ID) == list and type(value) == list:
-        return var_assign_operation_aux(line, ID, value, variables_dict)
+        return var_assign_operation_aux(line, procedure,  ID, value)
 
     # Si es una sola variable.
-    tmp = individual_assign_validation(line, ID, value, variables_dict)
+    tmp = individual_assign_validation(line, procedure, ID, value)
     if tmp is False:
         return False
 
     # Asignación
-    # print("TEMP is:", tmp)
+    # print("SALIDA is:", tmp)
+
 
     if type(tmp[0]) == str:
-        variables_dict[tmp[0]] = tmp[1]
-
-    return variables_dict
+        key = tmp[0]
+        val = tmp[1]
+        setVariable(procedure, key, val)
+        return getVariable(ID, procedure)
+    else:
+        return tmp
 
 
 # Funcion para operar la asignacion de las variables.
-def var_assign_operation_aux(line, ID, value, variables_dict):
+def var_assign_operation_aux(line, procedure, ID, value):
     # print("id: " + ID)
 
     # Si es más de una variable.
@@ -225,75 +259,79 @@ def var_assign_operation_aux(line, ID, value, variables_dict):
     if type(ID) == list and type(value) == list:
 
         # Validaciones.
-        if not multi_assign_validation(line, ID, value, variables_dict):
+        if not multi_assign_validation(line, procedure, ID, value):
             # Error se agrega en la funcion anterior.
             return False
 
         # Asignacion en cascada.
         for i in range(len(ID)):
-            tmp = var_assign_operation(line, ID[i], value[i], variables_dict)
+            tmp = var_assign_operation(line, procedure, ID[i], value[i])
             if tmp is False:
                 return False
             # Asignación
-            variables_dict[tmp[0]] = tmp[1]
-        return variables_dict
+            procedure[tmp[0]] = tmp[1]
+        return procedure
 
     # Si es solo una variable.
     # [line, ID, value, dict]
     else:
-        return individual_assign_validation(line, ID, value, variables_dict)
+        return individual_assign_validation(line, procedure, ID, value)
 
 
-def individual_assign_validation(line, ID, value, variables_dict):
+def individual_assign_validation(line, procedure, ID, value):
     '''
     Funcion para verificar la asignacion de las variables individualmente.
     :param line: linea en donde se encuentra el lector.
     :param ID:  lista de los ids o ID individual
     :param value:  lista de los valores o valor individual.
-    :param variables_dict: diccionario en donde se está trabajando la asignación.
+    :param procedure: diccionario en donde se está trabajando la asignación.
     :return: lista con ID y value si se cumplen todas las verificaciones, False en caso contrario.
     '''
 
-    # insumo :  [line, ID, value, dict]
-
-    # De [[18, '=', [18, 'a', [['row', 1]]], [True]]]
-    #  se recibe[18, [18, 'a', [['row', 1]]], [True], "dictionary"]
-
-    # De [16, '=', 'h', 5]
-    #     se recibe [16, 'h', 5, "dictionary"]
+    # A = None
+    #     # A = B
+    #     # A = 1
+    #     # A = [1]
+    #     # A = B[2] -> (B, [1,2,3...])
+    #     # A[2] =  B[2] -> (B, [1,2,3...])
 
     # Si es una asignacion a una sublista.
     if type(ID) == list:
-        return sublist_assign(ID, run_tree(value), variables_dict)
+        return sublist_assign(ID, procedure, run_tree(value))
 
     # Si la variable es una lista, obtener el valor si es una operacion.
     if type(value) == list:
 
         # Si es una variable.
         if value[1] in arithmetic_operators:
-            value += [variables_dict]
+            value += [procedure]
             var = value[3]
             if type(var) == str:
-                value[3] = [line, 'var', var, variables_dict]
+                value[3] = [line, 'var', var, procedure]
 
         value = run_tree(value)
 
     # Si no es una variable valida.
-    if not var_verification(line, ID, value, variables_dict):
+    if not var_verification(line, procedure, ID, value):
         # El error se agrega en la verificacion.
         return False
 
     # Si se cumplen todas las validaciones.
-    # print("-> {0} : {1}".format(ID, variables_dict[ID]))
+    # print("-> {0} : {1}".format(ID, procedure[ID]))
     return [ID, value]
 
 
-def sublist_assign(sublist, value, variables_dict):
+def get_sublist(procedure, sublist):
+    print("P  :", sublist)
+    return sublist_assign(procedure, sublist, None)
+
+
+def sublist_assign(procedure, sublist, value=None):
     '''
     Auxiliar para verificar la asignacion de las variables a una sublista.
     :param sublist: sublista de entrada
     :param value:  lista de los valores o valor individual.
-    :param variables_dict: diccionario en donde se está trabajando la asignación.
+    :param procedure: diccionario en donde se está trabajando la asignación.
     :return: lista con ID y value si se cumplen todas las verificaciones, False en caso contrario.
     '''
 
@@ -306,15 +344,10 @@ def sublist_assign(sublist, value, variables_dict):
 
     line = sublist[0]
     ID = sublist[2]
-    indexes = sublist[3]
 
-    # Obtener la sublista a la que debe ser igual el ID.
-    return get_sublist(line, True, indexes[0], indexes, ID, value, variables_dict)
-
-
-def get_sublist(line, assigning, action, indexes, ID, value, variables_dict):
     # Verificar que la variable existe en el diccionario recibido o en el global.
-    var = getByID(ID, variables_dict)
+    print("SUBLIST >> ", sublist)
+    var = getVariable(ID, procedure)
     if var is None:
         errors.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, value))
         return False
@@ -325,11 +358,13 @@ def get_sublist(line, assigning, action, indexes, ID, value, variables_dict):
             errors.append("TypeError in line {0}: {1} object is not subscriptable.".format(line, var_type(var)))
             return False
 
-    if len(indexes) == 1:
-        newAssign = get_sublist_one_index(line, assigning, action[0], ID, indexes[0], value, variables_dict)
+    indexes = sublist[3]
 
-    elif len(indexes) == 2:
-        newAssign = False
+    if len(indexes) == 1:
+        newAssign = get_sublist_one_index(line, procedure, ID, indexes[0], value)
+
+    # elif len(indexes) == 2:
+    #     newAssign = False
 
     else:
         newAssign = False
@@ -337,71 +372,72 @@ def get_sublist(line, assigning, action, indexes, ID, value, variables_dict):
     return newAssign
 
 
-def get_sublist_one_index(line, assigning, action, ID, indexes, value, variables_dict):
+def get_sublist_one_index(line, procedure, ID, indexes, value):
+    action = indexes[0]
+
     if action == 'row':
         row = indexes[1]
-        return do_row(line, assigning, ID, row, value, variables_dict)
+        return do_row(line, procedure, ID, row, value)
+
+    elif action == 'col':
+        col = indexes[1]
+        return do_col(line, procedure, ID, col, value)
 
     elif action == 'row,col':
         row = indexes[1]
         col = indexes[2]
-        return do_row_col(line, assigning, ID, row, col, value, variables_dict)
+        return do_row_col(line, procedure, ID, row, col, value)
 
     elif action == 'sublist':
         start = indexes[1]
         end = indexes[2]
-        return do_sublist(line, assigning, ID, start, end, value, variables_dict)
+        return do_sublist(line, procedure, ID, start, end, value)
 
 
-def do_row(line, assigning, ID, row, value=None, variables_dict=None):
-    lst = variables_dict[ID]
+def do_row(line, procedure, ID, row, value=None):
+    lst = getVariable(ID, procedure)
 
     # Verificaciones de asignacion y de llamada.
-    apt = row_verification(line, lst, row, ID, value, variables_dict) \
-        if assigning else row_verification(line, lst, row)
+    esApto = row_verification(line, procedure, lst, row, value)
 
     # Si no cumple con los requisitos.
-    if not apt:
+    if not esApto:
         return False
 
-    # Si no se estás asignando.
-    if not assigning:
+    # Si no se está asignando.
+    if value is None:
         return lst[row]
 
     # Si es un ID, obtener el valor que corresponde.
     if type(value) == str:
-        value = getVariable(value, variables_dict)
+        value = getVariable(value, procedure)
 
     # Actualizar lista.
     lst[row] = value
-    print("Lista nueva > ", lst)
     return lst
 
 
-def do_col(line, assigning, ID, col, value=None, variables_dict=None):
-    lst = variables_dict[ID]
+def do_col(line, procedure, ID, col, value=None):
+    lst = getVariable(ID, procedure)
 
     # Verificaciones de asignacion y de llamada.
-    apt = col_verification(line, lst, col, ID, value, variables_dict) \
-        if assigning else col_verification(line, lst, col)
+    esApto = col_verification(line, procedure, lst, col, value)
 
     # Si no cumple con los requisitos.
-    if not apt:
+    if not esApto:
         return False
 
-    # Si no se estás asignando.
-    if not assigning:
+    # Si no se está asignando.
+    if value is None:
         return get_matrix_column(lst, col)
 
     # Si es un ID, obtener el valor que corresponde.
     if type(value) == str:
-        value = getVariable(value, variables_dict)
+        value = getVariable(value, procedure)
 
     # Actualizar lista.
     lst = matrix_column_assign(lst, col, value)
     lst[col] = value
-    print("Lista nueva > ", lst)
-
     return lst
 
 
@@ -421,55 +457,49 @@ def matrix_column_assign(matrix, col, new_val_list):
     return matrix
 
 
-def do_row_col(line, assigning, ID, row, col, value=None, variables_dict=None):
-    lst = variables_dict[ID]
+def do_row_col(line, procedure, ID, row, col, value=None):
+    lst = getVariable(ID, procedure)
 
     # Verificaciones de asignacion y de llamada.
-    apt = row_col_verification(line, lst, row, ID, value, variables_dict) \
-        if assigning else row_col_verification(line, lst, row, col)
+    esApto = row_col_verification(line, procedure, lst, row, col, value)
 
     # Si no cumple con los requisitos.
-    if not apt:
+    if not esApto:
         return False
 
     # Si no se está asignando.
-    if not assigning:
+    if value is None:
         return lst[row][col]
 
     # Si es un ID, obtener el valor que corresponde.
     if type(value) == str:
-        value = getVariable(value, variables_dict)
+        value = getVariable(value, procedure)
 
     # Actualizar lista.
     lst[row][col] = value
-    print("Lista nueva > ", lst)
     return lst
 
 
-def do_sublist(line, assigning, ID, start, end, value=None, variables_dict=None):
-    lst = variables_dict[ID]
-    print("INSUMO -- ", lst)
+def do_sublist(line, procedure, ID, start, end, value=None):
+    lst = getVariable(ID, procedure)
 
     # Verificaciones de asignacion y de llamada.
-    apt = sublist_verification(line, lst, start, end, ID, value, variables_dict) \
-        if assigning else sublist_verification(line, lst, start, end)
+    esApto = sublist_verification(line, procedure, lst, start, end, value)
 
     # Si no cumple con los requisitos.
-    if not apt:
+    if not esApto:
         return False
 
     # Si no se está asignando.
-    if not assigning:
+    if value is None:
         return lst[start:end]
 
     # Si es un ID, obtener el valor que corresponde.
     if type(value) == str:
-        value = getVariable(value, variables_dict)
+        value = getVariable(value, procedure)
 
     # Actualizar lista.
     lst[start:end] = value
-    print("Lista nueva > ", lst)
-
     return lst
 
 
@@ -479,10 +509,10 @@ def get_real_value(value, dct):
     return value
 
 
-def entry_type_verification(line, lst, ID, value, variables_dict):
+def entry_type_verification(line, procedure, lst, ID, value):
     # Si el valor es un ID y aun no se ha creado.
     if type(value) == str:
-        if not var_ID_validation(line, value, variables_dict):
+        if not var_ID_validation(line, value, procedure):
             return False
 
     # Si el valor es una lista y no coincide el tipo con los elementos de la lista a la que se debe asignar.
@@ -497,7 +527,7 @@ def entry_type_verification(line, lst, ID, value, variables_dict):
     else:
 
         # Si es una variable, se obtiene su valor primero.
-        value = getVariable(value, variables_dict)
+        value = getVariable(value, procedure)
         print("VAL ", value)
         # si la variable no es una lista, debe cumplir con  el tipo.
         if get_list_type(lst) != type(value):
@@ -516,7 +546,7 @@ def entry_type_verification(line, lst, ID, value, variables_dict):
     return True
 
 
-def row_verification(line, lst, row, ID=None, value=None, variables_dict=None):
+def row_verification(line, procedure, lst, row, ID=None, value=None):
     '''
     # Funcion que verifica el indice de fila en una lista.
     :param line: linea en donde se encuentra el lector.
@@ -532,17 +562,17 @@ def row_verification(line, lst, row, ID=None, value=None, variables_dict=None):
         return False
 
     # Validaciones de la entrada
-    if ID is not None and value is not None:
-        if not entry_type_verification(line, lst, ID, value, variables_dict):
+    if value is not None:
+        if not entry_type_verification(line, procedure, lst, ID, value):
             return False
 
     return True
 
 
-def col_verification(line, lst, col, ID=None, value=None, variables_dict=None):
+def col_verification(line, procedure, lst, col, ID=None, value=None):
     '''
     Funcion que verifica el indice de columna en una lista.
-    :param variables_dict: dictionario que se debe utilizar
+    :param procedure: dictionario que se debe utilizar
     :param line: linea en donde se encuentra el lector.
     :param lst: lista a analizar.
     :param col: columna en la que se debe sustituir
@@ -560,8 +590,8 @@ def col_verification(line, lst, col, ID=None, value=None, variables_dict=None):
         return False
 
     # Validaciones de la entrada.
-    if ID is not None and value is not None:
-        if not entry_type_verification(line, lst, ID, value, variables_dict):
+    if value is not None:
+        if not entry_type_verification(line, procedure, lst, ID, value):
             return False
 
         if type(value) != list:
@@ -578,7 +608,7 @@ def col_verification(line, lst, col, ID=None, value=None, variables_dict=None):
     return True
 
 
-def row_col_verification(line, lst, row, col, ID=None, value=None, variables_dict=None):
+def row_col_verification(line, procedure, lst, row, col, ID=None, value=None):
     '''
     Funcion que verifica los indices fila y columna de una matriz.
     :param value: Entrada que se debe validar
@@ -602,14 +632,14 @@ def row_col_verification(line, lst, row, col, ID=None, value=None, variables_dic
         return False
 
     # Validaciones de la entrada
-    if ID is not None and value is not None:
-        if not entry_type_verification(line, lst, ID, value, variables_dict):
+    if value is not None:
+        if not entry_type_verification(line, procedure, lst, ID, value):
             return False
 
     return True
 
 
-def sublist_verification(line, lst, start, end, ID=None, value=None, variables_dict=None):
+def sublist_verification(line, procedure, lst, start, end, ID=None, value=None):
     if end < start:
         errors.append("RangeError in line {0}: Index 'start' cannot be greater than 'end'.".format(line, start))
         return False
@@ -621,8 +651,8 @@ def sublist_verification(line, lst, start, end, ID=None, value=None, variables_d
         return False
 
     # Validaciones de la entrada
-    if ID is not None and value is not None:
-        if not entry_type_verification(line, lst, ID, value, variables_dict):
+    if value is not None:
+        if not entry_type_verification(line, procedure, lst, ID, value):
             return False
 
         distance = end - start
@@ -639,35 +669,17 @@ def sublist_verification(line, lst, start, end, ID=None, value=None, variables_d
     return True
 
 
-def getByID(ID, variables_dic):
-    '''
-    Funcion que retorna el valor de un key en el diccionario recibido, si no se encuentra en
-    el diccionario recibido se busca en el diccionario global.
-    :param ID: key de la variable en el diccionario
-    :param variables_dic: diccionario en donde se debe buscar
-    :return: Value del key correspondiente, si no se encuentra retorna False.
-    '''
-
-    if variables_dic:
-        if ID not in variables_dic.keys():
-            if ID not in global_variables.keys():
-                return None
-            return global_variables[ID]
-        return variables_dic[ID]
-    return None
-
-
 """ ###################################### Validacion de asignacion de variables ################################################### """
 
 
-def multi_assign_validation(line, ids, values, variables_dict):
+def multi_assign_validation(line, ids, values, procedure):
     '''
     Funcion para verificar que la lista de IDS y VALUES corresponden al mismo tamaño,
     conservan los mismos tipos y que cada ID es unico.
     :param line: linea en donde se encuentra el lector.
     :param ids: lista de los ids.
     :param values: lista de los valores.
-    :param variables_dict: diccionario en donde se está trabajando la asignación.
+    :param procedure: diccionario en donde se está trabajando la asignación.
     :return: True si se cumplen todas las verificaciones, False en caso contrario.
     '''
 
@@ -683,7 +695,7 @@ def multi_assign_validation(line, ids, values, variables_dict):
 
     # IDs must be unique.
     for ID in ids:
-        if ID in variables_dict.keys():
+        if ID in procedure.keys():
             text = "TypeError in line {1}! \"{0}\" is already declared.".format(ID, line)
             errors.append(text)
             return False
@@ -691,13 +703,13 @@ def multi_assign_validation(line, ids, values, variables_dict):
 
 
 # Funcion auxiliar para verificar una reasignacion de la variable.
-def var_verification(line, ID, value, variables_dict):
+def var_verification(line, procedure, ID, value):
     '''
     Funcion auxiliar para verificar una asignacion o reasignacion de la variable.
     :param line: linea en donde se encuentra el lector.
     :param ids: lista de los ids.
     :param values: lista de los valores.
-    :param variables_dict: diccionario en donde se está trabajando la asignación.
+    :param procedure: diccionario en donde se está trabajando la asignación.
     :return: False si no se cumple alguna de las validaciones, True en caso contrario.
     '''
     # CHECK VALUE...
@@ -705,7 +717,9 @@ def var_verification(line, ID, value, variables_dict):
     # Si value es un string.
     if type(value) == str:
         # Si el valor es un ID y aun no se ha creado
-        if not isGlobalDeclared(value, variables_dict):
+        print("Value", procedure)
+        print("Val12 ", value)
+        if not isGlobalDeclared(value, procedure):
             errors.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, value))
             return False
 
@@ -713,16 +727,16 @@ def var_verification(line, ID, value, variables_dict):
 
         # Si el tipo de ambas variables no coincide.
         else:
-            if getVariable(ID, variables_dict) is not None:
-                if type(getVariable(ID, variables_dict)) != type(getVariable(value, variables_dict)):
+            if getVariable(ID, procedure) is not None:
+                if type(getVariable(ID, procedure)) != type(getVariable(value, procedure)):
                     errors.append("TypeError in line {0}! The type of \"{2}\" does not match the type of {1}."
                                   .format(line, ID, value))
 
     # CHECK ID...
 
     # Si el tipo del ID y la variable no coincide.
-    if getVariable(ID, variables_dict) is not None:
-        if type(getVariable(ID, variables_dict)) != type(value):
+    if getVariable(ID, procedure) is not None:
+        if type(getVariable(ID, procedure)) != type(value):
             errors.append("TypeError in line {0}! The type of \"{2}\" does not match the type of {1}."
                           .format(line, ID, value))
             return False
@@ -735,11 +749,11 @@ def var_verification(line, ID, value, variables_dict):
     return True
 
 
-def var_ID_validation(line, value, variables_dict):
+def var_ID_validation(line, value, procedure):
     # Si value es un string.
     if type(value) == str:
         # Si el valor es un ID y aun no se ha creado
-        if not isGlobalDeclared(value, variables_dict):
+        if not isGlobalDeclared(value, procedure):
             errors.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, value))
             return False
     return True
@@ -973,9 +987,10 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
     :param value: puede ser numero, o bool
     :return: bool
     """
-    print("---------------------------------------------------------------------------")
-    print("                 Ejecutando IF: ", "if {0}".format(iterable), operator, str(value))
-    print("---------------------------------------------------------------------------")
+    print()
+    print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
+    print(" ✱ EJECUTANDO IF: ", "if {0}".format(iterable), operator, str(value))
+
     if isinstance(iterable, list):
 
         flag = True
@@ -1002,11 +1017,14 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
                     flag = False
 
         if flag:
-            print("------EL IF SE HA CUMPLIDO CORRECTAMENTE, EJECUTANDO ORDENES DEL IF--------")
+            print("\t ◖ ejecutando ordenes:  IF")
             exe_ordenes(ordenes, procedure_name)
-            print("---------------------------Fin de ordenes del IF---------------------------")
+            print("\t ◗ finalizadas ordenes: IF")
+            print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
+
         else:
-            print("---------------------------EL IF NO SE HA CUMPLIDO-------------------------")
+            print("\t ✘ NO se ha cumplido: IF")
+            print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
             return
 
     elif isinstance(iterable, int) or isinstance(iterable, bool):
@@ -1038,11 +1056,14 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
                 flag = True
 
         if flag:
-            print("------EL IF SE HA CUMPLIDO CORRECTAMENTE, EJECUTANDO ORDENES DEL IF--------")
+            print("\t ◖ ejecutando ordenes:  IF")
             exe_ordenes(ordenes, procedure_name)
-            print("---------------------------Fin de ordenes del IF---------------------------")
+            print("\t ◗ finalizadas ordenes: IF")
+            print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
+
         else:
-            print("---------------------------EL IF NO SE HA CUMPLIDO-------------------------")
+            print("\t ✘ NO se ha cumplido: IF")
+            print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
             return
 
 
@@ -1084,7 +1105,7 @@ def exe_ordenes(ordenes, procedure_name):
         exe_orden(orden, procedure_name)
 
 def buscar_variable(id, procedure_name):
-    var = getVariableFromDict(id,procedure_name)
+    var = getVariableFromDict(id, procedure_name)
     if var is None:
         print("Busqueda sin resultados, la variable no se encuentra declarada globalmente ni localmente")
     return var
@@ -1136,27 +1157,12 @@ def buscar_valor_param(value, procedure_name):
 
 
 def exe_var_declaration(linea, procedure_name):
-    print("----------------EJECUTANDO DECLARACION------------------")
-    if procedure_name == "Main":
-        exe_global_var_declaration(linea)
-    else:
-        exe_local_var_declaration(linea, procedure_name)
-    print("----------------FIN DE DECLARACION------------------")
-
-def exe_global_var_declaration(linea):
-    linea += [global_variables]
-    print("Linea :: ", linea)
+    linea.insert(2, procedure_name)
+    # print("☀ Resultado:\t", run_tree(linea))
     run_tree(linea)
-    print("Se ha declarado la variable ", linea[2], " correctamente.")
-    print("Global BOOK: ", )
-    pp.pprint(global_variables)
-
-def exe_local_var_declaration(linea, procedure_name):
-    linea += [local_variables[procedure_name]]
-    run_tree(linea)
-    print("Se ha declarado la variable ", linea[2], " correctamente.")
-    print("Local BOOK for: ", procedure_name)
-    pp.pprint(local_variables[procedure_name])
+    # print("✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ")
+    # print()
+    # print()
 
 def exe_orden(linea, procedure_name):
     # ESTO EJECUTA LAS DECLARACIONES
@@ -1185,8 +1191,10 @@ def exe_orden(linea, procedure_name):
     elif linea[1] == 'PRINTLED':
         exe_print_led(buscar_valor_param(linea[2], procedure_name), buscar_valor_param(linea[3], procedure_name),
                       buscar_valor_param(linea[4], procedure_name), procedure_name)
-        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "PRINTLED  ", "\t→\t", linea)
 
+
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "PRINTLED  ", "\t→\t", linea)
+        print()
 
 
     elif linea[1] == 'PRINTLEDX':
@@ -1308,8 +1316,12 @@ def exe_print_led(row, column, value, procedure_name):
         else:
             matriz[row][column] = False
 
+        print()
+        print('▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼')
+
         print("Printing led: {0}|{1} with value {2}".format(row, column, value))
         pp.pprint(matriz)
+        print('▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲')
 
         # pp.pprint(matriz)
         instrucciones.append(['PRINT', str(matriz)])
@@ -1466,8 +1478,8 @@ def compile_program():
     print("\n--------- Lista de variables locales de procedimientos ---------")
     pp.pprint(local_variables)
 
-    print("\n--------- INSTRUCCIONES ARDUINO ---------")
-    pp.pprint(instrucciones)
+    # print("\n--------- INSTRUCCIONES ARDUINO ---------")
+    # pp.pprint(instrucciones)
 
     print("\n--------- Errors ---------")
     pp.pprint(errorList)
