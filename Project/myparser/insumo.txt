@@ -6,6 +6,20 @@ Procedure Main (){
 
     lista = list(range(tiempo,True));
 
+    lista.insert(a,True);
+
+    len(lista);
+
+    lista[1].Neg;
+
+    lista[1].F;
+
+    lista[1].T;
+
+    matriz.shapeF;
+
+    matriz.shapeC;
+
     row = 1;
     column = 5;
     estado = True;
