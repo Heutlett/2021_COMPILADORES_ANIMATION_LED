@@ -1,12 +1,15 @@
-from Syntax_Analysis import result
-from Syntax_Analysis import errors
+# from Syntax_Analysis import result
+# from Syntax_Analysis import errors
+
+from Syntax_Analysis import run_syntax_analysis
+import copy
 import pprint
 
 # Lista de arboles sintacticos generados en el analisis sintactico
-sintacticList = result
+sintacticList = []
 
 # Errores generados en el analisis sintactico
-errorList = errors
+errorList = []
 
 # Codigo main
 main_code = []
@@ -24,9 +27,7 @@ blink_list = []
 procedures_list = []
 
 # Diccionario para acciones con dict
-accionesConDict = ['=','[]','[]*']
-
-
+accionesConDict = ['=', '[]', '[]*']
 
 # Matriz actual
 matriz = [[False, False, False, False, False, False, False, False],
@@ -44,28 +45,39 @@ instrucciones = []
 # Pretty print para impresiones mas claras
 pp = pprint.PrettyPrinter(indent=2)
 
-""" ################################ Resultados del analisis sintactico ############################################ """
-
-print("\n--------- Syntactic Analysis Result ---------")
-
-pp.pprint(sintacticList)
-
-
-print("\n--------- Errors ---------")
-pp.pprint(errorList)
-
-""" ################################ Resultados del analisis sintactico ############################################ """
 
 
 # Funcion para obtener una de las variables del dictionario recibido
-def getVariable(key, variables_dict):
-    return variables_dict.get(key)
+def getVariable(key, procedure):
+    '''
+    Funcion que retorna el valor de un key en el diccionario recibido, si no se encuentra en
+    el diccionario recibido se busca en el diccionario global.
+    :param key: key de la variable en el diccionario
+    :param procedure: diccionario en donde se debe buscar
+    :return: Value del key correspondiente, si no se encuentra retorna None.
+    '''
 
+    # print("Procedure", procedure)
+
+    if procedure.lower() == "main":
+        if key in global_variables.keys():
+            return global_variables.get(key)
+    else:
+        print("Key", key)
+        print("Procedure", procedure)
+        if key in local_variables[procedure].keys():
+            return local_variables[procedure].get(key)
+        elif key in global_variables.keys():
+            return global_variables.get(key)
+
+    return None
 
 # Funcion para asignar a una variables del dictionario recibido
-def setVariable(key, variables_dict, value):
-    variables_dict[key] = value
-
+def setVariable(procedure, key, value):
+    if procedure.lower() == "main":
+        global_variables[key] = value
+    else:
+        local_variables[procedure][key] = value
 
 # Verifica si ID existe en el diccionario.
 def isGlobalDeclared(var, variables_dic):
@@ -86,7 +98,14 @@ arithmetic_operators = ['+', '-', '*', '/', '//', '%', '^']
 sublist_operators = ['row', 'row,col', 'col', 'sublist']
 
 
-def run_tree(p):
+def get_var(line, var, varDict):
+    val = getVariable(var, varDict)
+    if val is None:
+        errorList.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, var))
+    # print("Val", val)
+    return val
+
+def run_tree(p, dict = None):
     '''
     Funcion que toma todos los arboles e interpreta qué subfunción debe llamar.
     Funciona como switch case basicamente.
@@ -95,25 +114,28 @@ def run_tree(p):
     '''
 
     global arithmetic_operators
-    # print("P  :", p)
+
+    # print()
+    # print()
+    # print("✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ")
+    # print("TREE  :", p)
+
     if equalsType(p, list):
 
         if p[1] in arithmetic_operators:  # OPERACIONES ARITMETICAS
             return arithmetic_operation(p[0], p[1], p[2], p[3])
 
         elif p[1] == '=':
-            return var_assign_operation(p[0], p[2], p[3], p[4])
+            return var_assign_operation(p[0], dict, p[2], p[3])
 
         elif p[1] == '[]':
-            indexes = p[3]
-            print()
-            return get_sublist(p[0], False, indexes[0], indexes, p[2], p[3], p[4])
+            return get_sublist(dict, p)
 
         elif p[1] == '[]*':
-            return var_assign_operation(p[0], p[1], p[2], p[3])
+            return var_assign_operation(p[0],  dict,  p[2], p[3])
 
-        # elif p[0] == 'var':  # DEFINIR UNA VARIABLE
-        #     return env[p[1]]
+        elif p[1] == 'var':  # DEFINIR UNA VARIABLE
+            return get_var(p[0], p[2], p[3])
 
         # elif p[0] == 'type':
         #     return p[1]
@@ -151,7 +173,6 @@ def run_tree(p):
 
     return p
 
-
 """ ###################################### Operaciones aritmeticas ################################################### """
 
 
@@ -165,8 +186,16 @@ def arithmetic_operation(line, operator, a, b):
     :param b: expresion dos
     :return: el resultado de aplicar el operando a ambas expresiones recibididas.
     '''
-    if operator == '+':
+
+    a = run_tree(a)
+    b = run_tree(b)
+
+    if a is None or b is None:
+        return None
+
+    elif operator == '+':
         return run_tree(a) + run_tree(b)
+
     elif operator == '-':
         return run_tree(a) - run_tree(b)
     elif operator == '*':
@@ -180,41 +209,46 @@ def arithmetic_operation(line, operator, a, b):
     elif operator == '^':
         return pow(run_tree(a), run_tree(b))
     else:
-        errors.append("ArithmeticError in line {0}!".format(line))
+        errorList.append("ArithmeticError in line {0}!".format(line))
         return "Error aritmetico"
 
 
 """ ###################################### Asignacion de variables ################################################### """
 
 
-def var_assign_operation(line, ID, value, variables_dict):
+def var_assign_operation(line, procedure, ID, value):
     '''
     Funcion que asigna una variable y realiza las verificaciones necesarias.
     :param line: linea en donde se encuentra el lector.
     :param ID:  lista de los ids o ID individual
     :param value:  lista de los valores o valor individual.
-    :param variables_dict: diccionario en donde se está trabajando la asignación.
+    :param procedure: diccionario en donde se está trabajando la asignación.
     :return: asignacion de la variable deseada en el diccionario deseado.
     '''
     # Si es más de una variable.
     if type(ID) == list and type(value) == list:
-        return var_assign_operation_aux(line, ID, value, variables_dict)
+        return var_assign_operation_aux(line, procedure,  ID, value)
 
     # Si es una sola variable.
-    tmp = individual_assign_validation(line, ID, value, variables_dict)
+    tmp = individual_assign_validation(line, procedure, ID, value)
     if tmp is False:
         return False
+
     # Asignación
-    print("TEMP is:", tmp)
+    # print("SALIDA is:", tmp)
+
 
     if type(tmp[0]) == str:
-        variables_dict[tmp[0]] = tmp[1]
-
-    return variables_dict
+        key = tmp[0]
+        val = tmp[1]
+        setVariable(procedure, key, val)
+        return getVariable(ID, procedure)
+    else:
+        return tmp
 
 
 # Funcion para operar la asignacion de las variables.
-def var_assign_operation_aux(line, ID, value, variables_dict):
+def var_assign_operation_aux(line, procedure, ID, value):
     # print("id: " + ID)
 
     # Si es más de una variable.
@@ -222,67 +256,82 @@ def var_assign_operation_aux(line, ID, value, variables_dict):
     if type(ID) == list and type(value) == list:
 
         # Validaciones.
-        if not multi_assign_validation(line, ID, value, variables_dict):
+        if not multi_assign_validation(line, procedure, ID, value):
             # Error se agrega en la funcion anterior.
             return False
 
         # Asignacion en cascada.
         for i in range(len(ID)):
-            tmp = var_assign_operation(line, ID[i], value[i], variables_dict)
+            tmp = var_assign_operation(line, procedure, ID[i], value[i])
             if tmp is False:
                 return False
             # Asignación
-            variables_dict[tmp[0]] = tmp[1]
-        return variables_dict
+            procedure[tmp[0]] = tmp[1]
+        return procedure
 
     # Si es solo una variable.
     # [line, ID, value, dict]
     else:
-        return individual_assign_validation(line, ID, value, variables_dict)
+        return individual_assign_validation(line, procedure, ID, value)
 
-
-def individual_assign_validation(line, ID, value, variables_dict):
+def individual_assign_validation(line, procedure, ID, value):
     '''
     Funcion para verificar la asignacion de las variables individualmente.
     :param line: linea en donde se encuentra el lector.
     :param ID:  lista de los ids o ID individual
     :param value:  lista de los valores o valor individual.
-    :param variables_dict: diccionario en donde se está trabajando la asignación.
+    :param procedure: diccionario en donde se está trabajando la asignación.
     :return: lista con ID y value si se cumplen todas las verificaciones, False en caso contrario.
     '''
 
-    # insumo :  [line, ID, value, dict]
-
-    # De [[18, '=', [18, 'a', [['row', 1]]], [True]]]
-    #  se recibe[18, [18, 'a', [['row', 1]]], [True], "dictionary"]
-
-    # De [16, '=', 'h', 5]
-    #     se recibe [16, 'h', 5, "dictionary"]
+    # A = None
+    #     # A = B
+    #     # A = 1
+    #     # A = [1]
+    #     # A = B[2] -> (B, [1,2,3...])
+    #     # A[2] =  B[2] -> (B, [1,2,3...])
 
     # Si es una asignacion a una sublista.
     if type(ID) == list:
-        return sublist_assign(ID, run_tree(value), variables_dict)
+        return sublist_assign(ID, procedure, run_tree(value))
 
     # Si la variable es una lista, obtener el valor si es una operacion.
     if type(value) == list:
-        value = run_tree(value)
+        print("valueeee", value)
+        # Si es una variable.
+        if value[1] in arithmetic_operators:
+            var1 = value[2]
+            if type(var1) == str:
+                value[2] = [line, 'var', var1, procedure]
+            var2 = value[3]
+            if type(var2) == str:
+                value[3] = [line, 'var', var2, procedure]
+
+        print("value" , value)
+        value = run_tree(value, procedure)
 
     # Si no es una variable valida.
-    if not var_verification(line, ID, value, variables_dict):
+    if not var_verification(line, procedure, ID, value):
         # El error se agrega en la verificacion.
         return False
 
     # Si se cumplen todas las validaciones.
-    # print("-> {0} : {1}".format(ID, variables_dict[ID]))
+    # print("-> {0} : {1}".format(ID, procedure[ID]))
     return [ID, value]
 
 
-def sublist_assign(sublist, value, variables_dict):
+
+def get_sublist(procedure, sublist):
+    print("P  :", sublist)
+    return sublist_assign(procedure, sublist, None)
+
+
+def sublist_assign(procedure, sublist, value=None):
     '''
     Auxiliar para verificar la asignacion de las variables a una sublista.
     :param sublist: sublista de entrada
     :param value:  lista de los valores o valor individual.
-    :param variables_dict: diccionario en donde se está trabajando la asignación.
+    :param procedure: diccionario en donde se está trabajando la asignación.
     :return: lista con ID y value si se cumplen todas las verificaciones, False en caso contrario.
     '''
 
@@ -295,31 +344,27 @@ def sublist_assign(sublist, value, variables_dict):
 
     line = sublist[0]
     ID = sublist[2]
-    indexes = sublist[3]
 
-    # Obtener la sublista a la que debe ser igual el ID.
-    return get_sublist(line, True, indexes[0], indexes, ID, value, variables_dict)
-
-
-
-def get_sublist(line, assigning, action, indexes, ID, value, variables_dict):
     # Verificar que la variable existe en el diccionario recibido o en el global.
-    var = getByID(ID, variables_dict)
+    print("SUBLIST >> ", sublist)
+    var = getVariable(ID, procedure)
     if var is None:
-        errors.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, value))
+        errorList.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, value))
         return False
 
     # Si la variable existe pero no es una lista.
     else:
         if type(var) != list:
-            errors.append("TypeError in line {0}: {1} object is not subscriptable.".format(line, var_type(var)))
+            errorList.append("TypeError in line {0}: {1} object is not subscriptable.".format(line, var_type(var)))
             return False
 
-    if len(indexes) == 1:
-        newAssign = get_sublist_one_index(line, assigning, action[0], ID, indexes[0], value, variables_dict)
+    indexes = sublist[3]
 
-    elif len(indexes) == 2:
-        newAssign = False
+    if len(indexes) == 1:
+        newAssign = get_sublist_one_index(line, procedure, ID, indexes[0], value)
+
+    # elif len(indexes) == 2:
+    #     newAssign = False
 
     else:
         newAssign = False
@@ -327,73 +372,72 @@ def get_sublist(line, assigning, action, indexes, ID, value, variables_dict):
     return newAssign
 
 
-def get_sublist_one_index(line, assigning, action, ID, indexes, value, variables_dict):
+def get_sublist_one_index(line, procedure, ID, indexes, value):
+    action = indexes[0]
 
     if action == 'row':
         row = indexes[1]
-        return do_row(line, assigning, ID, row, value, variables_dict)
+        return do_row(line, procedure, ID, row, value)
+
+    elif action == 'col':
+        col = indexes[1]
+        return do_col(line, procedure, ID, col, value)
 
     elif action == 'row,col':
         row = indexes[1]
         col = indexes[2]
-        return do_row_col(line, assigning, ID, row, col, value, variables_dict)
+        return do_row_col(line, procedure, ID, row, col, value)
 
     elif action == 'sublist':
         start = indexes[1]
         end = indexes[2]
-        return do_sublist(line, assigning, ID, start, end, value, variables_dict)
+        return do_sublist(line, procedure, ID, start, end, value)
 
 
-def do_row(line, assigning, ID, row, value=None, variables_dict=None):
-    lst = variables_dict[ID]
+def do_row(line, procedure, ID, row, value=None):
+    lst = getVariable(ID, procedure)
 
     # Verificaciones de asignacion y de llamada.
-    apt = row_verification(line, lst, row, ID, value, variables_dict) \
-        if assigning else row_verification(line, lst, row)
-
+    esApto = row_verification(line, procedure, lst, row, value)
 
     # Si no cumple con los requisitos.
-    if not apt:
+    if not esApto:
         return False
 
-    # Si no se estás asignando.
-    if not assigning:
+    # Si no se está asignando.
+    if value is None:
         return lst[row]
 
     # Si es un ID, obtener el valor que corresponde.
     if type(value) == str:
-        value = getVariable(value, variables_dict)
+        value = getVariable(value, procedure)
 
     # Actualizar lista.
     lst[row] = value
-    print("Lista nueva > ", lst)
     return lst
 
 
-def do_col(line, assigning, ID, col, value=None, variables_dict=None):
-    lst = variables_dict[ID]
+def do_col(line, procedure, ID, col, value=None):
+    lst = getVariable(ID, procedure)
 
     # Verificaciones de asignacion y de llamada.
-    apt = col_verification(line, lst, col, ID, value, variables_dict) \
-        if assigning else col_verification(line, lst, col)
+    esApto = col_verification(line, procedure, lst, col, value)
 
     # Si no cumple con los requisitos.
-    if not apt:
+    if not esApto:
         return False
 
-    # Si no se estás asignando.
-    if not assigning:
+    # Si no se está asignando.
+    if value is None:
         return get_matrix_column(lst, col)
 
     # Si es un ID, obtener el valor que corresponde.
     if type(value) == str:
-        value = getVariable(value, variables_dict)
+        value = getVariable(value, procedure)
 
     # Actualizar lista.
     lst = matrix_column_assign(lst, col, value)
     lst[col] = value
-    print("Lista nueva > ", lst)
-
     return lst
 
 
@@ -413,55 +457,49 @@ def matrix_column_assign(matrix, col, new_val_list):
     return matrix
 
 
-def do_row_col(line, assigning, ID, row, col, value=None, variables_dict=None):
-    lst = variables_dict[ID]
+def do_row_col(line, procedure, ID, row, col, value=None):
+    lst = getVariable(ID, procedure)
 
     # Verificaciones de asignacion y de llamada.
-    apt = row_col_verification(line, lst, row, ID, value, variables_dict) \
-        if assigning else row_col_verification(line, lst, row, col)
+    esApto = row_col_verification(line, procedure, lst, row, col, value)
 
     # Si no cumple con los requisitos.
-    if not apt:
+    if not esApto:
         return False
 
     # Si no se está asignando.
-    if not assigning:
+    if value is None:
         return lst[row][col]
 
     # Si es un ID, obtener el valor que corresponde.
     if type(value) == str:
-        value = getVariable(value, variables_dict)
+        value = getVariable(value, procedure)
 
     # Actualizar lista.
     lst[row][col] = value
-    print("Lista nueva > ", lst)
     return lst
 
 
-def do_sublist(line, assigning, ID, start, end, value=None, variables_dict=None):
-    lst = variables_dict[ID]
-    print("INSUMO -- ", lst)
+def do_sublist(line, procedure, ID, start, end, value=None):
+    lst = getVariable(ID, procedure)
 
     # Verificaciones de asignacion y de llamada.
-    apt = sublist_verification(line, lst, start, end, ID, value, variables_dict) \
-        if assigning else sublist_verification(line, lst, start, end)
+    esApto = sublist_verification(line, procedure, lst, start, end, value)
 
     # Si no cumple con los requisitos.
-    if not apt:
+    if not esApto:
         return False
 
     # Si no se está asignando.
-    if not assigning:
+    if value is None:
         return lst[start:end]
 
     # Si es un ID, obtener el valor que corresponde.
     if type(value) == str:
-        value = getVariable(value, variables_dict)
+        value = getVariable(value, procedure)
 
     # Actualizar lista.
     lst[start:end] = value
-    print("Lista nueva > ", lst)
-
     return lst
 
 
@@ -471,17 +509,16 @@ def get_real_value(value, dct):
     return value
 
 
-def entry_type_verification(line, lst, ID, value, variables_dict):
-
+def entry_type_verification(line, procedure, lst, ID, value):
     # Si el valor es un ID y aun no se ha creado.
     if type(value) == str:
-        if not var_ID_validation(line, value, variables_dict):
+        if not var_ID_validation(line, value, procedure):
             return False
 
     # Si el valor es una lista y no coincide el tipo con los elementos de la lista a la que se debe asignar.
     if type(value) == lst:
         if get_list_type(lst) != get_list_type(value):
-            errors.append(
+            errorList.append(
                 "TypeError in line {0}: Elements in \"{2}\" does not match the type of \"{1}\"."
                     .format(line, ID, value))
             return False
@@ -490,18 +527,18 @@ def entry_type_verification(line, lst, ID, value, variables_dict):
     else:
 
         # Si es una variable, se obtiene su valor primero.
-        value = getVariable(value, variables_dict)
+        value = getVariable(value, procedure)
         print("VAL ", value)
         # si la variable no es una lista, debe cumplir con  el tipo.
         if get_list_type(lst) != type(value):
-            errors.append("TypeError in line {0}: \"{2}\" does not match the type of elements in \"{1}\"."
+            errorList.append("TypeError in line {0}: \"{2}\" does not match the type of elements in \"{1}\"."
                           .format(line, ID, value))
             return False
 
         # Si la variable es una lista, los elementos dentro deben cumplir con el tipo.
         if list_check_type_validation(line, value):
             if get_list_type(lst) != get_list_type(value):
-                errors.append("TypeError in line {0}: \"{2}\" does not match the type of elements in \"{1}\"."
+                errorList.append("TypeError in line {0}: \"{2}\" does not match the type of elements in \"{1}\"."
                               .format(line, ID, value))
                 return False
         return False
@@ -509,7 +546,7 @@ def entry_type_verification(line, lst, ID, value, variables_dict):
     return True
 
 
-def row_verification(line, lst, row, ID=None, value=None, variables_dict=None):
+def row_verification(line, procedure, lst, row, ID=None, value=None):
     '''
     # Funcion que verifica el indice de fila en una lista.
     :param line: linea en donde se encuentra el lector.
@@ -521,21 +558,21 @@ def row_verification(line, lst, row, ID=None, value=None, variables_dict=None):
     '''
 
     if row >= len(lst):
-        errors.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, row))
+        errorList.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, row))
         return False
 
     # Validaciones de la entrada
-    if ID is not None and value is not None:
-        if not entry_type_verification(line, lst, ID, value, variables_dict):
+    if value is not None:
+        if not entry_type_verification(line, procedure, lst, ID, value):
             return False
 
     return True
 
 
-def col_verification(line, lst, col, ID=None, value=None, variables_dict=None):
+def col_verification(line, procedure, lst, col, ID=None, value=None):
     '''
     Funcion que verifica el indice de columna en una lista.
-    :param variables_dict: dictionario que se debe utilizar
+    :param procedure: dictionario que se debe utilizar
     :param line: linea en donde se encuentra el lector.
     :param lst: lista a analizar.
     :param col: columna en la que se debe sustituir
@@ -544,35 +581,34 @@ def col_verification(line, lst, col, ID=None, value=None, variables_dict=None):
     :return: True si se cumplen todas las verificaciones, False en caso contrario.
     '''
 
-
     if type(lst[0]) != lst:
-        errors.append("TypeError in line {0}: {1} object is not subscriptable.".format(line, var_type(lst)))
+        errorList.append("TypeError in line {0}: {1} object is not subscriptable.".format(line, var_type(lst)))
         return False
 
     if col >= len(lst[0]):
-        errors.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, col))
+        errorList.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, col))
         return False
 
     # Validaciones de la entrada.
-    if ID is not None and value is not None:
-        if not entry_type_verification(line, lst, ID, value, variables_dict):
+    if value is not None:
+        if not entry_type_verification(line, procedure, lst, ID, value):
             return False
 
         if type(value) != list:
             if len(lst) != 1:
-                errors.append("IndexError in line {0}: Assignment \"{1}\" must match the number of columns in {2}."
+                errorList.append("IndexError in line {0}: Assignment \"{1}\" must match the number of columns in {2}."
                               .format(line, value, ID))
                 return False
         else:
             if len(value) != len(lst):
-                errors.append("IndexError in line {0}: Assignment \"{1}\" must match the number of columns in {2}."
+                errorList.append("IndexError in line {0}: Assignment \"{1}\" must match the number of columns in {2}."
                               .format(line, value, ID))
                 return False
 
     return True
 
 
-def row_col_verification(line, lst, row, col, ID=None, value=None, variables_dict=None):
+def row_col_verification(line, procedure, lst, row, col, ID=None, value=None):
     '''
     Funcion que verifica los indices fila y columna de una matriz.
     :param value: Entrada que se debe validar
@@ -584,117 +620,96 @@ def row_col_verification(line, lst, row, col, ID=None, value=None, variables_dic
     :return: True si se cumplen todas las verificaciones, False en caso contrario.
     '''
     if type(lst[0]) != list:
-        errors.append("TypeError in line {0}: {1} object is not subscriptable.".format(line, var_type(lst)))
+        errorList.append("TypeError in line {0}: {1} object is not subscriptable.".format(line, var_type(lst)))
         return False
 
     if row >= len(lst):
-        errors.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, row))
+        errorList.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, row))
         return False
 
     if col >= len(lst):
-        errors.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, col))
+        errorList.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, col))
         return False
 
     # Validaciones de la entrada
-    if ID is not None and value is not None:
-        if not entry_type_verification(line, lst, ID, value, variables_dict):
+    if value is not None:
+        if not entry_type_verification(line, procedure, lst, ID, value):
             return False
 
     return True
 
 
-def sublist_verification(line, lst, start, end, ID=None, value=None, variables_dict=None):
-
+def sublist_verification(line, procedure, lst, start, end, ID=None, value=None):
     if end < start:
-        errors.append("RangeError in line {0}: Index 'start' cannot be greater than 'end'.".format(line, start))
+        errorList.append("RangeError in line {0}: Index 'start' cannot be greater than 'end'.".format(line, start))
         return False
     if start >= len(lst):
-        errors.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, start))
+        errorList.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, start))
         return False
     if end >= len(lst):
-        errors.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, end))
+        errorList.append("LenError in line {0}: Index \"{1}\" out of range.".format(line, end))
         return False
 
     # Validaciones de la entrada
-    if ID is not None and value is not None:
-        if not entry_type_verification(line, lst, ID, value, variables_dict):
+    if value is not None:
+        if not entry_type_verification(line, procedure, lst, ID, value):
             return False
 
         distance = end - start
         if type(value) != list:
             if distance != 1:
-                errors.append("RangeError in line {0}: The range between index must be equal to the number of elements."
+                errorList.append("RangeError in line {0}: The range between index must be equal to the number of elements."
                               .format(line))
                 return False
         elif distance != len(value):
-            errors.append(
+            errorList.append(
                 "RangeError in line {0}: The range between index must be equal to the number of elements.".format(line))
             return False
 
-
-
     return True
-
-
-def getByID(ID, variables_dic):
-    '''
-    Funcion que retorna el valor de un key en el diccionario recibido, si no se encuentra en
-    el diccionario recibido se busca en el diccionario global.
-    :param ID: key de la variable en el diccionario
-    :param variables_dic: diccionario en donde se debe buscar
-    :return: Value del key correspondiente, si no se encuentra retorna False.
-    '''
-
-    if variables_dic:
-        if variables_dic[ID] is None:
-            if global_variables[ID] is None:
-                return None
-            return global_variables[ID]
-        return variables_dic[ID]
-    return None
 
 
 """ ###################################### Validacion de asignacion de variables ################################################### """
 
 
-def multi_assign_validation(line, ids, values, variables_dict):
+def multi_assign_validation(line, ids, values, procedure):
     '''
     Funcion para verificar que la lista de IDS y VALUES corresponden al mismo tamaño,
     conservan los mismos tipos y que cada ID es unico.
     :param line: linea en donde se encuentra el lector.
     :param ids: lista de los ids.
     :param values: lista de los valores.
-    :param variables_dict: diccionario en donde se está trabajando la asignación.
+    :param procedure: diccionario en donde se está trabajando la asignación.
     :return: True si se cumplen todas las verificaciones, False en caso contrario.
     '''
 
     # Number of values must match the numbers of ids.
     if len(ids) != len(values):
-        errors.append("LenError in line {0}! The number of values does not match the number of IDs.".format(line))
+        errorList.append("LenError in line {0}! The number of values does not match the number of IDs.".format(line))
         return False
 
     # All values type must be the same.
     if not list_check_type_validation(line, values):
-        errors.append("TypeError in line {0}! All values type must be the same.".format(line))
+        errorList.append("TypeError in line {0}! All values type must be the same.".format(line))
         return False
 
     # IDs must be unique.
     for ID in ids:
-        if ID in variables_dict.keys():
+        if ID in procedure.keys():
             text = "TypeError in line {1}! \"{0}\" is already declared.".format(ID, line)
-            errors.append(text)
+            errorList.append(text)
             return False
     return True
 
 
 # Funcion auxiliar para verificar una reasignacion de la variable.
-def var_verification(line, ID, value, variables_dict):
+def var_verification(line, procedure, ID, value):
     '''
     Funcion auxiliar para verificar una asignacion o reasignacion de la variable.
     :param line: linea en donde se encuentra el lector.
     :param ids: lista de los ids.
     :param values: lista de los valores.
-    :param variables_dict: diccionario en donde se está trabajando la asignación.
+    :param procedure: diccionario en donde se está trabajando la asignación.
     :return: False si no se cumple alguna de las validaciones, True en caso contrario.
     '''
     # CHECK VALUE...
@@ -702,25 +717,27 @@ def var_verification(line, ID, value, variables_dict):
     # Si value es un string.
     if type(value) == str:
         # Si el valor es un ID y aun no se ha creado
-        if not isGlobalDeclared(value, variables_dict):
-            errors.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, value))
+        print("Value", procedure)
+        print("Val12 ", value)
+        if not isGlobalDeclared(value, procedure):
+            errorList.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, value))
             return False
 
         # CHECK ID...
 
         # Si el tipo de ambas variables no coincide.
         else:
-            if getVariable(ID, variables_dict) is not None:
-                if type(getVariable(ID, variables_dict)) != type(getVariable(value, variables_dict)):
-                    errors.append("TypeError in line {0}! The type of \"{2}\" does not match the type of {1}."
+            if getVariable(ID, procedure) is not None:
+                if type(getVariable(ID, procedure)) != type(getVariable(value, procedure)):
+                    errorList.append("TypeError in line {0}! The type of \"{2}\" does not match the type of {1}."
                                   .format(line, ID, value))
 
     # CHECK ID...
 
     # Si el tipo del ID y la variable no coincide.
-    if getVariable(ID, variables_dict) is not None:
-        if type(getVariable(ID, variables_dict)) != type(value):
-            errors.append("TypeError in line {0}! The type of \"{2}\" does not match the type of {1}."
+    if getVariable(ID, procedure) is not None:
+        if type(getVariable(ID, procedure)) != type(value):
+            errorList.append("TypeError in line {0}! The type of \"{2}\" does not match the type of {1}."
                           .format(line, ID, value))
             return False
 
@@ -732,12 +749,12 @@ def var_verification(line, ID, value, variables_dict):
     return True
 
 
-def var_ID_validation(line, value, variables_dict):
+def var_ID_validation(line, value, procedure):
     # Si value es un string.
     if type(value) == str:
         # Si el valor es un ID y aun no se ha creado
-        if not isGlobalDeclared(value, variables_dict):
-            errors.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, value))
+        if not isGlobalDeclared(value, procedure):
+            errorList.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, value))
             return False
     return True
 
@@ -833,7 +850,7 @@ def check_type_aux(line, lst, supposedType=None):
     for i in lst:
         if not equalsType(i, supposedType):
             text = "TypeError in line {1}: \"{0}\" type does not match the type of elements.".format(i, line)
-            errors.append(text)
+            errorList.append(text)
             return False
     return True
 
@@ -851,53 +868,32 @@ def get_list_type(lst):
 
 """ ###################################### Validacion de asignacion de variables ################################################### """
 
-
-
 """ ################################ COMPROBACIONES INICIALES #################################################### """
 
 
-# Revisa que tod0 el código se encuentre dentro de PROCEDURES
-def check_blocks():
-    for line in sintacticList:
-
-        if line[1] != 'PROCEDURE':
-            errorList.append(
-                "Error in line {0}, all the instructions must be inside of procedure block".format(line[0]))
-
-
-# Revisa que solo exista un main en el codigo
-def check_main_count():
-    count = 0
-
-    for line in sintacticList:
-        if line[1] == 'PROCEDURE':
-            if line[2] == 'Main':
-                count += 1
-
-    if count == 1:
-        find_main()
-        return
-
-    if count == 0:
-        errorList.append(
-            "Error, Main not found")
-    elif count > 1:
-        errorList.append(
-            "Error, There can only be one main")
+def validate_iterable_for(iterable, procedure_name):
+    if type(iterable) == int or type(iterable) == list:
+        return True
+    elif type(iterable) == str:
+        var = buscar_variable(iterable, procedure_name)
+        if var is not None:
+            return True
+        else:
+            errorList.append("ERROR: el iterable no existe")
+    errorList.append("ERROR: el iterable del for debe ser una lista o un entero")
+    return False
 
 
-# Busca el main y lo guarda en una variable global
-def find_main():
-    global global_variables
-    global main_code
-
-    for line in sintacticList:
-        if line[1] == 'PROCEDURE':
-            if line[2] == 'Main':
-
-                main_code = line[4]
-
-                sintacticList.remove(line)
+def get_var_for_type(iterable):
+    if type(iterable) == int:
+        return "INT"
+    elif type(iterable) == list:
+        if len(iterable) > 0:
+            if type(iterable[0]) == int:
+                return "INT"
+            elif type(iterable[0]) == bool:
+                return "BOOL"
+    return None
 
 
 """ ############################################################################################################### """
@@ -905,7 +901,7 @@ def find_main():
 """ ###################################### Ciclos y Bifurcacion ################################################### """
 
 
-def ciclo_for(temp_var, iterable, step, ordenes):
+def ciclo_for(temp_var, iterable, step, ordenes, procedure_name):
     """
     Ejecuta el ciclo for
     :param temp_var: variable que cambiará
@@ -915,22 +911,72 @@ def ciclo_for(temp_var, iterable, step, ordenes):
     :return: None
     """
 
+    if not validate_iterable_for(iterable, procedure_name):
+        return
+
+    if type(iterable) == str:
+        iterable = buscar_variable(iterable, procedure_name)
+
+    if iterable is None:
+        errorList.append("Error, la variable del iterable no existe")
+        return
+
+    var = buscar_variable(temp_var, procedure_name)
+
+    if var is None:
+        print("La variable de cambio no se ha encontrado, se procede a crearla")
+        tipo_var = get_var_for_type(iterable)
+        if tipo_var == "INT":
+            exe_var_declaration([0, "=", temp_var, None], procedure_name)
+        elif tipo_var == "BOOL":
+            exe_var_declaration([0, "=", temp_var, None], procedure_name)
+
     if step == 1:
         if isinstance(iterable, list):
-            for temp_var in iterable:
-                print(temp_var)
+            for var in iterable:
+
+                tipo_var = get_var_for_type(iterable)
+                if tipo_var == "INT":
+                    exe_var_declaration([0, "=", temp_var, var], procedure_name)
+                elif tipo_var == "BOOL":
+                    exe_var_declaration([0, "=", temp_var, var], procedure_name)
+                exe_ordenes(ordenes, procedure_name)
 
         elif isinstance(iterable, int):
-            for temp_var in range(iterable):
-                print(temp_var)
+            for var in range(iterable):
+                tipo_var = get_var_for_type(iterable)
+                if tipo_var == "INT":
+                    exe_var_declaration([0, "=", temp_var, var], procedure_name)
+                elif tipo_var == "BOOL":
+                    exe_var_declaration([0, "=", temp_var, var], procedure_name)
+                exe_ordenes(ordenes, procedure_name)
     else:
         if isinstance(iterable, list):
-            for temp_var in iterable[::step]:
-                print(temp_var)
+
+            for var in iterable[::step]:
+                tipo_var = get_var_for_type(iterable)
+                if tipo_var == "INT":
+                    exe_var_declaration([0, "=", temp_var, var], procedure_name)
+                elif tipo_var == "BOOL":
+                    exe_var_declaration([0, "=", temp_var, var], procedure_name)
+                exe_ordenes(ordenes, procedure_name)
 
         elif isinstance(iterable, int):
-            for temp_var in range(0, iterable, step):
-                print(temp_var)
+
+            for var in range(0, iterable, step):
+                tipo_var = get_var_for_type(iterable)
+                if tipo_var == "INT":
+                    exe_var_declaration([0, "=", temp_var, var], procedure_name)
+                elif tipo_var == "BOOL":
+                    exe_var_declaration([0, "=", temp_var, var], procedure_name)
+                exe_ordenes(ordenes, procedure_name)
+
+    if procedure_name == "Main" and temp_var in global_variables.keys():
+        del global_variables[temp_var]
+    elif procedure_name != "Main":
+        dict = local_variables[procedure_name]
+        if temp_var in dict.keys():
+            del dict[temp_var]
 
 
 def bifurcacion(iterable, operator, value, ordenes, procedure_name):
@@ -941,7 +987,10 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
     :param value: puede ser numero, o bool
     :return: bool
     """
-    print("Ejecutando IF: ", "if {0}".format(iterable), operator, str(value))
+    print()
+    print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
+    print(" ✱ EJECUTANDO IF: ", "if {0}".format(iterable), operator, str(value))
+
     if isinstance(iterable, list):
 
         flag = True
@@ -963,13 +1012,19 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
             elif operator == '>=':
                 if not x >= value:
                     flag = False
+            elif operator == '<>':
+                if not x != value:
+                    flag = False
 
-        if flag == True:
-            print("------EL IF SE HA CUMPLIDO CORRECTAMENTE, EJECUTANDO ORDENES DEL IF--------")
+        if flag:
+            print("\t ◖ ejecutando ordenes:  IF")
             exe_ordenes(ordenes, procedure_name)
-            print("------Fin de ordenes del IF----------")
+            print("\t ◗ finalizadas ordenes: IF")
+            print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
+
         else:
-            print("------EL IF NO SE HA CUMPLIDO--------")
+            print("\t ✘ NO se ha cumplido: IF")
+            print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
             return
 
     elif isinstance(iterable, int) or isinstance(iterable, bool):
@@ -978,7 +1033,6 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
 
         if operator == '==':
             if iterable == value:
-
                 exe_ordenes(ordenes, procedure_name)
 
         elif operator == '<':
@@ -997,137 +1051,230 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
             if iterable >= value:
                 flag = True
 
+        elif operator == '<>':
+            if iterable != value:
+                flag = True
+
         if flag:
-            print("------EL IF SE HA CUMPLIDO CORRECTAMENTE, EJECUTANDO ORDENES DEL IF--------")
+            print("\t ◖ ejecutando ordenes:  IF")
             exe_ordenes(ordenes, procedure_name)
-            print("------Fin de ordenes del IF----------")
+            print("\t ◗ finalizadas ordenes: IF")
+            print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
+
         else:
-            print("------EL IF NO SE HA CUMPLIDO--------")
+            print("\t ✘ NO se ha cumplido: IF")
+            print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
             return
-
-
-""" ####################################### PROCEDURE ANALISIS #################################################### """
-
-
-def check_procedures_name_count():
-
-    for procedure in sintacticList:
-        procedures_list.append(procedure[2])
-
-    for procedure in procedures_list:
-        if procedures_list.count(procedure) > 1:
-            errorList.append("ERROR: el procedimiento: {0} esta definido mas de una vez".format(procedure))
-            return
-        local_variables[procedure] = {}
-
-
-
-
-""" ####################################### PROCEDURE ANALISIS #################################################### """
-
 
 
 """ ####################################### Ejecucion principal #################################################### """
 
 
-
 def main_execute():
-
+    print("\n\n◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆"
+          " EJECUTANDO PROCEDURE: Main ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆\n\n")
     exe_ordenes(main_code, "Main")
+    print("\n◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆"
+          " FIN Main ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆\n")
+    print()
 
 
 def procedure_execute(nombre, params):
-    print("-------------------------------------------------------------------")
-    print("Ejecutando procedure: ", nombre)
-    print("Parametros: ", params)
     print()
-    print("-----------------EJECUTANDO ORDENES DE :", nombre, "---------------")
+    print("★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★")
+    # print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
+
+    print(" ➽ EJECUTANDO PROCEDURE:", nombre)
+    print("\t↪ params: ", params)
+    print()
+
+    print("\t ◖ ejecutando ordenes de : ", nombre)
 
     for procedure in sintacticList:
         if procedure[2] == nombre:
             exe_ordenes(procedure[4], nombre)
 
-
-
-    print("-----------------FIN DE DE ORDENES DE :", nombre, "----------------")
+    print("\t ◗ finalizadas ordenes de :", nombre)
+    print("★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★")
+    # print("••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••")
     print()
 
 
 def exe_ordenes(ordenes, procedure_name):
-
     for orden in ordenes:
         exe_orden(orden, procedure_name)
 
+def buscar_variable(id, procedure_name):
+    var = getVariableFromDict(id, procedure_name)
+    if var is None:
+        print("Busqueda sin resultados, la variable no se encuentra declarada globalmente ni localmente")
+    return var
+
+"""
+Busca una variable:
+Primero busca si esta en las variables globales
+Si no la encuentra y no es el main, la busca localmente
+"""
+
+# Funcion para obtener una de las variables del dictionario recibido
+def getVariableFromDict(key, procedure):
+    '''
+    Funcion que retorna el valor de un key en el diccionario recibido, si no se encuentra en
+    el diccionario recibido se busca en el diccionario global.
+    :param key: key de la variable en el diccionario
+    :param procedure: diccionario en donde se debe buscar
+    :return: Value del key correspondiente, si no se encuentra retorna None.
+    '''
+
+    # print("Procedure", procedure)
+
+    if procedure.lower() == "main":
+        if key in global_variables.keys():
+            return global_variables.get(key)
+    else:
+        if key in local_variables[procedure].keys():
+            return local_variables[procedure].get(key)
+        elif key in global_variables.keys():
+            return global_variables.get(key)
+    return None
+
+
+def buscar_valor_param(value, procedure_name):
+    if type(value) == str:
+
+        var = buscar_variable(value, procedure_name)
+
+        if var is None:
+            errorList.append("Error, no se ha encontrado la variable {0}".format(value))
+        else:
+            return var
+
+
+    elif value is None:
+        errorList.append("Error, el valor del parametro es None")
+    else:
+        return value
+
+
+def exe_var_declaration(linea, procedure_name):
+
+    print("☀ Resultado:\t", run_tree(linea, procedure_name))
+
+    #linea.insert(2, procedure_name)
+    # print("☀ Resultado:\t", run_tree(linea))
+    #run_tree(linea)
+    # print("✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ")
+    # print()
+    # print()
 
 def exe_orden(linea, procedure_name):
+    # ESTO EJECUTA LAS DECLARACIONES
+    if linea[1] in accionesConDict or linea[1] in arithmetic_operators:
+        # print("----------------EJECUTANDO DECLARACION------------------")
+        exe_var_declaration(linea, procedure_name)
 
-    if linea[1] in accionesConDict:  # ESTO EJECUTA LAS DECLARACIONES
-        print("----------------EJECUTANDO DECLARACION------------------")
-        if procedure_name == "Main":
-            linea += [global_variables]
-            run_tree(linea)
-            print("Se ha declarado la variable ", linea[2], " correctamente.")
-            print("Global BOOK: ", global_variables)
-            print(linea,
-                  "  ----->   Declaracion, asignacion o redefinicion de variables        [EJECUTADO CORRECTAMENTE]\n")
-        else:
-            linea += [local_variables[procedure_name]]
-            run_tree(linea)
-            print("Se ha declarado la variable ", linea[2], " correctamente.")
-            print("Local BOOK for: ", procedure_name, local_variables[procedure_name])
-            print(linea,
-                  "  ----->   Declaracion, asignacion o redefinicion de variables        [EJECUTADO CORRECTAMENTE]\n")
-        print("----------------FIN DE DECLARACION------------------")
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DECLARATION     ", "\t→\t", linea)
+        # print("----------------FIN DE DECLARACION------------------\n")
+
     elif linea[1] == 'CALL':
-        print(linea, "  ----->   Procedimiento     [EJECUTADO CORRECTAMENTE]\n")
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "CALL     ", "\t→\t", linea)
         procedure_execute(linea[2], linea[3])
+
+
     elif linea[1] == 'BLINK':
         print(linea, "  ----->   BLINK")
+
+
     elif linea[1] == 'DELAY':
-        exe_delay(linea[2],linea[3])
-        print(linea, "  ----->   DELAY                        [EJECUTADO CORRECTAMENTE]\n")
+        exe_delay(buscar_valor_param(linea[2], procedure_name), linea[3])
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DELAY     ", "\t→\t", linea)
+
+
+
     elif linea[1] == 'PRINTLED':
-        exe_print_led(linea[2], linea[3], linea[4])
-        print(linea, "  ----->   PRINTLED               [EJECUTADO CORRECTAMENTE]\n")
+        exe_print_led(buscar_valor_param(linea[2], procedure_name), buscar_valor_param(linea[3], procedure_name),
+                      buscar_valor_param(linea[4], procedure_name), procedure_name)
+
+
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "PRINTLED  ", "\t→\t", linea)
+        print()
+
+
     elif linea[1] == 'PRINTLEDX':
-        matrizPrueba = [[True, False, False, False, False, False, False, False],
-                  [False, False, True, False, False, False, False, False],
-                  [False, False, False, True, False, False, False, False],
-                  [False, False, False, False, True, False, False, False],
-                  [False, False, True, False, False, True, False, False],
-                  [False, False, True, False, False, False, True, False],
-                  [False, False, False, False, False, False, False, True],
-                  [False, True, False, False, False, False, False, False]]
-        exe_print_ledx(linea[2], linea[3], matrizPrueba)
-        print(linea, "  ----->   PRINTLEDX       [EJECUTADO CORRECTAMENTE]\n")
+
+        var = buscar_variable(linea[4], procedure_name)
+
+        if var is not None:
+            exe_print_ledx(linea[2], buscar_valor_param(linea[3], procedure_name), var)
+            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "PRINTLEDX ", "\t→\t", linea)
+        else:
+            errorList.append("Error: no se ha encontrado la variable {0}".format(linea[4]))
+
     elif linea[1] == 'IF':
-        iterable = global_variables[linea[2][0]]  # ESTA DEBE SER LA VARIABLE CON EL ID linea[2][0]
-        bifurcacion(iterable, linea[2][1], linea[2][2], linea[3], procedure_name)
-        print(linea, "  ----->   IF                  [EJECUTADO CORRECTAMENTE]\n")
+
+        var = buscar_variable(linea[2][0], procedure_name)
+
+        if var is not None:
+            bifurcacion(var, linea[2][1], buscar_valor_param(linea[2][2], procedure_name), linea[3], procedure_name)
+            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "IF     ", "\t→\t", linea)
+            print()
+
+        else:
+            errorList.append("Error: no se ha encontrado la variable {0}".format(linea[2][0]))
+
+
+
     elif linea[1] == 'FOR':
-        print(linea, "  ----->   FOR")
-    elif linea[1] == 'RANGE':    ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
-        print(linea, "  ----->   RANGE")
-    elif linea[1] == 'INSERT':    # [line, 'INSERT', lista, num, bool] ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
+        print("PRUEBA for")
+        ciclo_for(linea[2], linea[3], linea[5], buscar_valor_param(linea[4], procedure_name), procedure_name)
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "FOR       ", "\t→\t", linea)
+
+
+    elif linea[1] == 'RANGE':  ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
+        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "RANGE     ", "\t→\t", linea)
+
+
+    elif linea[1] == 'INSERT':  # [line, 'INSERT', lista, num, bool] ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
         print(linea, "  ----->   INSERT")
-    elif linea[1] == 'DEL': ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
+
+
+    elif linea[1] == 'DEL':  ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
         print(linea, "  ----->   DEL")
+
+
     elif linea[1] == 'LEN':
         print(linea, "  ----->   LEN")
+
+
     elif linea[1] == 'NEG':
         print(linea, "  ----->   NEG")
+
+
     elif linea[1] == 'T':
         print(linea, "  ----->   T")
+
+
     elif linea[1] == 'F':
         print(linea, "  ----->   F")
+
+    elif linea[1] == '=sublist':
+        ID_a_sublist(linea[0], linea[2], linea[3], procedure_name)
+
+
+def ID_a_sublist(line, ID, value, procedure_name):
+    val = run_tree(value,procedure_name)
+    var = getVariable(ID, procedure_name)
+
+    if var is None:
+        setVariable(procedure_name, ID, val)
+        return True
+
+
 
 
 """ ####################################### Ejecucion principal #################################################### """
 
-
-
 """ ###################################### Ejecuciones finales #################################################### """
-
 
 """ #######################################  BLINK  ############################################################### """
 
@@ -1152,8 +1299,8 @@ def exe_blink(row, column, tiempo, rangoTiempo, estado):
 
 
 def exe_delay(tiempo, rangoTiempo):
-
     instrucciones.append(['DELAY', rangoTiempo, tiempo])
+
 
 """ #######################################  Delay  ############################################################### """
 
@@ -1168,15 +1315,36 @@ Valor: Bool
 """
 
 
-def exe_print_led(row, column, value):
+def exe_print_led(row, column, value, procedure_name):
+    if row <= 7 and column <= 7:
 
-    if value:
-        matriz[row][column] = True
+        temp = value
+
+        if type(value) == str:
+            print("VALUE ES STR")
+            value = buscar_variable(value, procedure_name)
+
+        if value is None:
+            errorList.append("Error, no se ha encontrado la variable {0}".format(temp))
+            return
+
+        if value:
+            matriz[row][column] = True
+        else:
+            matriz[row][column] = False
+
+        print()
+        print('▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼')
+
+        print("Printing led: {0}|{1} with value {2}".format(row, column, value))
+        pp.pprint(matriz)
+        print('▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲')
+
+        # pp.pprint(matriz)
+        instrucciones.append(['PRINT', str(matriz)])
+
     else:
-        matriz[row][column] = False
-
-    # pp.pprint(matriz)
-    instrucciones.append(['PRINT', matriz])
+        errorList.append("ERROR: La fila o columna esta fuera de los limites de la matriz 8x8")
 
 
 """ #######################################  PrintLed  ############################################################ """
@@ -1212,48 +1380,169 @@ def exe_print_ledx(tipo_objeto, index, arreglo):
                     matriz[i] = arreglo[count]
                     count += 1
             else:
-                errors.append("Error, la lista que se desea adjuntar sobrepasa los limites de la matriz 8x8")
+                errorList.append("Error, la lista que se desea adjuntar sobrepasa los limites de la matriz 8x8")
 
-        #pp.pprint(matriz)
-        #print()
+        # pp.pprint(matriz)
+        # print()
 
     else:
-        errors.append("Error, el indice debe ser entre 0 y 7")
+        errorList.append("Error, el indice debe ser entre 0 y 7")
 
-    instrucciones.append(['PRINT', matriz])
+    instrucciones.append(['PRINT', str(matriz)])
 
 
 """ #######################################  PrintLedX  ############################################################ """
 
+""" ####################################### PROCEDURE ANALISIS #################################################### """
+
+
+def check_procedures_name_count():
+    for procedure in sintacticList:
+        procedures_list.append(procedure[2])
+
+    for procedure in procedures_list:
+        if procedures_list.count(procedure) > 1:
+            errorList.append("ERROR: el procedimiento: {0} esta definido mas de una vez".format(procedure))
+            return
+        local_variables[procedure] = {}
+
+
+""" ####################################### PROCEDURE ANALISIS #################################################### """
 
 """ ####################################### Ejecucion ##################################################### """
 
-check_blocks()
-check_main_count()
-check_procedures_name_count()
 
-print("\n--------- Main ---------")
-pp.pprint(main_code)
+# Revisa que tod0 el código se encuentre dentro de PROCEDURES
+def check_blocks():
+    for line in sintacticList:
 
-print("\n--------- Lista de procedimientos ---------")
-pp.pprint(procedures_list)
-
-print("\n--------- Ejecutando Main ---------")
-main_execute()
-
-print("\n--------- Variables globales ---------")
-pp.pprint(global_variables)
-
-print("\n--------- Lista de variables locales de procedimientos ---------")
-pp.pprint(local_variables)
-
-print("\n--------- Errors ---------")
-pp.pprint(errorList)
-
-print("\n--------- INSTRUCCIONES ARDUINO ---------")
-pp.pprint(instrucciones)
+        if line[1] != 'PROCEDURE':
+            errorList.append(
+                "Error in line {0}, all the instructions must be inside of procedure block".format(line[0]))
 
 
+# Revisa que solo exista un main en el codigo
+def check_main_count():
+    count = 0
+
+    for line in sintacticList:
+        if line[1] == "PROCEDURE":
+            if line[2] == "Main":
+                count += 1
+
+    if count == 1:
+        find_main()
+        return
+
+    if count == 0:
+        errorList.append(
+            "Error, Main not found")
+    elif count > 1:
+        errorList.append(
+            "Error, There can only be one main")
+
+
+# Busca el main y lo guarda en una variable global
+def find_main():
+    global global_variables
+    global main_code
+
+    for line in sintacticList:
+        if line[1] == 'PROCEDURE':
+            if line[2] == 'Main':
+                main_code = line[4]
+
+                sintacticList.remove(line)
+
+
+def clear_all():
+    global matriz
+    global instrucciones
+    global sintacticList
+    global errorList
+    global global_variables
+    global local_variables
+    global main_code
+
+    matriz = [[False, False, False, False, False, False, False, False],
+              [False, False, False, False, False, False, False, False],
+              [False, False, False, False, False, False, False, False],
+              [False, False, False, False, False, False, False, False],
+              [False, False, False, False, False, False, False, False],
+              [False, False, False, False, False, False, False, False],
+              [False, False, False, False, False, False, False, False],
+              [False, False, False, False, False, False, False, False]]
+
+    instrucciones.clear()
+    global_variables.clear()
+    local_variables.clear()
+    procedures_list.clear()
+    main_code.clear()
+
+
+def compile_program(insumo):
+    # Lista de arboles sintacticos generados en el analisis sintactico
+    global sintacticList
+    global errorList
+    global global_variables
+    global local_variables
+
+    clear_all()
+
+    syntaxResult = run_syntax_analysis(insumo)
+
+    sintacticList = syntaxResult[0]
+
+    # Errores generados en el analisis sintactico
+    errorList = syntaxResult[1]
+
+    """ ################################ Resultados del analisis sintactico ############################################ """
+
+    print("\n--------- Syntactic Analysis Result ---------")
+
+    pp.pprint(sintacticList)
+
+    print("\n--------- Errors ---------")
+    pp.pprint(errorList)
+
+    """ ################################ Resultados del analisis sintactico ############################################ """
+
+    check_blocks()
+    check_main_count()
+    check_procedures_name_count()
+
+    print("\n--------- Main ---------")
+    pp.pprint(main_code)
+
+    print("\n--------- Lista de procedimientos ---------")
+    pp.pprint(procedures_list)
+
+    print()
+    main_execute()
+
+    print("\n--------- Variables globales ---------")
+    pp.pprint(global_variables)
+
+    print("\n--------- Lista de variables locales de procedimientos ---------")
+    pp.pprint(local_variables)
+
+    print("\n--------- INSTRUCCIONES ARDUINO ---------")
+    pp.pprint(instrucciones)
+
+    print("\n--------- Errors ---------")
+    pp.pprint(errorList)
+
+    file = open("ArduinoCompiledOutput.txt", "w")
+    if len(errorList) == 0:
+        file.write(str(instrucciones))
+    else:
+        file.write("")
+    file.close()
+
+    return errorList
+
+
+#compile_program()
 
 # a = None
 # ciclo_for(a, [1,2,3,4,5,6,7,8,9,10],1,0)

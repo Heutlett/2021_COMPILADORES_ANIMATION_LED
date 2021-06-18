@@ -1,7 +1,7 @@
 import tkinter
 from tkinter import *
 from tkinter import scrolledtext
-from CopiaSemanticAdrian import compile_program  # CAMBIAR CAMBIAR CAMBIAR CAMBIAR
+from SemanticAnalysis import compile_program  # CAMBIAR CAMBIAR CAMBIAR CAMBIAR
 
 
 
