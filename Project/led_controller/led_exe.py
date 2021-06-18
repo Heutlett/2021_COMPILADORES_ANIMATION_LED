@@ -83,7 +83,7 @@ def trans_mtrx(m):
         for j in i:
             reslt+=j.__str__()
 
-    return f"{int(reslt, 2):X}"
+    return converthex(reslt)
 
 '''Envia una matriz por serial a Arduino'''
 def send_mtrx(r):
@@ -97,10 +97,11 @@ def build_send(rules_):
 def build_aux(rules_,i):
     try:
         if (rules_[i][0] == 'PRINT'):
-            #print("P"+trans_mtrx(rules_[i][1]))
+            print("P"+trans_mtrx(rules_[i][1]))
+            print("P",rules_[i][1])
             return "P"+trans_mtrx(rules_[i][1])+build_aux(rules_, i+1)
         elif (rules_[i][0] == 'DELAY'):
-            #print("T"+rules_[i][1]+rules_[i][2].__str__())
+            print("T"+rules_[i][1]+rules_[i][2].__str__())
             return "T"+res_t(rules_[i][1])+dectohex(rules_[i][2])+build_aux(rules_, i+1)
         else:
             return ""
@@ -118,10 +119,26 @@ def res_t(time_):
 def dectohex(num):
     return f"{int(num.__str__(), 10):X}"
 
+def converthex(b):
+    print(b)
+    rslt=""
+    temp=""
+    for i in range(16):
+        for j in range(4):
+            temp+=b[(i*4)+j]
+            print(temp,"\n")
+        print(temp,"\n")
+        if (temp=="0000"):
+            rslt+="0"
+        else:
+            rslt+=f"{int(temp, 2):X}"
+        temp=""
+    return rslt
 
 def exe_led(rules):
 
-    rules = ast.literal_eval(rules)
+    rules = ast.literal_eval(str(rules))
+    print("Prueba: ",type(rules))
     time.sleep(4)
     send_mtrx(build_send(rules))
     print(build_send(rules))

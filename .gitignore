@@ -7,3 +7,9 @@ Project/myparser/__pycache__/Syntax_Analysis.cpython-39.pyc
 Project/myparser/parsetab.py
 
 Project/myparser/parser.out
+
+Project/led_controller/__pycache__/
+
+Project/lexer/__pycache__/
+
+Project/myparser/__pycache__/

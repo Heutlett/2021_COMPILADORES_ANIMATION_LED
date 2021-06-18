@@ -4,8 +4,8 @@ from tkinter import scrolledtext
 from SemanticAdrianCopia import compile_program  # CAMBIAR CAMBIAR CAMBIAR CAMBIAR
 import os
 import ast
-# from led_controller import led_exe
-# from led_controller.led_exe import exe_led
+from led_controller import led_exe
+from led_controller.led_exe import exe_led
 
 user_color = '#aa9787' #Café
 change_color='#b0dfc2' #lila
@@ -243,7 +243,7 @@ class Ide(Frame):
         if len(content) > 0:
             print("se ha enviado")
             print(content)
-            #exe_led(content)
+            exe_led(content)
             self.insertTextOutput("El programa se ha enviado correctamente al controlador\n\n")
             return
         else:
