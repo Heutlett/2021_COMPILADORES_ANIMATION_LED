@@ -61,7 +61,7 @@ def getVariable(key, procedure):
         if key in global_variables.keys():
             return global_variables.get(key)
     else:
-        print("Key", key)
+        print("KEY", key)
         print("Procedure", procedure)
         if key in local_variables[procedure].keys():
             return local_variables[procedure].get(key)
@@ -103,7 +103,7 @@ def get_var(line, var, varDict):
     # print("Val", val)
     return val
 
-def run_tree(p):
+def run_tree(p, dict = None):
     '''
     Funcion que toma todos los arboles e interpreta qué subfunción debe llamar.
     Funciona como switch case basicamente.
@@ -124,17 +124,13 @@ def run_tree(p):
             return arithmetic_operation(p[0], p[1], p[2], p[3])
 
         elif p[1] == '=':
-            return var_assign_operation(p[0], p[2], p[3], p[4])
+            return var_assign_operation(p[0], dict, p[2], p[3])
 
         elif p[1] == '[]':
-            indexes = p[3]
-            # print()
-            procedure = p[2]
-            p.remove(p[2])
-            return get_sublist(procedure, p)
+            return get_sublist(dict, p)
 
         elif p[1] == '[]*':
-            return var_assign_operation(p[0], p[2], p[3], p[4])
+            return var_assign_operation(p[0],  dict,  p[2], p[3])
 
         elif p[1] == 'var':  # DEFINIR UNA VARIABLE
             return get_var(p[0], p[2], p[3])
@@ -301,15 +297,18 @@ def individual_assign_validation(line, procedure, ID, value):
 
     # Si la variable es una lista, obtener el valor si es una operacion.
     if type(value) == list:
-
+        print("valueeee", value)
         # Si es una variable.
         if value[1] in arithmetic_operators:
-            value += [procedure]
-            var = value[3]
-            if type(var) == str:
-                value[3] = [line, 'var', var, procedure]
+            var1 = value[2]
+            if type(var1) == str:
+                value[2] = [line, 'var', var1, procedure]
+            var2 = value[3]
+            if type(var2) == str:
+                value[3] = [line, 'var', var2, procedure]
 
-        value = run_tree(value)
+        print("value" , value)
+        value = run_tree(value, procedure)
 
     # Si no es una variable valida.
     if not var_verification(line, procedure, ID, value):
@@ -1157,9 +1156,8 @@ def buscar_valor_param(value, procedure_name):
 
 
 def exe_var_declaration(linea, procedure_name):
-    linea.insert(2, procedure_name)
-    # print("☀ Resultado:\t", run_tree(linea))
-    run_tree(linea)
+    print("☀ Resultado:\t", run_tree(linea, procedure_name))
+    # run_tree(linea)
     # print("✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ")
     # print()
     # print()
@@ -1253,6 +1251,24 @@ def exe_orden(linea, procedure_name):
 
     elif linea[1] == 'F':
         print(linea, "  ----->   F")
+
+
+    elif linea[1] == '=sublist':
+        ID_a_sublist(linea[0], linea[2], linea[3], procedure_name)
+
+
+
+
+def ID_a_sublist(line, ID, value, procedure_name):
+    val = run_tree(value,procedure_name)
+    var = getVariable(ID, procedure_name)
+
+    if var is None:
+        setVariable(procedure_name, ID, val)
+        return True
+
+
+
 
 
 """ ####################################### Ejecucion principal #################################################### """

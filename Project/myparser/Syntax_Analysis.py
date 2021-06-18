@@ -649,6 +649,16 @@ def p_ordenes(p):
         p[0] = p[1] + [p[2]]
 
 
+def p_var_sublist_ID(p):
+    """
+    var_assign : ID IGUAL sublist PYC
+    """
+    # [line, '=', ['[]*', 'a', [['row', 0, 4]]] , [1, 2, 3, 4]]
+    values = p[3]
+
+
+    p[0] = [p.lineno(4), '=sublist', p[1], values]
+    print("Sublista : ", p[0])
 
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  OUTPUT  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
 # Create the dictionary in which we will store and retrieve all errors we get.
