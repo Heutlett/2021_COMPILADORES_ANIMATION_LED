@@ -315,6 +315,93 @@ def p_empty(p):
     p[0] = None
 
 
+
+def p_valor_param(p):
+    """ valor_param : BOOLEAN
+              | INT
+              | ID
+    """
+    p[0] = p[1]
+
+###################################### FUNCIONES DE LISTAS #####################################################
+
+# Expresion para crear lista con range.
+def p_statement_list_range(p):
+    """
+    var_assign : ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
+    """
+
+    p[0] = [p.lineno(1), '=r', p[1], p[7], p[9]]
+
+
+
+def p_insert(p):
+    '''
+    funcionreservada : ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    '''
+
+    # [linea, INSERT, ID, Indice, Valor]
+
+    p[0] = [p.lineno(1), 'INSERT', p[1], p[5], p[7]]
+
+
+
+
+# del para listas
+def p_del(p):
+    '''
+    funcionreservada : ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC
+   '''
+
+    # ['DEL', ID, INDICE]
+    p[0] = [p.lineno(1), 'DEL', p[1], p[5]]
+
+
+def p_len(p):
+    '''
+    funcionreservada : LEN PARENTESISIZQ ID PARENTESISDER PYC
+    '''
+
+    p[0] = [p.lineno(1), 'LEN', p[3]]
+
+
+############################ OPERACIONES BOOLEANAS
+
+
+def p_neg(p):
+
+    '''
+    funcionreservada : ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
+    '''
+
+    # [p.lineno(1), 'NEG', ID, INDICE]
+
+    p[0] = [p.lineno(1), 'NEG', p[1], p[3]]
+
+
+def p_T(p):
+
+    '''
+    funcionreservada : ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
+    '''
+
+    # [p.lineno(1), 'NEG', ID, INDICE]
+
+    p[0] = [p.lineno(1), 'T', p[1], p[3]]
+
+
+def p_F(p):
+
+    '''
+    funcionreservada : ID CORCHETEIZQ expression CORCHETEDER PUNTO F PYC
+    '''
+
+    # [p.lineno(1), 'NEG', ID, INDICE]
+
+    p[0] = [p.lineno(1), 'F', p[1], p[3]]
+
+
+
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  DEFAULT FUNCTIONS  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
 
 rangoTiempo = ["seg", "mil", "min"]
@@ -424,6 +511,75 @@ def p_PrintLedX(p):
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  ADRIAN  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
 
 
+def p_for(p):
+    '''
+    funcionreservada : FOR expression IN INT LLAVEIZQ ordenes LLAVEDER
+                        | FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
+                        | FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
+                        | FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
+    '''
+
+    if 'Step' not in p:
+        p[0] = [p.lineno(1), 'FOR', p[2], p[4], p[6], 1]
+    else:
+        p[0] = [p.lineno(1), 'FOR', p[2], p[4], p[8], p[6]]
+
+
+####################################### MATRICES ########################################################
+
+
+def p_shapeF(p):
+
+    '''
+    funcionreservada : ID PUNTO SHAPEF PYC
+    '''
+
+    # [p.lineno(1), 'NEG', ID, INDICE]
+
+    p[0] = [p.lineno(1), 'SHAPEF', p[1]]
+
+
+def p_shapeC(p):
+
+    '''
+    funcionreservada : ID PUNTO SHAPEC PYC
+    '''
+
+    # [p.lineno(1), 'NEG', ID, INDICE]
+
+    p[0] = [p.lineno(1), 'SHAPEC', p[1]]
+
+
+def p_insertMatrix(p):
+
+    '''
+    funcionreservada : ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
+                        |   ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
+    '''
+
+    # [p.lineno(1), 'NEG', ID, INDICE]
+
+    if len(p) == 12:
+        p[0] = [p.lineno(1), 'INSERT_MATRIX', p[1], p[5], p[7], p[9]]
+    else:
+        p[0] = [p.lineno(1), 'INSERT_MATRIX', p[1], p[5], p[7]]
+
+
+
+def p_deleteMatrix(p):
+    '''
+    funcionreservada : ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    '''
+
+    # ['DEL', ID, INDICE, TIPOELIMINACION]
+    p[0] = [p.lineno(1), 'DELETE_MATRIX', p[1], p[5], p[7]]
+
+
+
+############################### BIFURCACION ###############################################
+
+
+
 # Condicion
 def p_condicion(p):
     """ condicion : expression IGUALES valorIf
@@ -451,6 +607,8 @@ def p_if(p):
     p[0] = [p.lineno(1), 'IF', p[3], p[6]]
 
 
+###################################### PROCEDIMIENTOS ###############################################
+
 def p_procedure(p):
     '''
     procedure : PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ ordenes LLAVEDER PYC
@@ -467,38 +625,6 @@ def p_call(p):
 
     p[0] = [p.lineno(1), 'CALL', p[2], p[4]]
 
-
-def p_del(p):
-    '''
-    funcionreservada : ID PUNTO DEL PARENTESISIZQ INT COMA INT PARENTESISDER PYC
-   '''
-
-    # ['DEL', ID, INDICE, TIPOELIMINACION]
-    p[0] = [p.lineno(1), 'DEL', p[1], p[5], p[7]]
-
-
-# Expresion para crear lista con range.
-def p_statement_list_range(p):
-    """
-    var_assign : ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA BOOLEAN PARENTESISDER PARENTESISDER PYC
-    """
-
-    p[0] = [p.lineno(1), '=r', p[1], p[7], p[9]]
-
-
-
-def p_for(p):
-    '''
-    funcionreservada : FOR expression IN INT LLAVEIZQ ordenes LLAVEDER
-                        | FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
-                        | FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
-                        | FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
-    '''
-
-    if 'Step' not in p:
-        p[0] = [p.lineno(1), 'FOR', p[2], p[4], p[6], 1]
-    else:
-        p[0] = [p.lineno(1), 'FOR', p[2], p[4], p[8], p[6]]
 
 
 # Ordenes (se dan en forma de una lista de listas)
