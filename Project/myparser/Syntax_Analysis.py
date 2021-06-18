@@ -324,13 +324,47 @@ def p_valor_param(p):
 
 ###################################### FUNCIONES DE LISTAS #####################################################
 
+
 # Expresion para crear lista con range.
-def p_statement_list_range(p):
+def p_statement_assign_range(p):
     """
-    var_assign : ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
+    var_assign : ID IGUAL rango PYC
+    """
+    # Build tree
+    # [10, '=', ID, [10, 'range', ID, expresion, params]]
+    p[0] = [p.lineno(1), '=', p[1], p[3]]
+
+def p_statement_range(p):
+    """
+    rango : LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER
     """
 
-    p[0] = [p.lineno(1), '=r', p[1], p[7], p[9]]
+    # Build tree
+    # [10, 'range', ID, expresion, params]
+    p[0] = [p.lineno(1), 'RANGE', p[5], p[7][0]]
+
+
+# Expresion para crear lista con range.
+def p_statement_assign_len(p):
+    """
+    var_assign : ID IGUAL length PYC
+    """
+    # Build tree
+    # [10, '=', ID, [10, 'LEN', [1,2,3]]]
+    p[0] = [p.lineno(1), '=', p[1], p[3]]
+
+
+# Expresion para crear lista con len.
+def p_statement_len(p):
+    """
+    length : LEN PARENTESISIZQ ID PARENTESISDER
+            | LEN PARENTESISIZQ list PARENTESISDER
+    """
+    # Build tree
+    # Example [10, 'LEN', [1,2,3]]
+    # Example [10, 'LEN', 'a']
+    tree = [p.lineno(1), "LEN", p[3]]
+    p[0] = tree
 
 
 

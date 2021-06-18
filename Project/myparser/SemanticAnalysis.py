@@ -107,7 +107,10 @@ def get_var(line, var, varDict):
     return val
 
 
-def run_tree(p, dict=None):
+
+
+
+def run_tree(p, procedure_name=None):
     '''
     Funcion que toma todos los arboles e interpreta qué subfunción debe llamar.
     Funciona como switch case basicamente.
@@ -117,61 +120,50 @@ def run_tree(p, dict=None):
 
     global arithmetic_operators
 
-    # print()
-    # print()
-    # print("✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ")
-    # print("TREE  :", p)
+    print()
+    print()
+    print("✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ")
+    print("TREE  :", p)
 
     if equalsType(p, list):
 
-        if p[1] in arithmetic_operators:  # OPERACIONES ARITMETICAS
-            return arithmetic_operation(p[0], p[1], p[2], p[3])
+        if len(p) == 1:
+            return p
+
+        elif p[1] in arithmetic_operators:  # OPERACIONES ARITMETICAS
+            print("ENTRADA ARITMETIC : ", p)
+            return arithmetic_operation(p[0], p[1], p[2], p[3], procedure_name)
 
         elif p[1] == '=':
-            return var_assign_operation(p[0], dict, p[2], p[3])
+            print("ENTRADA ASIGNACION : ", p)
+            return var_assign_operation(p[0], procedure_name, p[2], p[3])
 
         elif p[1] == '[]':
-            return get_sublist(dict, p)
+            print("ENTRADA SUBLISTA : ", p)
+            return get_sublist(procedure_name, p)
 
         elif p[1] == '[]*':
-            return var_assign_operation(p[0], dict, p[2], p[3])
+            return var_assign_operation(p[0], procedure_name, p[2], p[3])
 
         elif p[1] == 'var':  # DEFINIR UNA VARIABLE
-            return get_var(p[0], p[2], p[3])
+            print("ENTRADA VARIABLE : ", p)
+            return get_var(p[0], p[2], procedure_name)
 
         # elif p[0] == 'type':
         #     return p[1]
         #
-        #
+        elif p[1] == 'RANGE':  ## ESTE ES EL RANGEEEEEEEEEEEEEEEEEEEEE
+            print("ENTRADA RANGE : ", p)
+            return exe_range_operation(p[0], p[2], p[3], procedure_name)
+
         # elif p[0] == 'INSERT':
         #     return list_insert_operation(p[1], p[2], p[3])
         #
         # elif p[0] == 'DEL':
         #     return list_delete_operation(p[1], p[2])
         #
-        # elif p[0] == 'LEN':
-        #     return list_len_operation(p[1])
-        #
-        # elif p[0] == "NEG":
-        #     return neg_operation(p[1])
-        #
-        # elif p[0] == "T":
-        #     return t_operation(p[1])
-        #
-        # elif p[0] == "F":
-        #     return f_operation(p[1])
-        #
-        # elif p[0] == 'BLINK':
-        #     return p[1]
-        #
-        # elif p[0] == 'DELAY':
-        #     return p[1]
-        #
-        # elif p[0] == 'PRINTLED':
-        #     return p[1]
-        #
-        # elif p[0] == 'PRINTLEDX':
-        #     return p[1]
+        elif p[1] == 'LEN':
+            return exe_len_operation(p[0], p[2], procedure_name)
 
     return p
 
@@ -179,7 +171,7 @@ def run_tree(p, dict=None):
 """ ###################################### Operaciones aritmeticas ################################################### """
 
 
-def arithmetic_operation(line, operator, a, b):
+def arithmetic_operation(line, operator, a, b, procedure):
     '''
     Funcion auxiliar para operar los calculos aritmeticos por aparte.
     Funciona como switch case para la operacion que se debe realizar.
@@ -190,33 +182,83 @@ def arithmetic_operation(line, operator, a, b):
     :return: el resultado de aplicar el operando a ambas expresiones recibididas.
     '''
 
-    a = run_tree(a)
-    b = run_tree(b)
+    # Si es una variable.
+    tmpa = a
+    tmpb = b
+
+    if type(a) == str:
+        tmpa = [line, 'var', a]
+    a = tmpa
+
+    if type(b) == str:
+        tmpb = [line, 'var', b]
+    b = tmpb
 
     if a is None or b is None:
         return None
 
-    elif operator == '+':
-        return run_tree(a) + run_tree(b)
+    a = run_tree(a, procedure)
+    b = run_tree(b, procedure)
+    #
+    # print("Este es a:", a)
+    # print("Este es b:", b)
+
+    if operator == '+':
+        return a + b
 
     elif operator == '-':
-        return run_tree(a) - run_tree(b)
+        return a- b
     elif operator == '*':
-        return run_tree(a) * run_tree(b)
+        return a * b
     elif operator == '/':
-        return run_tree(a) / run_tree(b)
+        return a / b
     elif operator == '//':
-        return run_tree(a) // run_tree(b)
+        return a // b
     elif operator == '%':
-        return run_tree(a) % run_tree(b)
+        return a % b
     elif operator == '^':
-        return pow(run_tree(a), run_tree(b))
+        return pow(a, b)
     else:
         errorList.append("ArithmeticError in line {0}!".format(line))
         return "Error aritmetico"
 
 
 """ ###################################### Asignacion de variables ################################################### """
+
+
+
+
+def exe_range_operation(line, num, param, procedure_name):
+    # [10, 'RANGE', expresion, params]
+    num = run_tree(num, procedure_name)
+    param = run_tree(param)
+
+    if num is None:
+        # errorList.append("Error en la linea {0}, no se logra procesar la operacion {1}".format(linea[0], linea[3]))
+        return
+
+    tmp = []
+    i=1
+    for i in range(num):
+        tmp.append(param)
+
+    print("[EJECUTADO CORRECTAMENTE]\t➤\t", "RANGE     ", "\t→\t", tmp)
+    return tmp
+
+def exe_len_operation(line, valor, procedure_name):
+    # Example [10, 'LEN', [1,2,3]]
+    # Example [10, 'LEN', 'a']
+    valor = run_tree(valor, procedure_name)
+    if valor is None:
+        return
+
+    return len(valor)
+
+
+
+
+
+
 
 
 def var_assign_operation(line, procedure, ID, value):
@@ -246,7 +288,7 @@ def var_assign_operation(line, procedure, ID, value):
         setVariable(procedure, key, val)
         return getVariable(ID, procedure)
     else:
-        return tmp
+        return True
 
 
 # Funcion para operar la asignacion de las variables.
@@ -267,9 +309,7 @@ def var_assign_operation_aux(line, procedure, ID, value):
             tmp = var_assign_operation(line, procedure, ID[i], value[i])
             if tmp is False:
                 return False
-            # Asignación
-            procedure[tmp[0]] = tmp[1]
-        return procedure
+        return True
 
     # Si es solo una variable.
     # [line, ID, value, dict]
@@ -300,17 +340,6 @@ def individual_assign_validation(line, procedure, ID, value):
 
     # Si la variable es una lista, obtener el valor si es una operacion.
     if type(value) == list:
-        print("valueeee", value)
-        # Si es una variable.
-        if value[1] in arithmetic_operators:
-            var1 = value[2]
-            if type(var1) == str:
-                value[2] = [line, 'var', var1, procedure]
-            var2 = value[3]
-            if type(var2) == str:
-                value[3] = [line, 'var', var2, procedure]
-
-        print("value", value)
         value = run_tree(value, procedure)
 
     # Si no es una variable valida.
@@ -1168,21 +1197,20 @@ def exe_var_declaration(linea, procedure_name):
     # linea.insert(2, procedure_name)
     # print("☀ Resultado:\t", run_tree(linea))
     # run_tree(linea)
-    # print("✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ")
-    # print()
-    # print()
+    print("✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ✂ ")
+    print()
+    print()
 
 
 def exe_orden(linea, procedure_name):
     # ESTO EJECUTA LAS DECLARACIONES
-    if linea[1] in accionesConDict or linea[1] in arithmetic_operators:
-        # print("----------------EJECUTANDO DECLARACION------------------")
-        exe_var_declaration(linea, procedure_name)
+    # print("----------------EJECUTANDO DECLARACION------------------")
+    exe_var_declaration(linea, procedure_name)
 
-        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DECLARATION     ", "\t→\t", linea)
-        # print("----------------FIN DE DECLARACION------------------\n")
+    print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DECLARATION     ", "\t→\t", linea)
+    # print("----------------FIN DE DECLARACION------------------\n")
 
-    elif linea[1] == 'CALL':
+    if linea[1] == 'CALL':
         print("[EJECUTADO CORRECTAMENTE]\t➤\t", "CALL     ", "\t→\t", linea)
         procedure_execute(linea[2], linea[3])
 
@@ -1232,14 +1260,6 @@ def exe_orden(linea, procedure_name):
         ciclo_for(linea[2], linea[3], linea[5], buscar_valor_param(linea[4], procedure_name), procedure_name)
         print("[EJECUTADO CORRECTAMENTE]\t➤\t", "FOR       ", "\t→\t", linea)
 
-
-    elif linea[1] == '=r':  ## ESTE ES EL RANGEEEEEEEEEEEEEEEEEEEEE
-        """
-        listax = list(range(5,True));
-        [3, '=r', 'listax', 5, True]
-        """
-        print("[EJECUTADO CORRECTAMENTE]\t➤\t", "RANGE     ", "\t→\t", linea)
-        exe_range(linea, procedure_name)
 
 
     elif linea[1] == 'INSERT':  # [line, 'INSERT', lista, num, bool] ## IMPLEMENTAAAAAAAAAAAAAAAAAAAR
@@ -1356,10 +1376,6 @@ def exe_orden(linea, procedure_name):
 
 
 """##################################### Métodos listas ##########################################################"""
-
-
-def exe_range(linea, procedure_name):
-    pass
 
 
 def exe_insert_listas(linea, procedure_name):
@@ -1805,7 +1821,7 @@ def check_procedures_name_count():
 # Revisa que tod0 el código se encuentre dentro de PROCEDURES
 def check_blocks():
     for line in sintacticList:
-
+        print("Linea - - - - - - ", line)
         if line[1] != 'PROCEDURE':
             errorList.append(
                 "Error in line {0}, all the instructions must be inside of procedure block".format(line[0]))
