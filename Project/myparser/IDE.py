@@ -2,48 +2,75 @@ import tkinter
 from tkinter import *
 from tkinter import scrolledtext
 from SemanticAnalysis import compile_program  # CAMBIAR CAMBIAR CAMBIAR CAMBIAR
+import os
 
 
+user_color = '#aa9787' #Café
+change_color='#b0dfc2' #lila
+front_color = '#9c2c51' #Vino
+admin_color = '#8ca5b4' #Verde oscuro
+
+bg_color ='#d2ce9c' #Beige oscuro
+entry_color = '#e0d8b0' #Beige Claro
+label_color='#2b2a29' #Gris oscuro
+light='light gray'
+admin_color=admin_color
+body_color=light
 
 class Ide(Frame):
 
 
 
     def __init__(self):
-        super().__init__(bg="#333")
+        super().__init__(bg=admin_color)
         self.initUI()
 
     def initUI(self):
 
-        self.contadorLineas = 50
+        self.load_img = self.CargarImg('load.png')
+        self.compile_img = self.CargarImg('compile.png')
+        self.run_img = self.CargarImg('run.png')
+
+        self.contadorLineas = 20
 
         self.master.title("IDE")
         self.pack(fill=BOTH, expand=1)
 
-        self.labelOutput = Label(self.master, text="Output")
-        self.labelOutput.place(x=90, y=573)
 
-        self.labelLoad = Label(self.master, text="    Nombre del archivo a cargar  ")
-        self.labelLoad.place(x=281, y=100)
-
+        fontList = ('century gothic', 16, 'italic', 'bold')
+        self.labelLoad = Label(self.master,  text='Open...', bg=admin_color, fg = label_color, font=fontList)
+        self.labelCompile = Label(self.master, text='Compile',bg=admin_color, fg = label_color, font=fontList)
         self.entryLoad = Entry(self.master, width=28)
-        self.entryLoad.place(x=281, y=130)
-
-        self.buttonLoad = Button(self.master, text="Load", command=self.loadFunction, width=25, height=5)
-        self.buttonLoad.place(x=90, y=65)
-
-        self.buttonCompile = Button(self.master, text="Compile", command=self.compileFunction, width=25, height=5)
-        self.buttonCompile.place(x=560, y=65)
-
-        self.labelCompile = Label(self.master, text="Nombre del archivo a compilar")
-        self.labelCompile.place(x=760, y=100)
-
         self.entryCompile = Entry(self.master, width=28)
-        self.entryCompile.place(x=760, y=130)
 
-        self.buttonCompileRun = Button(self.master, text="Compile and run",
-                                       command=self.compileAndRunFunction, width=25, height=5)
-        self.buttonCompileRun.place(x=1010, y=65)
+        self.buttonLoad = Button(self.master, image=self.load_img, command=self.loadFunction, bg= admin_color,
+                                 relief="ridge", cursor="hand2", activebackground=admin_color, bd='0' )
+        self.buttonCompile = Button(self.master, image=self.compile_img, command=self.compileFunction,  bg= admin_color,
+                                 relief="ridge", cursor="hand2", activebackground=admin_color, bd='0' )
+        self.buttonCompileRun = Button(self.master,  image=self.run_img, command=self.compileAndRunFunction, bg= admin_color,
+                                 relief="ridge", cursor="hand2", activebackground=admin_color, bd='0' )
+
+        self.labelCompileRun  = Label(self.master,  text='Compile\n&\nRun', bg=admin_color, fg = label_color, font=fontList)
+
+        self.labelOutput = Label(self.master, text="Output", bg=admin_color, fg = label_color, font=('century gothic', 20, 'italic', 'bold'))
+
+
+        self.buttonLoad.place(x=40, y=23)
+        self.labelLoad.place(x=154, y=45)
+        self.entryLoad.place(x=154, y=80)
+
+        self.labelCompile.place(x=619, y=45)
+
+
+        self.entryCompile.place(x=619, y=80)
+        self.buttonCompile.place(x=500, y=23)
+        self.buttonCompileRun.place(x=960, y=23)
+        self.labelCompileRun.place(x=1073, y=35)
+
+
+        self.labelOutput.place(x=90, y=550)
+
+
 
         def viewall(*args):
             txtInput.yview(*args)
@@ -53,21 +80,22 @@ class Ide(Frame):
         # scrollbar.place(x=0,y=0)
         # scrollbar.config(command=viewall)
 
-        txtInput = scrolledtext.ScrolledText(self.master, undo=True, width=120, height=20)  # 120 20
+        txtInput = scrolledtext.ScrolledText(self.master, font = fontList, bg= body_color, undo=True, width=120, height=20)  # 120 20
         txtInput['font'] = ('consolas', '12')
-        txtInput.place(x=90, y=180)
+        txtInput.place(x=90, y=150)
         # self.txtInput.vbar
         self.inputTxt = txtInput
 
         #self.inputTxt.bind("<B1-Leave>", lambda event: "break")
 
         txtInput.vbar.bind_all("<MouseWheel>", self._on_mousewheel)
+        txtInput.bind_all('<Return>', self._on_enter)
+
         txtInput.vbar.config(command=viewall)
 
-        txtLineCount = Text(self.master, undo=True, width=7,
-                            height=20)
+        txtLineCount = Text(self.master, font = fontList, undo=True, width=7, height=20, bg= body_color)
         txtLineCount['font'] = ('consolas', '12')
-        txtLineCount.place(x=15, y=180)
+        txtLineCount.place(x=15, y=150)
 
         self.lineCountTxt = txtLineCount
 
@@ -86,20 +114,37 @@ class Ide(Frame):
 
         # self.txtInput.vbar.config(command=self.txtLineCount.yview)
 
-        self.txtOutput = scrolledtext.ScrolledText(self.master, undo=True, width=120, height=5, state=DISABLED)
+        self.txtOutput = scrolledtext.ScrolledText(self.master, font = ("Times New Roman",15),
+                                                   undo=True, bg= body_color, width=120, height=5, state=DISABLED)
         self.txtOutput['font'] = ('consolas', '12')
         self.txtOutput.place(x=90, y=600)
 
         self.insertTextOutput("")
 
+    #                       ________________________
+    # __________/Función para cargar imágenes
+    def CargarImg(self, nombre):
+        ruta = os.path.join('imgsound', nombre)
+        imagen = PhotoImage(file=ruta)
+        return imagen
+
+    def _on_enter(self, event):
+        self.crear_linea()
+
+    def crear_lineas(self, count):
+        for i in range(count):
+            self.crear_linea()
+
     def crear_linea(self):
-        print("PRUEBa")
         self.lineCountTxt.configure(state=NORMAL)
         self.contadorLineas += 1
         self.inputTxt.insert(END, "\n")
         self.lineCountTxt.insert(END, str(self.contadorLineas))
         self.lineCountTxt.insert(END, "\n")
         self.lineCountTxt.configure(state=DISABLED)
+
+
+
 
     def _on_mousewheel(self, event):
 
@@ -123,11 +168,18 @@ class Ide(Frame):
 
                 texto = ""
 
-                for linea in file.readlines():
+                data = file.readlines()
+
+                for linea in data:
                     texto = texto + linea
+
 
                 self.inputTxt.insert("1.0", texto)
                 file.close()
+
+                self.contadorLineas = data.count("\n")
+                self.crear_lineas(self.contadorLineas)
+
                 self.insertTextOutput("El programa se ha cargado correctamente!\n\n")
 
 
@@ -191,6 +243,7 @@ class Ide(Frame):
         self.txtOutput.configure(state=NORMAL)
         self.txtOutput.delete('1.0', END)
         self.txtOutput.configure(state=DISABLED)
+        self.contadorLineas = 20
 
     def insertLineNumber(self):
         pass
@@ -198,8 +251,9 @@ class Ide(Frame):
 
 def main():
     root = Tk()
-    root.geometry("1300x730+100+10")
+    root.geometry("1210x730+100+10")
     root.bind("<Button 1>", getorigin)
+
     IDE = Ide()
     root.mainloop()
 
@@ -208,7 +262,7 @@ def getorigin(eventorigin):
     global x, y
     x = eventorigin.x
     y = eventorigin.y
-    #print(x, y)
+    print(x, y)
 
 
 
