@@ -367,27 +367,24 @@ def p_statement_len(p):
     p[0] = tree
 
 
-
 def p_insert(p):
     '''
-    funcionreservada : ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    funcionreservada : ID PUNTO INSERT PARENTESISIZQ expression COMA params PARENTESISDER PYC
     '''
 
     # [linea, INSERT, ID, Indice, Valor]
-
-    p[0] = [p.lineno(1), 'INSERT', p[1], p[5], p[7]]
-
-
+    p[0] = [p.lineno(1), 'INSERT_LIST', p[1], p[5], p[7][0]]
 
 
 # del para listas
 def p_del(p):
     '''
-    funcionreservada : ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC
+    funcionreservada : ID PUNTO DEL PARENTESISIZQ expression PARENTESISDER PYC
    '''
 
-    # ['DEL', ID, INDICE]
-    p[0] = [p.lineno(1), 'DEL', p[1], p[5]]
+    # [linea, "DELETE", ID, Indice]
+    p[0] = [p.lineno(1), 'DELETE_LIST', p[1], p[5]]
+
 
 
 def p_len(p):

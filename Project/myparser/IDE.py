@@ -1,7 +1,7 @@
 import tkinter
 from tkinter import *
 from tkinter import scrolledtext
-from SemanticAdrianCopia import compile_program  # CAMBIAR CAMBIAR CAMBIAR CAMBIAR
+from SemanticAnalysis import compile_program  # CAMBIAR CAMBIAR CAMBIAR CAMBIAR
 import os
 import ast
 # from led_controller import led_exe
