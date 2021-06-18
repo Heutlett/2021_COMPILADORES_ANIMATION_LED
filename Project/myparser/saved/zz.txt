@@ -1,5 +1,4 @@
 Procedure Main (){
-
     ## matriz.Neg;
 	##matriz[1].Neg;
 	##matriz[1][1].Neg;
@@ -7,9 +6,7 @@ Procedure Main (){
 	##len(lista);
 	a = 1;
 	##c = 4;
-
 	##l1 = list(range(5,[True,False]));
-
 	l2 = list(range(3+2,2));
 	l2.insert(0,5483);
 	l2.insert(4,89);
@@ -19,119 +16,8 @@ Procedure Main (){
  ##   l2.insert(5, False);
   ##  l2.insert(10, [False,True]);
   ##  l2.insert(10, [12,30,30]);
-
-
 	##l3 = list(range(4+a,True));
 	##l4 = list(range(c-2,[1,2,3,4]));
     ## d = len(l4);
     ## e = len([1,2,3,4,5,6]);
-
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

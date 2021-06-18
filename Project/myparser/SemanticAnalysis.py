@@ -1133,7 +1133,7 @@ def exe_orden(tree, procedure_name):
         if len(tree) == 1:
             return tree
 
-        print("◉ EJECUTANDO \t{0}\t\t  • • • • •  \t\t{1}".format(tree[1], tree))
+        print("◉ EJECUTANDO\t• • • • •\t{0}".format(tree))
         # print("◉ EJECUTANDO ", tree[1], "\t  • • • • •  \t", tree)
         # """   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●  VARIABLES Y OPERACIONES ARITMETICAS  ●   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●  """
 
