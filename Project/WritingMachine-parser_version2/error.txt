@@ -1,2 +1,0 @@
-ERROR: No se puede cambiar el valor del identificador 'iAaaaa' indefinido en la linea 4
-ERROR: No se incrementar el valor del identificador 'var_prueba' indefinido en la linea 21

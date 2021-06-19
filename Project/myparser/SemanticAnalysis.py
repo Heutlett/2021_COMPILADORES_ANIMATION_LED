@@ -1556,7 +1556,7 @@ def exe_insert_matrix_operation(line, ID, keyValue, param, tipo_insercion, indic
         return None
 
     # AMBOS TIPOS DEBEN SER IGUALES
-        if get_type_list_or_var(keyValue) != get_type_list_or_var(param):
+    if get_type_list_or_var(keyValue) != get_type_list_or_var(param):
         errorList.append(
             "Error en linea {0}. El valor de insercion \'{2}\' no coincide con el tipo de \'{1}\'.".format(line, ID,
                                                                                                            param))
