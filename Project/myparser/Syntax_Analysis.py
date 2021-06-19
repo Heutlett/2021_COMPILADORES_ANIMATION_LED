@@ -369,11 +369,11 @@ def p_statement_len(p):
 
 def p_insert(p):
     '''
-    funcionreservada : ID PUNTO INSERT PARENTESISIZQ expression COMA params PARENTESISDER PYC
+    funcionreservada : ID PUNTO INSERT PARENTESISIZQ input COMA input PARENTESISDER PYC
     '''
 
     # [linea, INSERT, ID, Indice, Valor]
-    p[0] = [p.lineno(1), 'INSERT_LIST', p[1], p[5], p[7][0]]
+    p[0] = [p.lineno(1), 'INSERT_LIST', p[1], p[5][0], p[7][0]]
 
 
 # del para listas
@@ -619,6 +619,31 @@ def p_shapeC(p):
     # [p.lineno(1), 'NEG', ID, INDICE]
 
     p[0] = [p.lineno(1), 'SHAPEC', p[1]]
+
+
+
+def p_insertMatrix(p):
+    '''
+    funcionreservada : ID PUNTO INSERT PARENTESISIZQ input COMA expression COMA expression PARENTESISDER PYC
+
+    '''
+
+    if type(p[5]) == int or type(p[5]) == bool:
+        errors.append("Error en la linea {0}. \'{1}\' el elemento a insertar debe ser de tipo lista.".format(p.lineno(1), p[5]))
+        return None
+
+    if type(p[7]) == bool:
+        errors.append(
+            "Error en la linea {0}. \'{1}\' el tipo de insercion solo acepta 1s o 0s.".format(p.lineno(1), p[7]))
+        return None
+
+    if type(p[9]) == bool:
+        errors.append(
+            "Error en la linea {0}. \'{1}\' el tercer elemento debe ser un entero.".format(p.lineno(1), p[9]))
+        return None
+
+    # [10, 'INSERT_MATRIX', ID, VALOR, TIPO_ADICION]
+    p[0] = [p.lineno(1), 'INSERT_MATRIX', p[1], p[5], p[7], p[9]]
 
 
 

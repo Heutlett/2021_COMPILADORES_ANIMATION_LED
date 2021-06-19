@@ -1,6 +1,7 @@
 import tkinter
 from tkinter import *
 from tkinter import scrolledtext
+import tkinter.font as tkfont
 from SemanticAnalysis import compile_program  # CAMBIAR CAMBIAR CAMBIAR CAMBIAR
 import os
 import ast
@@ -81,6 +82,12 @@ class Ide(Frame):
         # self.txtInput.vbar
         self.inputTxt = txtInput
 
+
+        font = tkfont.Font(font=txtInput['font'])
+        tab = font.measure('   ')
+
+        self.inputTxt.config(tabs=tab)
+
         # self.inputTxt.bind("<B1-Leave>", lambda event: "break")
 
         txtInput.vbar.bind_all("<MouseWheel>", self._on_mousewheel)
@@ -112,6 +119,7 @@ class Ide(Frame):
 
     def _on_enter(self, event):
         self.crear_linea()
+        self.lineCountTxt.yview_moveto(self.inputTxt.yview()[0])
 
     def crear_lineas(self, count):
         for i in range(count):
@@ -153,6 +161,7 @@ class Ide(Frame):
         self.insertTextOutput("loading program...\n\n")
 
         nombre_archivo = self.entryLoad.get()
+        nombre_archivo2 = nombre_archivo
 
         if nombre_archivo == "":
             self.insertTextOutput("No se ha podido cargar el programa porque no se ha insertado el nombre del archivo")
@@ -182,6 +191,8 @@ class Ide(Frame):
                 #     self.crear_lineas(20-self.contadorLineas)
 
                 self.insertTextOutput("El programa se ha cargado correctamente!\n\n")
+                self.entryCompile.delete(0,END)
+                self.entryCompile.insert(0, nombre_archivo2)
 
 
         except Exception:
@@ -256,17 +267,23 @@ class Ide(Frame):
         file.close()
 
         errors = compile_program(self.inputTxt.get("1.0", tkinter.END))
+
+        print("errores en ide")
+        print(len(errors))
+
         if len(errors) == 0:
             self.insertTextOutput("El codigo se ha compilado correctamente sin errores")
+            return True
         else:
             self.insertTextOutput("ERRORES ENCONTADOS, NO SE PUDO COMPILAR CORRECTAMENTE:\n")
             self.insertTextOutput(str(errors))
+            return False
 
     def compileAndRunFunction(self):
-        self.compileFunction()
+        resultado = self.compileFunction()
         self.crear_linea()
-        self.clearTextOutput()
-        self.insertTextOutput("compiling and running program...\n\n")
+        #self.clearTextOutput()
+        self.insertTextOutput("running program...\n\n")
 
         texto = self.inputTxt.get("1.0", tkinter.END)
 
@@ -284,15 +301,24 @@ class Ide(Frame):
         content = file.readlines()
         content = ast.literal_eval(content[0])
 
-        if len(content) > 0:
-            print("se ha enviado")
-            print(content)
-            # exe_led(content)
-            self.insertTextOutput("El programa se ha enviado correctamente al controlador\n\n")
-            return
+        if resultado:
+
+            if len(content) > 0:
+                print(content)
+                # exe_led(content)
+                self.insertTextOutput("El programa se ha enviado correctamente al controlador\n\n")
+                return
+
+            elif len(content) == 0:
+                self.insertTextOutput("El programa se ha ejecutado correctamente, pero "
+                                      "no hay intrucciones para enviar al controlador\n\n")
+                return
+            else:
+                self.insertTextOutput("Error, no se podido correr porque hay errores en la compilacion\n\n")
+                return
+
         else:
-            self.insertTextOutput("Error, no se podido correr porque hay errores en la compilacion\n\n")
-            return
+            self.insertTextOutput("No se ha podido correr el programa porque hay errores en la compilacion")
 
     def insertTextOutput(self, text):
         self.txtOutput.configure(state=NORMAL)
