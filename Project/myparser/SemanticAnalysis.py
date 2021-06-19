@@ -138,14 +138,11 @@ def arithmetic_operation(line, operator, a, b, procedure):
         tmpb = [line, 'var', b]
     b = tmpb
 
-
     a = exe_orden(a, procedure)
     b = exe_orden(b, procedure)
 
     if a is None or b is None:
         return None
-
-
 
     # print("Este es a:", a)
     # print("Este es b:", b)
@@ -1130,7 +1127,6 @@ def exe_ordenes(ordenes, procedure_name):
         print("⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")
 
 
-
 def exe_orden(tree, procedure_name):
     global arithmetic_operators
 
@@ -1262,6 +1258,7 @@ def exe_orden(tree, procedure_name):
             [45, 'DELETE_MATRIX', 'matriz', 0, 0],
             """
             print(tree, "  ----->   DELETE_MATRIX")
+            exe_delete_matrix(tree, procedure_name)
 
 
         elif tree[1] == '=sf':
@@ -1296,7 +1293,7 @@ def exe_orden(tree, procedure_name):
 
 
         elif tree[1] == 'DELAY':
-            exe_delay(buscar_valor_param(tree[2], procedure_name), tree[3])
+            exe_delay(buscar_valor_param(tree[2], procedure_name), tree[3], procedure_name)
             print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DELAY     ", "\t→\t", tree)
 
 
@@ -1370,6 +1367,7 @@ def exe_len_operation(line, valor, procedure_name):
 
     return len(valor)
 
+
 def exe_insert_matrix_operation(tree, procedure_name):
     """
     matriz.insert(a, b, c);
@@ -1385,13 +1383,10 @@ def exe_insert_matrix_operation(tree, procedure_name):
     tipo = exe_orden(tree[4], procedure_name)
     indice = exe_orden(tree[5], procedure_name)
 
-
     print("\t➤ CASTEO: ", line, ID, value, params, tipo, indice)
 
     print(tree, "  ----->   INSERT_MATRIX")
     return None
-
-
 
 
 def exe_insert_delete_operation(tree, procedure_name):
@@ -1411,7 +1406,6 @@ def exe_insert_delete_operation(tree, procedure_name):
 
     print(tree, "  ----->   INSERT_MATRIX")
     return
-
 
 
 def exe_insert_listas_operation(tree, procedure_name):
@@ -1446,7 +1440,6 @@ def exe_insert_listas_operation(tree, procedure_name):
     value.insert(indice, params)
     print("[EJECUTADO CORRECTAMENTE]\t➤\t", "INSERT_LIST     ", "\t→\t", value)
     return value
-
 
 
 def exe_del_listas_operation(line, ID, indice, procedure_name):
@@ -1484,12 +1477,73 @@ def exe_del_listas_operation(line, ID, indice, procedure_name):
 """
 
 
+def validar_matriz_cuadrada(matriz):
+    if len(matriz) == 0:
+        return False
+
+    tamano = len(matriz[0])
+
+    for fila in matriz:
+        if len(fila) != tamano:
+            return False
+
+    return True
+
+
+"""
+matriz.delete(0,0);
+[45, 'DELETE_MATRIX', 'matriz', 0, tipo_de_eliminacion],
+tipo de eliminacion:   0 = fila,   1=columna
+"""
+
+
+def exe_delete_matrix(linea, procedure_name):
+    print("procedure")
+    print(procedure_name)
+
+    id = linea[2]
+    indice = buscar_valor_param(linea[3], procedure_name)
+    tipo_eliminacion = buscar_valor_param(linea[4], procedure_name)
+
+    var = buscar_variable(id, procedure_name)
+
+    if var is None:
+        errorList.append("Error en la linea {0}, la matriz {1} no existe".format(linea[0], id))
+        return
+
+    if not is_matriz(var) or not validar_matriz_cuadrada(var):
+        errorList.append("Error en la linea {0}, el ID {1} no corresponde a una matriz".format(linea[0], id))
+        return
+
+
+    if tipo_eliminacion == 0:  # eliminar fila
+        if indice < len(var):
+            var.remove(var[indice])
+            return
+        else:
+            errorList.append(
+                "Error en la linea {0}, el indice {1} sobrepasa el tamaño de la matriz".format(linea[0], indice))
+            return
+    elif tipo_eliminacion == 1:
+        if indice < len(var[0]):
+
+            for elem in var:
+                elem.remove(elem[indice])
+                pass
+            return
+
+        else:
+            errorList.append(
+                "Error en la linea {0}, el indice {1} sobrepasa el tamaño de la matriz".format(linea[0], indice))
+    else:
+        errorList.append(
+            "Error en la linea {0}, el tipo de eliminacion {1} es incorrecto (0 o 1)".format(linea[0],
+                                                                                             tipo_eliminacion))
+        return
+
 
 def validaciones_insert_matrix(m1, m2):
     pass
-
-
-
 
 
 # def validaciones_insert_matrix(line, ID, value, params, row, col=None):
@@ -1734,7 +1788,7 @@ def exe_neg(linea, procedure_name):
     if len(linea) == 4:
         if is_matriz(var):  # negar toda la fila
 
-            l = linea[3]
+            l = buscar_valor_param(linea[3],procedure_name)
 
             for index in range(len(var[0])):
 
@@ -1769,16 +1823,19 @@ def exe_neg(linea, procedure_name):
         if is_matriz(var):
             try:
 
-                if type(var[linea[3]][linea[4]]) == int:
-                    if var[linea[3]][linea[4]] == 1:
-                        var[linea[3]][linea[4]] = 0
-                    elif var[linea[3]][linea[4]] == 0:
-                        var[linea[3]][linea[4]] = 1
+                fila = buscar_valor_param(linea[3],procedure_name)
+                columna = buscar_valor_param(linea[4],procedure_name)
+
+                if type(var[fila][columna]) == int:
+                    if var[fila][columna] == 1:
+                        var[fila][columna] = 0
+                    elif var[fila][columna] == 0:
+                        var[fila][columna] = 1
                     else:
                         errorList.append(
                             "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(linea[0]))
-                elif type(var[linea[3]][linea[4]]) == bool:
-                    var[linea[3]][linea[4]] = not var[linea[3]][linea[4]]
+                elif type(var[fila][columna]) == bool:
+                    var[fila][columna] = not var[fila][columna]
 
 
             except Exception:
@@ -1860,7 +1917,7 @@ def exe_F(linea, procedure_name):
         if type(var) == list:
             if is_matriz(var):  # es matriz, negar toda la fila
 
-                l = linea[3]
+                l = buscar_valor_param(linea[3],procedure_name)
 
                 for index in range(len(var[0])):
 
@@ -1901,6 +1958,8 @@ def exe_F(linea, procedure_name):
     if len(linea) == 5:
         if is_matriz(var):
             try:
+                linea[3] = buscar_valor_param(linea[3], procedure_name)
+                linea[4] = buscar_valor_param(linea[4], procedure_name)
 
                 if type(var[linea[3]][linea[4]]) == int:
                     if var[linea[3]][linea[4]] == 1 or var[linea[3]][linea[4]] == 0:
@@ -1935,6 +1994,7 @@ def exe_T(linea, procedure_name):
 
     id = linea[2]
     var = buscar_variable(id, procedure_name)
+
 
     if var is None:
         errorList.append("Error en la linea {0}, no se ha encontrado la variable {1}".format(linea[0], id))
@@ -1991,7 +2051,7 @@ def exe_T(linea, procedure_name):
         if type(var) == list:
             if is_matriz(var):  # es matriz, negar toda la fila
 
-                l = linea[3]
+                l = buscar_valor_param(linea[3],procedure_name)
 
                 for index in range(len(var[0])):
 
@@ -2007,6 +2067,9 @@ def exe_T(linea, procedure_name):
 
 
             else:  # es una lista, negar indice
+
+                linea[3] = buscar_valor_param(linea[3], procedure_name)
+
                 if not linea[3] >= len(var):
 
                     if type(var[linea[3]]) == bool:
@@ -2032,6 +2095,8 @@ def exe_T(linea, procedure_name):
     if len(linea) == 5:
         if is_matriz(var):
             try:
+                linea[3] = buscar_valor_param(linea[3], procedure_name)
+                linea[4] = buscar_valor_param(linea[4], procedure_name)
 
                 if type(var[linea[3]][linea[4]]) == int:
                     if var[linea[3]][linea[4]] == 1 or var[linea[3]][linea[4]] == 0:
@@ -2072,7 +2137,10 @@ def exe_blink(row, column, tiempo, rangoTiempo, estado):
     pass
 
 
-def exe_delay(tiempo, rangoTiempo):
+def exe_delay(tiempo, rangoTiempo, procedure_name):
+
+    #tiempo = exe_orden(tiempo, procedure_name)
+
     instrucciones.append(['DELAY', rangoTiempo, tiempo])
 
 
@@ -2295,11 +2363,11 @@ def compile_program(insumo):
     print("\n--------- Variables globales ---------")
     pp.pprint(global_variables)
 
-    # print("\n--------- Lista de variables locales de procedimientos ---------")
-    # pp.pprint(local_variables)
+    print("\n--------- Lista de variables locales de procedimientos ---------")
+    pp.pprint(local_variables)
 
-    # print("\n--------- INSTRUCCIONES ARDUINO ---------")
-    # pp.pprint(instrucciones)
+    print("\n--------- INSTRUCCIONES ARDUINO ---------")
+    pp.pprint(instrucciones)
 
     print("\n--------- Errors ---------")
     pp.pprint(errorList)
@@ -2307,6 +2375,10 @@ def compile_program(insumo):
     instrucciones = convert_instructions_to_list(str(instrucciones))
 
     file = open("ArduinoCompiledOutput.txt", "w")
+
+    print("tamaño errores en syntax")
+    print(len(errorList))
+
     if len(errorList) == 0:
         file.write(str(instrucciones))
     else:

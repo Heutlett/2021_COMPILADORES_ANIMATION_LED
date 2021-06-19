@@ -138,12 +138,12 @@ def arithmetic_operation(line, operator, a, b, procedure):
         tmpb = [line, 'var', b]
     b = tmpb
 
+    a = exe_orden(a, procedure)
+    b = exe_orden(b, procedure)
+
     if a is None or b is None:
         return None
 
-    a = exe_orden(a, procedure)
-    b = exe_orden(b, procedure)
-    #
     # print("Este es a:", a)
     # print("Este es b:", b)
 
@@ -186,14 +186,16 @@ def var_assign_operation(line, procedure, ID, value):
     # Si es más de una variable.
     if type(ID) == list and type(value) == list:
         return var_assign_operation_aux(line, procedure, ID, value)
+    print("▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ", ID, value)
 
     # Si es una sola variable.
     tmp = individual_assign_validation(line, procedure, ID, value)
-    if tmp is False:
-        return False
+    print("▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ", tmp)
+    if tmp is None:
+        return None
 
     # Asignación
-    # print("SALIDA is:", tmp)
+    print("SALIDA is:", tmp)
 
     if type(tmp[0]) == str:
         key = tmp[0]
@@ -220,7 +222,7 @@ def var_assign_operation_aux(line, procedure, ID, value):
         # Asignacion en cascada.
         for i in range(len(ID)):
             tmp = var_assign_operation(line, procedure, ID[i], value[i])
-            if tmp is False:
+            if tmp is None:
                 return None
         return True
 
@@ -258,15 +260,16 @@ def individual_assign_validation(line, procedure, ID, value):
     # Si no es una variable valida.
     if not var_verification(line, procedure, ID, value):
         # El error se agrega en la verificacion.
-        return False
+        return None
 
     # Si se cumplen todas las validaciones.
     # print("-> {0} : {1}".format(ID, procedure[ID]))
+    print("▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ", ID, value)
     return [ID, value]
 
 
 def get_sublist(procedure, sublist):
-    print("P  :", sublist)
+    # print("P  :", sublist)
     return sublist_assign(procedure, sublist, None)
 
 
@@ -290,11 +293,13 @@ def sublist_assign(procedure, sublist, value=None):
     ID = sublist[2]
 
     # Verificar que la variable existe en el diccionario recibido o en el global.
-    print("SUBLIST >> ", sublist)
+    # print("SUBLIST >> ", sublist)
     var = getVariable(ID, procedure)
     if var is None:
-        errorList.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, value))
+        if value is not None:
+            errorList.append("ERROR in line {0}! \"{1}\" is not yet defined.".format(line, value))
         return False
+
 
     # Si la variable existe pero no es una lista.
     else:
@@ -461,7 +466,7 @@ def entry_type_verification(line, procedure, lst, ID, value):
 
     # Si el valor es una lista y no coincide el tipo con los elementos de la lista a la que se debe asignar.
     if type(value) == lst:
-        if get_list_type(lst) != get_list_type(value):
+        if get_type_list_or_var(lst) != get_type_list_or_var(value):
             errorList.append(
                 "TypeError in line {0}: Elements in \"{2}\" does not match the type of \"{1}\"."
                     .format(line, ID, value))
@@ -473,19 +478,15 @@ def entry_type_verification(line, procedure, lst, ID, value):
         # Si es una variable, se obtiene su valor primero.
         value = getVariable(value, procedure)
         print("VAL ", value)
-        # si la variable no es una lista, debe cumplir con  el tipo.
-        if get_list_type(lst) != type(value):
-            errorList.append("TypeError in line {0}: \"{2}\" does not match the type of elements in \"{1}\"."
-                             .format(line, ID, value))
-            return False
 
         # Si la variable es una lista, los elementos dentro deben cumplir con el tipo.
         if list_check_type_validation(line, value):
-            if get_list_type(lst) != get_list_type(value):
+            if get_type_list_or_var(lst) != get_type_list_or_var(value):
                 errorList.append("TypeError in line {0}: \"{2}\" does not match the type of elements in \"{1}\"."
                                  .format(line, ID, value))
                 return False
-        return False
+        else:
+            return False
 
     return True
 
@@ -704,6 +705,8 @@ def var_verification(line, procedure, ID, value):
     if not list_check_type_validation(line, value):
         return False
 
+    if value is None:
+        return False
     return True
 
 
@@ -755,7 +758,7 @@ def list_check_type_validation(line, lst):
     # If its a list of lists.
     else:
         # Get the type that all items in the list are supposed to be.
-        supposedType = get_list_type(lst)
+        supposedType = get_type_list_or_var(lst)
         return list_check_type_validation_aux(line, lst, supposedType)
 
 
@@ -810,14 +813,14 @@ def check_type_aux(line, lst, supposedType=None):
     return True
 
 
-def get_list_type(lst):
+def get_type_list_or_var(lst):
     '''
     Funcion auxiliar para obtener el primer elemento de una lista que no sea una sublista.
     :param lst: lista de entrada
     :return: el tipo al que corresponde el primer elemento de la lista.
     '''
     if equalsType(lst, list):
-        return get_list_type(lst[0])
+        return get_type_list_or_var(lst[0])
     return type(lst)
 
 
@@ -1154,10 +1157,17 @@ def exe_orden(tree, procedure_name):
 
 
 
+        elif tree[1] == '=sublist':
+            ID_a_sublist(tree[0], tree[2], tree[3], procedure_name)
+
         # """   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●  LISTA Y MATRICES   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●  """
 
         elif tree[1] == '[]':
-            return get_sublist(procedure_name, tree)
+            lst = get_sublist(procedure_name, tree)
+            if lst is None:
+                return None
+            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "[]              ", "\t→\t", lst)
+            return lst
 
 
         elif tree[1] == '[]*':
@@ -1237,13 +1247,9 @@ def exe_orden(tree, procedure_name):
 
 
         elif tree[1] == 'INSERT_MATRIX':
-            """
-            matriz.insert(a, b, c);
-            matriz.insert(a, d);
-            [41, 'INSERT_MATRIX', 'matriz', 'a', 'b', 'c'],
-            [43, 'INSERT_MATRIX', 'matriz', 'a', 'd'],
-            """
-            print(tree, "  ----->   INSERT_MATRIX")
+
+            return exe_insert_matrix_operation(tree, procedure_name)
+
 
 
         elif tree[1] == 'DELETE_MATRIX':
@@ -1252,6 +1258,7 @@ def exe_orden(tree, procedure_name):
             [45, 'DELETE_MATRIX', 'matriz', 0, 0],
             """
             print(tree, "  ----->   DELETE_MATRIX")
+            exe_delete_matrix(tree, procedure_name)
 
 
         elif tree[1] == '=sf':
@@ -1272,9 +1279,6 @@ def exe_orden(tree, procedure_name):
             exe_def_shapec(tree, procedure_name)
 
 
-        elif tree[1] == '=sublist':
-            ID_a_sublist(tree[0], tree[2], tree[3], procedure_name)
-
 
 
         # """   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●  FUNCIONES   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●   ●  """
@@ -1289,7 +1293,7 @@ def exe_orden(tree, procedure_name):
 
 
         elif tree[1] == 'DELAY':
-            exe_delay(buscar_valor_param(tree[2], procedure_name), tree[3])
+            exe_delay(buscar_valor_param(tree[2], procedure_name), tree[3], procedure_name)
             print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DELAY     ", "\t→\t", tree)
 
 
@@ -1364,6 +1368,46 @@ def exe_len_operation(line, valor, procedure_name):
     return len(valor)
 
 
+def exe_insert_matrix_operation(tree, procedure_name):
+    """
+    matriz.insert(a, b, c);
+    matriz.insert(a, d);
+    [41, 'INSERT_MATRIX', 'matriz', 'a', 'b', 'c'],
+    [43, 'INSERT_MATRIX', 'matriz', 'a', 'd'],
+    [p.lineno(1), 'INSERT_MATRIX', ID, params, tipo insercion, indice]
+    """
+    line = tree[0]
+    ID = tree[2]
+    value = exe_orden([line, "var", tree[2]], procedure_name)
+    params = exe_orden(tree[3], procedure_name)
+    tipo = exe_orden(tree[4], procedure_name)
+    indice = exe_orden(tree[5], procedure_name)
+
+    print("\t➤ CASTEO: ", line, ID, value, params, tipo, indice)
+
+    print(tree, "  ----->   INSERT_MATRIX")
+    return None
+
+
+def exe_insert_delete_operation(tree, procedure_name):
+    """
+    matriz.insert(a, b, c);
+    matriz.insert(a, d);
+    [41, 'INSERT_MATRIX', 'matriz', 'a', 'b', 'c'],
+    [43, 'INSERT_MATRIX', 'matriz', 'a', 'd'],
+    [p.lineno(1), 'INSERT_MATRIX', ID, params, tipo insercion, indice]
+    """
+    line = tree[0]
+    ID = tree[2]
+    value = exe_orden([line, "var", tree[2]], procedure_name)
+    indice = exe_orden(tree[3], procedure_name)
+    params = exe_orden(tree[4], procedure_name)
+    # print("\t➤ CASTEO: ", line, ID, value, indice, params)
+
+    print(tree, "  ----->   INSERT_MATRIX")
+    return
+
+
 def exe_insert_listas_operation(tree, procedure_name):
     """
     lista.insert(a,True);
@@ -1388,7 +1432,7 @@ def exe_insert_listas_operation(tree, procedure_name):
         errorList.append("Error en la linea {0}. {1} debe ser una lista.".format(line, ID))
         return None
 
-    if get_list_type(value) != type(params):
+    if get_type_list_or_var(value) != type(params):
         errorList.append(
             "Error en linea {0}. El valor de insercion \"{2}\" no coincide con el tipo de {1}.".format(line, ID, value))
         return None
@@ -1431,6 +1475,108 @@ def exe_del_listas_operation(line, ID, indice, procedure_name):
 ●   ●   ●   ●   ●   ●   ●   ●   ●         METODOS DE MATRICES         ●   ●   ●   ●   ●   ●   ●   ●   ●
 ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼                                     ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ 
 """
+
+
+def validar_matriz_cuadrada(matriz):
+    if len(matriz) == 0:
+        return False
+
+    tamano = len(matriz[0])
+
+    for fila in matriz:
+        if len(fila) != tamano:
+            return False
+
+    return True
+
+
+"""
+matriz.delete(0,0);
+[45, 'DELETE_MATRIX', 'matriz', 0, tipo_de_eliminacion],
+tipo de eliminacion:   0 = fila,   1=columna
+"""
+
+
+def exe_delete_matrix(linea, procedure_name):
+    print("procedure")
+    print(procedure_name)
+
+    id = linea[2]
+    indice = buscar_valor_param(linea[3], procedure_name)
+    tipo_eliminacion = buscar_valor_param(linea[4], procedure_name)
+
+    var = buscar_variable(id, procedure_name)
+
+    if var is None:
+        errorList.append("Error en la linea {0}, la matriz {1} no existe".format(linea[0], id))
+        return
+
+    if not is_matriz(var) or not validar_matriz_cuadrada(var):
+        errorList.append("Error en la linea {0}, el ID {1} no corresponde a una matriz".format(linea[0], id))
+        return
+
+
+    if tipo_eliminacion == 0:  # eliminar fila
+        if indice < len(var):
+            var.remove(var[indice])
+            return
+        else:
+            errorList.append(
+                "Error en la linea {0}, el indice {1} sobrepasa el tamaño de la matriz".format(linea[0], indice))
+            return
+    elif tipo_eliminacion == 1:
+        if indice < len(var[0]):
+
+            for elem in var:
+                elem.remove(elem[indice])
+                pass
+            return
+
+        else:
+            errorList.append(
+                "Error en la linea {0}, el indice {1} sobrepasa el tamaño de la matriz".format(linea[0], indice))
+    else:
+        errorList.append(
+            "Error en la linea {0}, el tipo de eliminacion {1} es incorrecto (0 o 1)".format(linea[0],
+                                                                                             tipo_eliminacion))
+        return
+
+
+def validaciones_insert_matrix(m1, m2):
+    pass
+
+
+# def validaciones_insert_matrix(line, ID, value, params, row, col=None):
+#     # Si son matrices
+#     if not is_matriz(params):
+#         errorList.append("Error en la linea {0}. \'{1}\' no corresponde a una matriz".format(line, params))
+#         return None
+#
+#     if not is_matriz(params):
+#         errorList.append("Error en la linea {0}. \'{1}\' no corresponde a una matriz".format(line, ID))
+#         return None
+#
+#     # Si el tamano de las filas no es el mismo
+#     if not validaciones_insert_matrix_aux(line, ID, value, params, row):
+#         errorList.append(
+#             "Error en la linea {0}. El numero de filas de \'{1}\' no coincide con el de \'{2}\'".format(line, params,
+#                                                                                                         ID))
+#         return None
+#
+#     # Si hay columnas.
+#     if col is not None:
+#         for r in value:
+#             if validaciones_insert_matrix_aux(line, ID, value[r], params[r], col) is None:
+#                 errorList.append(
+#                     "Error en la linea {0}. El numero de columnas de \'{1}\' no coincide con el de \'{2}\'".format(line,
+#                                                                                                                    params,
+#                                                                                                                    ID))
+#                 return None
+#
+#     # value.insert(row, params)
+#     # print("[EJECUTADO CORRECTAMENTE]\t➤\t", "INSERT_MATRIX     ", "\t→\t", value)
+#     return True
+
 
 """
 a = matriz.shapeF;
@@ -1642,7 +1788,7 @@ def exe_neg(linea, procedure_name):
     if len(linea) == 4:
         if is_matriz(var):  # negar toda la fila
 
-            l = linea[3]
+            l = buscar_valor_param(linea[3],procedure_name)
 
             for index in range(len(var[0])):
 
@@ -1677,16 +1823,19 @@ def exe_neg(linea, procedure_name):
         if is_matriz(var):
             try:
 
-                if type(var[linea[3]][linea[4]]) == int:
-                    if var[linea[3]][linea[4]] == 1:
-                        var[linea[3]][linea[4]] = 0
-                    elif var[linea[3]][linea[4]] == 0:
-                        var[linea[3]][linea[4]] = 1
+                fila = buscar_valor_param(linea[3],procedure_name)
+                columna = buscar_valor_param(linea[4],procedure_name)
+
+                if type(var[fila][columna]) == int:
+                    if var[fila][columna] == 1:
+                        var[fila][columna] = 0
+                    elif var[fila][columna] == 0:
+                        var[fila][columna] = 1
                     else:
                         errorList.append(
                             "Error en la linea {0}, no se puede negar un entero diferente de 1 o 0".format(linea[0]))
-                elif type(var[linea[3]][linea[4]]) == bool:
-                    var[linea[3]][linea[4]] = not var[linea[3]][linea[4]]
+                elif type(var[fila][columna]) == bool:
+                    var[fila][columna] = not var[fila][columna]
 
 
             except Exception:
@@ -1768,7 +1917,7 @@ def exe_F(linea, procedure_name):
         if type(var) == list:
             if is_matriz(var):  # es matriz, negar toda la fila
 
-                l = linea[3]
+                l = buscar_valor_param(linea[3],procedure_name)
 
                 for index in range(len(var[0])):
 
@@ -1809,6 +1958,8 @@ def exe_F(linea, procedure_name):
     if len(linea) == 5:
         if is_matriz(var):
             try:
+                linea[3] = buscar_valor_param(linea[3], procedure_name)
+                linea[4] = buscar_valor_param(linea[4], procedure_name)
 
                 if type(var[linea[3]][linea[4]]) == int:
                     if var[linea[3]][linea[4]] == 1 or var[linea[3]][linea[4]] == 0:
@@ -1843,6 +1994,7 @@ def exe_T(linea, procedure_name):
 
     id = linea[2]
     var = buscar_variable(id, procedure_name)
+
 
     if var is None:
         errorList.append("Error en la linea {0}, no se ha encontrado la variable {1}".format(linea[0], id))
@@ -1899,7 +2051,7 @@ def exe_T(linea, procedure_name):
         if type(var) == list:
             if is_matriz(var):  # es matriz, negar toda la fila
 
-                l = linea[3]
+                l = buscar_valor_param(linea[3],procedure_name)
 
                 for index in range(len(var[0])):
 
@@ -1915,6 +2067,9 @@ def exe_T(linea, procedure_name):
 
 
             else:  # es una lista, negar indice
+
+                linea[3] = buscar_valor_param(linea[3], procedure_name)
+
                 if not linea[3] >= len(var):
 
                     if type(var[linea[3]]) == bool:
@@ -1940,6 +2095,8 @@ def exe_T(linea, procedure_name):
     if len(linea) == 5:
         if is_matriz(var):
             try:
+                linea[3] = buscar_valor_param(linea[3], procedure_name)
+                linea[4] = buscar_valor_param(linea[4], procedure_name)
 
                 if type(var[linea[3]][linea[4]]) == int:
                     if var[linea[3]][linea[4]] == 1 or var[linea[3]][linea[4]] == 0:
@@ -1980,7 +2137,10 @@ def exe_blink(row, column, tiempo, rangoTiempo, estado):
     pass
 
 
-def exe_delay(tiempo, rangoTiempo):
+def exe_delay(tiempo, rangoTiempo, procedure_name):
+
+    #tiempo = exe_orden(tiempo, procedure_name)
+
     instrucciones.append(['DELAY', rangoTiempo, tiempo])
 
 
@@ -2203,11 +2363,11 @@ def compile_program(insumo):
     print("\n--------- Variables globales ---------")
     pp.pprint(global_variables)
 
-    # print("\n--------- Lista de variables locales de procedimientos ---------")
-    # pp.pprint(local_variables)
+    print("\n--------- Lista de variables locales de procedimientos ---------")
+    pp.pprint(local_variables)
 
-    # print("\n--------- INSTRUCCIONES ARDUINO ---------")
-    # pp.pprint(instrucciones)
+    print("\n--------- INSTRUCCIONES ARDUINO ---------")
+    pp.pprint(instrucciones)
 
     print("\n--------- Errors ---------")
     pp.pprint(errorList)
@@ -2215,6 +2375,10 @@ def compile_program(insumo):
     instrucciones = convert_instructions_to_list(str(instrucciones))
 
     file = open("ArduinoCompiledOutput.txt", "w")
+
+    print("tamaño errores en syntax")
+    print(len(errorList))
+
     if len(errorList) == 0:
         file.write(str(instrucciones))
     else:
