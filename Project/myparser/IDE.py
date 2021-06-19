@@ -75,9 +75,9 @@ class Ide(Frame):
         # scrollbar.place(x=0,y=0)
         # scrollbar.config(command=viewall)
 
-        txtInput = scrolledtext.ScrolledText(self.master, font=fontList, bg=txt_color, undo=True, width=120, relief="flat", bd='0',
+        txtInput = scrolledtext.ScrolledText(self.master, font=fontList, bg=txt_color, undo=True, width=135, relief="flat", bd='0',
                                              height=20)  # 120 20
-        txtInput['font'] = ('consolas', '12')
+        txtInput['font'] = ('consolas', '11')
         txtInput.place(x=90, y=150)
         # self.txtInput.vbar
         self.inputTxt = txtInput
@@ -96,7 +96,7 @@ class Ide(Frame):
         txtInput.vbar.config(command=viewall)
 
         txtLineCount = Text(self.master, font=fontList, undo=True, width=7, height=20, bg=txt_color, relief="flat",bd='0')
-        txtLineCount['font'] = ('consolas', '12')
+        txtLineCount['font'] = ('consolas', '11')
         txtLineCount.place(x=15, y=150)
 
         self.lineCountTxt = txtLineCount
@@ -177,10 +177,6 @@ class Ide(Frame):
                 texto = self.eliminar_lineas_blancas(data)
                 lineas_crear = texto.count("\n")
 
-                print("cantidad de lineas a crear: ", lineas_crear)
-                print("TEXTO A INSERTAAAAAAAAAAAAAAAAAAAAAAAAAR")
-                print(texto)
-
                 self.inputTxt.insert("1.0", texto)
 
                 file.close()
@@ -205,8 +201,6 @@ class Ide(Frame):
         contador = 0
         txt = ""
 
-        #print("data: ", data)
-
         for linea in data:
             if linea == "\n":
                 pass
@@ -214,7 +208,6 @@ class Ide(Frame):
                 txt += linea
             contador += 1
 
-        #print(txt)
 
         return txt
 
@@ -223,24 +216,16 @@ class Ide(Frame):
 
         texto = ""
 
-        print("borrando lineas de compile")
-        print("data inicial")
-        print(data)
-
         contador = 0
-        print("imprimiendo lineas importantes")
 
         data = data.split("\n")
 
-        print("data final")
-        print(data)
 
         for linea in data:
             if ";" in linea or "{" in linea or "#" in linea or "," in linea or "}" in linea:
                 contador += 1
                 texto = texto + linea + "\n"
 
-        print("cantidad de lineas: ", contador)
 
         return texto
 
@@ -267,9 +252,6 @@ class Ide(Frame):
         file.close()
 
         errors = compile_program(self.inputTxt.get("1.0", tkinter.END))
-
-        print("errores en ide")
-        print(len(errors))
 
         if len(errors) == 0:
             self.insertTextOutput("El codigo se ha compilado correctamente sin errores")
@@ -304,7 +286,6 @@ class Ide(Frame):
         if resultado:
 
             if len(content) > 0:
-                print(content)
                 # exe_led(content)
                 self.insertTextOutput("El programa se ha enviado correctamente al controlador\n\n")
                 return
@@ -347,7 +328,7 @@ def getorigin(eventorigin):
     global x, y
     x = eventorigin.x
     y = eventorigin.y
-    print(x, y)
+    #print(x, y)
 
 
 if __name__ == '__main__':

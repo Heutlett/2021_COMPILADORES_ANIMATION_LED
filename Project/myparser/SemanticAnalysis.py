@@ -2255,6 +2255,10 @@ def check_procedures_name_count():
 def check_blocks():
     for line in sintacticList:
 
+        if line is None:
+            errorList.append("Error: el procedimiento esta vacio")
+            return
+
         if line[1] != 'PROCEDURE':
             errorList.append(
                 "Error in line {0}, all the instructions must be inside of procedure block".format(line[0]))
@@ -2265,6 +2269,11 @@ def check_main_count():
     count = 0
 
     for line in sintacticList:
+
+        if line is None:
+            errorList.append("Error, el procedimiento esta vacio")
+            return
+
         if line[1] == "PROCEDURE":
             if line[2] == "Main":
                 count += 1

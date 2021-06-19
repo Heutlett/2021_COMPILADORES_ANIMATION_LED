@@ -1,0 +1,6 @@
+Procedure Main (){
+	call pro1();
+};
+Procedure pro1(){
+	a = 1;
+};

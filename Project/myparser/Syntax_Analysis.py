@@ -735,8 +735,6 @@ def run_syntax_analysis(insumo):
 
     errors = []
     result = parser.parse(insumo)
-    print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL ERRORES DEL SYNTAX LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
-    print(errors)
     return (result, errors)
 
 
