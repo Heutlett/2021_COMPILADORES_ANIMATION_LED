@@ -621,20 +621,6 @@ def p_shapeC(p):
     p[0] = [p.lineno(1), 'SHAPEC', p[1]]
 
 
-def p_insertMatrix(p):
-
-    '''
-    funcionreservada : ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
-                        |   ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
-    '''
-
-    # [p.lineno(1), 'NEG', ID, INDICE]
-
-    if len(p) == 12:
-        p[0] = [p.lineno(1), 'INSERT_MATRIX', p[1], p[5], p[7], p[9]]
-    else:
-        p[0] = [p.lineno(1), 'INSERT_MATRIX', p[1], p[5], p[7]]
-
 
 
 def p_deleteMatrix(p):

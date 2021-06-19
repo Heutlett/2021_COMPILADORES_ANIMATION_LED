@@ -8,23 +8,24 @@ import ast
 # from led_controller import led_exe
 # from led_controller.led_exe import exe_led
 
-user_color = '#aa9787'  # Café
-change_color = '#b0dfc2'  # lila
-front_color = '#9c2c51'  # Vino
-admin_color = '#8ca5b4'  # Verde oscuro
+cafe_oscuro  = '#aa9787'  # Café
+lila_oscuro  = '#b0dfc2'  # lila
+vino_oscuro  = '#9c2c51'  # Vino
+beige_oscuro = '#d2ce9c'  # Beige oscuro
+beige_claro  = '#e0d8b0'  # Beige Claro
+gris_oscuro  = '#808080'  # Gris oscuro
+gris_claro   = 'light gray'
+verde_oscuro = '#8ca5b4'  # Verde oscuro
 
-bg_color = '#d2ce9c'  # Beige oscuro
-entry_color = '#e0d8b0'  # Beige Claro
-label_color = '#2b2a29'  # Gris oscuro
-light = 'light gray'
-admin_color = admin_color
-body_color = light
 
+bg_color = gris_oscuro
+txt_color = gris_claro
+label_color = "black"
 
 class Ide(Frame):
 
     def __init__(self):
-        super().__init__(bg=admin_color)
+        super().__init__(bg=bg_color)
         self.initUI()
 
     def initUI(self):
@@ -39,23 +40,18 @@ class Ide(Frame):
         self.pack(fill=BOTH, expand=1)
 
         fontList = ('century gothic', 16, 'italic', 'bold')
-        self.labelLoad = Label(self.master, text='Open...', bg=admin_color, fg=label_color, font=fontList)
-        self.labelCompile = Label(self.master, text='Compile', bg=admin_color, fg=label_color, font=fontList)
-        self.entryLoad = Entry(self.master, width=28)
-        self.entryCompile = Entry(self.master, width=28)
+        self.labelLoad = Label(self.master, text='Open...', bg=bg_color, fg=label_color, font=fontList)
+        self.labelCompile = Label(self.master, text='Compile', bg=bg_color, fg=label_color, font=fontList)
+        self.labelCompileRun = Label(self.master, text='Compile\n&\nRun', bg=bg_color, fg=label_color, font=fontList)
+        self.labelOutput = Label(self.master, text="Output", bg=bg_color, fg=label_color,font=('century gothic', 20, 'italic', 'bold'))
 
-        self.buttonLoad = Button(self.master, image=self.load_img, command=self.loadFunction, bg=admin_color,
-                                 relief="ridge", cursor="hand2", activebackground=admin_color, bd='0')
-        self.buttonCompile = Button(self.master, image=self.compile_img, command=self.compileFunction, bg=admin_color,
-                                    relief="ridge", cursor="hand2", activebackground=admin_color, bd='0')
-        self.buttonCompileRun = Button(self.master, image=self.run_img, command=self.compileAndRunFunction,
-                                       bg=admin_color,
-                                       relief="ridge", cursor="hand2", activebackground=admin_color, bd='0')
+        self.entryLoad = Entry(self.master, width=28, relief="flat")
+        self.entryCompile = Entry(self.master, width=28, relief="flat")
 
-        self.labelCompileRun = Label(self.master, text='Compile\n&\nRun', bg=admin_color, fg=label_color, font=fontList)
+        self.buttonLoad = Button(self.master, image=self.load_img, command=self.loadFunction, bg=bg_color, relief="ridge", cursor="hand2", activebackground=bg_color, bd='0')
+        self.buttonCompile = Button(self.master, image=self.compile_img, command=self.compileFunction, bg=bg_color, relief="ridge", cursor="hand2", activebackground=bg_color, bd='0')
+        self.buttonCompileRun = Button(self.master, image=self.run_img, command=self.compileAndRunFunction,bg=bg_color, relief="ridge", cursor="hand2", activebackground=bg_color, bd='0')
 
-        self.labelOutput = Label(self.master, text="Output", bg=admin_color, fg=label_color,
-                                 font=('century gothic', 20, 'italic', 'bold'))
 
         self.buttonLoad.place(x=40, y=23)
         self.labelLoad.place(x=154, y=45)
@@ -78,7 +74,7 @@ class Ide(Frame):
         # scrollbar.place(x=0,y=0)
         # scrollbar.config(command=viewall)
 
-        txtInput = scrolledtext.ScrolledText(self.master, font=fontList, bg=body_color, undo=True, width=120,
+        txtInput = scrolledtext.ScrolledText(self.master, font=fontList, bg=txt_color, undo=True, width=120, relief="flat", bd='0',
                                              height=20)  # 120 20
         txtInput['font'] = ('consolas', '12')
         txtInput.place(x=90, y=150)
@@ -92,7 +88,7 @@ class Ide(Frame):
 
         txtInput.vbar.config(command=viewall)
 
-        txtLineCount = Text(self.master, font=fontList, undo=True, width=7, height=20, bg=body_color)
+        txtLineCount = Text(self.master, font=fontList, undo=True, width=7, height=20, bg=txt_color, relief="flat",bd='0')
         txtLineCount['font'] = ('consolas', '12')
         txtLineCount.place(x=15, y=150)
 
@@ -101,7 +97,7 @@ class Ide(Frame):
         self.crear_lineas(20)
 
         self.txtOutput = scrolledtext.ScrolledText(self.master, font=("Times New Roman", 15),
-                                                   undo=True, bg=body_color, width=120, height=5, state=DISABLED)
+                                                   undo=True, bg=txt_color, width=120, height=5, relief="flat", bd='0', state=DISABLED)
         self.txtOutput['font'] = ('consolas', '12')
         self.txtOutput.place(x=90, y=600)
 
