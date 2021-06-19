@@ -1154,7 +1154,7 @@ def exe_orden(tree, procedure_name):
             # print("----------------FIN DE DECLARACION------------------\n")
             if a is None or a is False:
                 return None
-            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DECLARATION     ", "\t→\t", tree[2]," ➨ ",a)
+            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "DECLARATION     ", "\t→\t", tree[2], " ➨ ", a)
             return a
 
         elif tree[1] == 'var':  # DEFINIR UNA VARIABLE
@@ -1436,8 +1436,8 @@ def exe_del_list_operation(line, ID, indice, procedure_name):
     [10, 'DELETE_LIST', 'lista', 0]
     """
 
-    value = buscar_valor_param(ID,procedure_name,line)
-    indice = buscar_valor_param(indice,procedure_name,line)
+    value = buscar_valor_param(ID, procedure_name, line)
+    indice = buscar_valor_param(indice, procedure_name, line)
 
     # print("\t➤ CASTEO : ", line, ID, indice)
 
@@ -1600,7 +1600,6 @@ def exe_delete_matrix(linea, procedure_name):
         errorList.append("Error en la linea {0}, el ID {1} no corresponde a una matriz".format(linea[0], id))
         return
 
-
     if tipo_eliminacion == 0:  # eliminar fila
         if indice < len(var):
             var.remove(var[indice])
@@ -1625,6 +1624,7 @@ def exe_delete_matrix(linea, procedure_name):
             "Error en la linea {0}, el tipo de eliminacion {1} es incorrecto (0 o 1)".format(linea[0],
                                                                                              tipo_eliminacion))
         return
+
 
 """
 a = matriz.shapeF;
@@ -1762,7 +1762,6 @@ matriz[1][1].Neg;
 """
 
 
-
 def exe_neg(linea, procedure_name):
     print("------------------- EJECUTANDO NEG ---------------------------")
 
@@ -1872,8 +1871,8 @@ def exe_neg(linea, procedure_name):
         if is_matriz(var):
             try:
 
-                fila = buscar_valor_param(linea[3],procedure_name)
-                columna = buscar_valor_param(linea[4],procedure_name)
+                fila = buscar_valor_param(linea[3], procedure_name)
+                columna = buscar_valor_param(linea[4], procedure_name)
 
                 if type(var[fila][columna]) == int:
                     if var[fila][columna] == 1:
@@ -2181,8 +2180,7 @@ def exe_blink(row, column, tiempo, rangoTiempo, estado):
 
 
 def exe_delay(tiempo, rangoTiempo, procedure_name):
-
-    #tiempo = exe_orden(tiempo, procedure_name)
+    tiempo = buscar_valor_param(tiempo, procedure_name, tiempo[0])
     instrucciones.append(['DELAY', rangoTiempo, tiempo])
 
 
@@ -2300,7 +2298,11 @@ def check_blocks():
 
     for line in sintacticList:
 
-        if line[1] != 'PROCEDURE':
+        if line[1] is None:
+            errorList.append("Error en la linea {0}. El procedimiento {1} se encuentra vacio.".format(line[0], line[2]))
+            return
+
+        elif line[1] != 'PROCEDURE':
             errorList.append(
                 "Error in line {0}, all the instructions must be inside of procedure block".format(line[0]))
 
@@ -2386,7 +2388,7 @@ def compile_program(insumo):
     print()
     print("⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")
     print("◉  SYNTAX ANALYSIS CODE  ◉")
-
+    print()
     pp.pprint(sintacticList)
 
     print()
@@ -2418,8 +2420,6 @@ def compile_program(insumo):
     print("◉  GLOBAL VARIABLES  ◉")
     print()
     pp.pprint(global_variables)
-
-
 
     # print()
     # print("⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")

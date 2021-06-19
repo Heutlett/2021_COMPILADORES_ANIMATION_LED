@@ -699,6 +699,13 @@ def p_procedure(p):
 
     p[0] = [p.lineno(1), 'PROCEDURE', p[2], p[4], p[7]]
 
+def p_empty_procedure(p):
+    '''
+    procedure : PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ LLAVEDER PYC
+              | PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ LLAVEDER PYC
+    '''
+
+    p[0] = [p.lineno(1), None, p[1]]
 
 def p_call(p):
     '''
@@ -760,8 +767,6 @@ def run_syntax_analysis(insumo):
 
     errors = []
     result = parser.parse(insumo)
-    print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL ERRORES DEL SYNTAX LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
-    print(errors)
     return (result, errors)
 
 
