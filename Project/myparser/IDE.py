@@ -22,6 +22,10 @@ verde_oscuro = '#8ca5b4'  # Verde oscuro
 bg_color = gris_oscuro
 txt_color = gris_claro
 label_color = "black"
+txtFont = ('consolas', '11')
+txtTab = '       '
+labelsFont = ('century gothic', 14, 'italic', 'bold')
+
 
 class Ide(Frame):
 
@@ -40,10 +44,9 @@ class Ide(Frame):
         self.master.title("IDE")
         self.pack(fill=BOTH, expand=1)
 
-        fontList = ('century gothic', 16, 'italic', 'bold')
-        self.labelLoad = Label(self.master, text='Open...', bg=bg_color, fg=label_color, font=fontList)
-        self.labelCompile = Label(self.master, text='Compile', bg=bg_color, fg=label_color, font=fontList)
-        self.labelCompileRun = Label(self.master, text='Compile\n&\nRun', bg=bg_color, fg=label_color, font=fontList)
+        self.labelLoad = Label(self.master, text='Open...', bg=bg_color, fg=label_color, font=labelsFont)
+        self.labelCompile = Label(self.master, text='Compile', bg=bg_color, fg=label_color, font=labelsFont)
+        self.labelCompileRun = Label(self.master, text='Compile\n&\nRun', bg=bg_color, fg=label_color, font=labelsFont)
         self.labelOutput = Label(self.master, text="Output", bg=bg_color, fg=label_color,font=('century gothic', 20, 'italic', 'bold'))
 
         self.entryLoad = Entry(self.master, width=28, relief="flat")
@@ -75,16 +78,16 @@ class Ide(Frame):
         # scrollbar.place(x=0,y=0)
         # scrollbar.config(command=viewall)
 
-        txtInput = scrolledtext.ScrolledText(self.master, font=fontList, bg=txt_color, undo=True, width=135, relief="flat", bd='0',
+        txtInput = scrolledtext.ScrolledText(self.master, font=labelsFont, bg=txt_color, undo=True, width=120, relief="flat", bd='0',
                                              height=20)  # 120 20
-        txtInput['font'] = ('consolas', '11')
+        txtInput['font'] = txtFont
         txtInput.place(x=90, y=150)
         # self.txtInput.vbar
         self.inputTxt = txtInput
 
 
         font = tkfont.Font(font=txtInput['font'])
-        tab = font.measure('   ')
+        tab = font.measure(txtTab)
 
         self.inputTxt.config(tabs=tab)
 
@@ -94,9 +97,8 @@ class Ide(Frame):
         txtInput.bind_all('<Return>', self._on_enter)
 
         txtInput.vbar.config(command=viewall)
-
-        txtLineCount = Text(self.master, font=fontList, undo=True, width=7, height=20, bg=txt_color, relief="flat",bd='0')
-        txtLineCount['font'] = ('consolas', '11')
+        txtLineCount = Text(self.master, font=labelsFont, undo=True, width=7, height=20, bg=txt_color, relief="flat", bd='0')
+        txtLineCount['font'] = txtFont
         txtLineCount.place(x=15, y=150)
 
         self.lineCountTxt = txtLineCount
@@ -105,7 +107,7 @@ class Ide(Frame):
 
         self.txtOutput = scrolledtext.ScrolledText(self.master, font=("Times New Roman", 15),
                                                    undo=True, bg=txt_color, width=120, height=5, relief="flat", bd='0', state=DISABLED)
-        self.txtOutput['font'] = ('consolas', '12')
+        self.txtOutput['font'] = txtFont
         self.txtOutput.place(x=90, y=600)
 
         self.insertTextOutput("")
@@ -177,6 +179,10 @@ class Ide(Frame):
                 texto = self.eliminar_lineas_blancas(data)
                 lineas_crear = texto.count("\n")
 
+                # print("cantidad de lineas a crear: ", lineas_crear)
+                # print("TEXTO A INSERTAAAAAAAAAAAAAAAAAAAAAAAAAR")
+                # print(texto)
+
                 self.inputTxt.insert("1.0", texto)
 
                 file.close()
@@ -216,16 +222,24 @@ class Ide(Frame):
 
         texto = ""
 
+        # print("borrando lineas de compile")
+        # print("data inicial")
+        # print(data)
+
         contador = 0
+        # print("imprimiendo lineas importantes")
 
         data = data.split("\n")
 
+        # print("data final")
+        # print(data)
 
         for linea in data:
             if ";" in linea or "{" in linea or "#" in linea or "," in linea or "}" in linea:
                 contador += 1
                 texto = texto + linea + "\n"
 
+        # print("cantidad de lineas: ", contador)
 
         return texto
 
@@ -252,6 +266,9 @@ class Ide(Frame):
         file.close()
 
         errors = compile_program(self.inputTxt.get("1.0", tkinter.END))
+
+        print("errores en ide")
+        print(len(errors))
 
         if len(errors) == 0:
             self.insertTextOutput("El codigo se ha compilado correctamente sin errores")
@@ -286,6 +303,7 @@ class Ide(Frame):
         if resultado:
 
             if len(content) > 0:
+                # print(content)
                 # exe_led(content)
                 self.insertTextOutput("El programa se ha enviado correctamente al controlador\n\n")
                 return
@@ -328,7 +346,7 @@ def getorigin(eventorigin):
     global x, y
     x = eventorigin.x
     y = eventorigin.y
-    #print(x, y)
+    # print(x, y)
 
 
 if __name__ == '__main__':
