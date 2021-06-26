@@ -102,7 +102,7 @@ def build_aux(rules_,i):
             return "P"+trans_mtrx(rules_[i][1])+build_aux(rules_, i+1)
         elif (rules_[i][0] == 'DELAY'):
             print("T"+rules_[i][1]+rules_[i][2].__str__())
-            return "T"+res_t(rules_[i][1])+dectohex(rules_[i][2])+build_aux(rules_, i+1)
+            return "T"+res_t(rules_[i][1])+str(rules_[i][2])+build_aux(rules_, i+1)
         else:
             return ""
     except:
@@ -126,8 +126,8 @@ def converthex(b):
     for i in range(16):
         for j in range(4):
             temp+=b[(i*4)+j]
-            print(temp,"\n")
-        print(temp,"\n")
+            #print(temp,"\n")
+        #print(temp,"\n")
         if (temp=="0000"):
             rslt+="0"
         else:
