@@ -324,36 +324,67 @@ def p_valor_param(p):
 
 ###################################### FUNCIONES DE LISTAS #####################################################
 
+
 # Expresion para crear lista con range.
-def p_statement_list_range(p):
+def p_statement_assign_range(p):
     """
-    var_assign : ID IGUAL LIST PARENTESISIZQ RANGE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PARENTESISDER PYC
+    var_assign : ID IGUAL rango PYC
+    """
+    # Build tree
+    # [10, '=', ID, [10, 'range', ID, expresion, params]]
+    p[0] = [p.lineno(1), '=', p[1], p[3]]
+
+def p_statement_range(p):
+    """
+    rango : LIST PARENTESISIZQ RANGE PARENTESISIZQ expression COMA params PARENTESISDER PARENTESISDER
     """
 
-    p[0] = [p.lineno(1), '=r', p[1], p[7], p[9]]
+    # Build tree
+    # [10, 'range', ID, expresion, params]
+    p[0] = [p.lineno(1), 'RANGE', p[5], p[7][0]]
 
+
+# Expresion para crear lista con range.
+def p_statement_assign_len(p):
+    """
+    var_assign : ID IGUAL length PYC
+    """
+    # Build tree
+    # [10, '=', ID, [10, 'LEN', [1,2,3]]]
+    p[0] = [p.lineno(1), '=', p[1], p[3]]
+
+
+# Expresion para crear lista con len.
+def p_statement_len(p):
+    """
+    length : LEN PARENTESISIZQ ID PARENTESISDER
+            | LEN PARENTESISIZQ list PARENTESISDER
+    """
+    # Build tree
+    # Example [10, 'LEN', [1,2,3]]
+    # Example [10, 'LEN', 'a']
+    tree = [p.lineno(1), "LEN", p[3]]
+    p[0] = tree
 
 
 def p_insert(p):
     '''
-    funcionreservada : ID PUNTO INSERT PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
+    funcionreservada : ID PUNTO INSERT PARENTESISIZQ input COMA input PARENTESISDER PYC
     '''
 
     # [linea, INSERT, ID, Indice, Valor]
-
-    p[0] = [p.lineno(1), 'INSERT', p[1], p[5], p[7]]
-
-
+    p[0] = [p.lineno(1), 'INSERT_LIST', p[1], p[5][0], p[7][0]]
 
 
 # del para listas
 def p_del(p):
     '''
-    funcionreservada : ID PUNTO DEL PARENTESISIZQ valor_param PARENTESISDER PYC
+    funcionreservada : ID PUNTO DEL PARENTESISIZQ expression PARENTESISDER PYC
    '''
 
-    # ['DEL', ID, INDICE]
-    p[0] = [p.lineno(1), 'DEL', p[1], p[5]]
+    # [linea, "DELETE", ID, Indice]
+    p[0] = [p.lineno(1), 'DELETE_LIST', p[1], p[5]]
+
 
 
 def p_len(p):
@@ -440,6 +471,11 @@ def p_blink(p):
     funcionreservada : BLINK PARENTESISIZQ params PARENTESISDER PYC
     '''
     params = p[3]
+    if type(params[3]) != str:
+        errors.append("ERROR in line {0}! The forth param must be a (Seg, Mil, Min)! "
+                      "".format(p.lineno(1)))
+        return "Error in Blink, line {0}.".format(p.lineno(5))
+
     rango = params[3].lower()[1:-1]  # De '"seg"' a "seg"
 
     global rangoTiempo
@@ -451,12 +487,10 @@ def p_blink(p):
         errors.append("ERROR in line {0}! The estado param must be a boolean "
                       "".format(p.lineno(1)))
         return
-    elif "\"" in params[4]:
-        errors.append("ERROR in line {0}! The estado param must be a boolean "
-                      "".format(p.lineno(1)))
-        return
+
     # ['BLINK', f, c, int, rangotiempo, bool]
     p[0] = [p.lineno(1), "BLINK", params[0], params[1], params[2], rango, params[4]]
+
 
 
 """   
@@ -590,19 +624,30 @@ def p_shapeC(p):
     p[0] = [p.lineno(1), 'SHAPEC', p[1]]
 
 
+
 def p_insertMatrix(p):
+    '''
+    funcionreservada : ID PUNTO INSERT PARENTESISIZQ input COMA expression COMA expression PARENTESISDER PYC
 
     '''
-    funcionreservada : ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression COMA expression PARENTESISDER PYC
-                        |   ID PUNTO INSERT PARENTESISIZQ valor_param COMA expression PARENTESISDER PYC
-    '''
 
-    # [p.lineno(1), 'NEG', ID, INDICE]
+    if type(p[5]) == int or type(p[5]) == bool:
+        errors.append("Error en la linea {0}. \'{1}\' el elemento a insertar debe ser de tipo lista.".format(p.lineno(1), p[5]))
+        return None
 
-    if len(p) == 12:
-        p[0] = [p.lineno(1), 'INSERT_MATRIX', p[1], p[5], p[7], p[9]]
-    else:
-        p[0] = [p.lineno(1), 'INSERT_MATRIX', p[1], p[5], p[7]]
+    if type(p[7]) == bool:
+        errors.append(
+            "Error en la linea {0}. \'{1}\' el tipo de insercion solo acepta 1s o 0s.".format(p.lineno(1), p[7]))
+        return None
+
+    if type(p[9]) == bool:
+        errors.append(
+            "Error en la linea {0}. \'{1}\' el tercer elemento debe ser un entero.".format(p.lineno(1), p[9]))
+        return None
+
+    # [10, 'INSERT_MATRIX', ID, VALOR, TIPO_ADICION]
+    p[0] = [p.lineno(1), 'INSERT_MATRIX', p[1], p[5], p[7], p[9]]
+
 
 
 
@@ -641,10 +686,10 @@ def p_valorIf(p):
 
 # Definición de if
 def p_if(p):
-    """ funcionreservada : IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
+    """ funcionreservada : IF condicion LLAVEIZQ ordenes LLAVEDER
    """
 
-    p[0] = [p.lineno(1), 'IF', p[3], p[6]]
+    p[0] = [p.lineno(1), 'IF', p[2], p[4]]
 
 
 ###################################### PROCEDIMIENTOS ###############################################
@@ -657,6 +702,13 @@ def p_procedure(p):
 
     p[0] = [p.lineno(1), 'PROCEDURE', p[2], p[4], p[7]]
 
+def p_empty_procedure(p):
+    '''
+    procedure : PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ LLAVEDER PYC
+              | PROCEDURE MAIN PARENTESISIZQ params PARENTESISDER LLAVEIZQ LLAVEDER PYC
+    '''
+
+    p[0] = [p.lineno(1), None, p[1]]
 
 def p_call(p):
     '''
@@ -664,6 +716,16 @@ def p_call(p):
     '''
 
     p[0] = [p.lineno(1), 'CALL', p[2], p[4]]
+
+# Error rule for syntax errors.
+def p_error(p):
+    if p:
+
+        error_message = "Syntax error in line: " + str(p.lineno)
+        #file = open(globals.projectFolderPath + "/src/tmp/error_log.txt", "w")
+        #file.write(error_message)
+        #file.close()
+        print(error_message)
 
 
 
@@ -718,8 +780,6 @@ def run_syntax_analysis(insumo):
 
     errors = []
     result = parser.parse(insumo)
-    print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL ERRORES DEL SYNTAX LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
-    print(errors)
     return (result, errors)
 
 

@@ -1,0 +1,11 @@
+Procedure Main (){
+	matrizX = [[99, 88], 
+		  [77, 66]];
+	filas = matrizX.shapeF;
+	columnas = matrizX.shapeC;
+	for fila in filas{
+		for columna in columnas{
+			Delay(matrizX[fila][columna], "Seg");
+		}
+	}
+};

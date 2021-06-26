@@ -1,0 +1,142 @@
+##1. Error No hay procedimiento MAIN
+	Procedure proc X ()
+	{
+##2. Error mayor a 10 posiciones
+	mi_variable = True;   // Error mayor a 10 posiciones
+##3.  Error Debe iniciar siempre con minuscula
+	Var1 = True;
+##4. Error simbolo no reconocido &
+	m1& = True;
+##5. Error simbolos no reconocidos iniciar con minuscula
+	Var$1 = 3;
+	  var1 = true;
+##6.  Error llama a una rutina NO existente
+	  call prox99();
+	};
+
+##7. Error Palabra no identificada
+	Stored Procedure procY()
+##8.  Error Esperando { / Palabra no reconocida
+	Begin
+##9. Error var1 no existe en el scope
+	if var1 = true then
+	{
+	 ab = 5;
+	};
+##10. Error  Se cierra el IF sin abrirlo
+	if ab=5
+	};
+##11. Error Semantico.  Valor incompatible
+	  miVar1 = true;
+	  miVar2 = 5;
+	  miVar1 = 1;
+##12. Error Semantico.  Valor incompatible
+	  oTra1 = 2;
+	  otra2 = True;
+	  oTra1 = False;
+##13. Error.  Se inicializa una variable que no existe
+	a, b = True, False, 3;
+##14. Error.   La lista debe tener todos los valores del mismo tipo
+	x1 = [True, True, False, False, False, 3, 3, 2];
+##15.  Error Falta finalización de sentencia Punto y Coma
+	y1 = [True, True]
+##16.  Error.  Indice no existe
+	y1[5] = true;
+##17.  Error.  Indice no existe
+	y1[1:5] = true;
+##18.  Error Falta un parametro
+	x2 = list(range(5));
+##19. Error.  Indice no existe
+	MiLista = [True, False, True, False]
+	MiLista.insert(7,False)     // Error indice no existe
+##20. Error.  Incorrecto uso de NEG en variable numerica
+	x=5;
+	x.Neg   // Error incorrecto uso de NEG en variable numerica
+##21.  Error Variable no existe
+	x9.Neg;       //Error Variable No existe
+##22. Error.  Incorrecto uso de T en variable numerica
+	x[1].T;
+##23. Error.  Incorrecto uso de T en variable numerica
+	x[0:1].T;
+##24.  Error.  Incorrecto uso de T en variable No existe
+	x2[1].T;
+##25. Error.  Constante Hora no reconocido
+    Blink( x[1],5, "Hora", True);
+##26. Error. Variable no existe
+	Blink( x9[1],5, “Hora", True);
+##27.  Error.  Constante Hora no existe
+	Delay( 5, "Hora );
+##28. Error.  Valor esperado debe ser booleano
+	Printled(1,1, 5);
+##29.  Error Parametro Objeto no existe
+	listaX = [True, True, False, False, False, False, True, False]
+	PrintLedX("X", 2, listaX) ;
+##30. Error.  Variable no existe
+	PrintLedX("X", 2, lista999);
+##31.  Error Variable no existe
+	for var1 in x Step 2
+	{
+	x9999[var1].Neg;
+	}
+##32.  Error.  Variable interna del FOR ya existe
+	var1 = true;
+	for var1 in x Step 2
+	{
+	x[var1].Neg;
+	}
+##33. Error. Variable no existe
+	for var1 in milista[1:3]
+	{
+	listaX[var999].Neg      // variable no existe
+	}
+##34.  Error. Variable Ya se encuentra definida
+	for var1 in 10
+	{
+	mivar = 3;
+	}
+##35.  Error de sintaxis
+	mivariable=[[True,False,True],[True, True, True],[]];
+##36.  Error.  Indice negativo
+	mivariable=[[True,False,True],[True, True, True],[False,False,True]]
+	mivariable[-5] = True;
+##37.  Error de sintaxis
+	mivariable[1][1][1][1] = true;
+##38.  Error.  Solo valores booleanos permitidos
+	mivariable[1,1] = 3;
+##39. Error de sintaxis
+	mivariable[:,:,1] = true;
+##40.  Error Variable no existe
+	matriz99.shapeF;
+##41.  Error Matrix no existe
+	miN999.insert([[True, False, True]], 0);
+##42.  Error.  Variable no existe
+	miN999.delete(0,0);
+##43.  Error.  Varias internas del FOR no existe
+	miNMatriz=[[True,False,True],[True, True, True],[False,False,True]]
+	for indice_fila in filas    // Filas no existe
+	{
+	for indice_columna in columnas    // Columnas no existe
+	{
+	miNMatriz[indice_fila, indice_columna].Neg;
+	};
+	};
+##44.  Error miNMatriz9 no existe
+	miNMatriz[1][1] = miNMatriz9[2][2];
+##45.  Error variable No existe
+	If otra999 == 5
+	{
+	otra1 = 6;
+	};
+##46.  Error sintaxis THEN no reconocido
+	If var1 == true THEN     //Error sintaxis THEN no reconocido
+	{
+	otra1 = 6;
+	}ñ
+##47.  Error Sintaxis.  Palabra no reconocida
+	x[1].Negativo;
+##48.  Error Procedimiento no encontrado
+	call proc X (24);
+
+
+##50. Error.  Final de procedimiento no encontrado
+
