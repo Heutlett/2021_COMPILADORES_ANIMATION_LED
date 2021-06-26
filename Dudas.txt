@@ -1,4 +1,0 @@
-1. Como funciona la bifurcacion para listas, todos los elementos deben dar True para 
-retornar True y con uno que no se cumpla dara false?
-
-2. Que hace el operador <>?

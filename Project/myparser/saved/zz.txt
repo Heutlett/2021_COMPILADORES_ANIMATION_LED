@@ -1,7 +1,4 @@
 Procedure Main (){
-    lista = [1,2,3];
-    a = 1;
-    c = 1;
     l1 = list(range(5,[True,False]));
     list2 = list(range(2,2));
     list3 = list(range(4+a,True));
@@ -11,6 +8,7 @@ Procedure Main (){
     matrix.insert(lista,c);
     matrix.insert(lista,1);
     matrix.insert([0,1,0],0);
-    matrix.insert(1,0);
-    matrix.insert([False, False],1);
+    matrix.insert(1,0)@
+    matrix.insert([False, False],1);@
+   lista4 = [1,2,3]
 };

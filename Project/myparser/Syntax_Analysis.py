@@ -137,20 +137,21 @@ def p_var_assign(p):
     """
     var_assign : ID IGUAL expression PYC
                | ID IGUAL primitive PYC
-               | ids IGUAL params PYC
     """
     # Build our tree
     # Examples:
     # [line, '=', ID, value]
+    p[0] = [p.lineno(4), '=', p[1], p[3]]
+
+
+def p_var_multiple(p):
+    """
+    var_assign : ids IGUAL params PYC
+    """
+    # Build our tree
+    # Examples:
     # [line, '=', [ID1,ID2,..., IDn], [val1,val2,..., valn]]
-
-    # print("ID:", p[1])
-    # print("Val:", p[3])
-    values = p[3]
-    if type(p[1]) == list:
-        values = p[3][0]
-
-    p[0] = [p.lineno(4), '=', p[1], values]
+    p[0] = [p.lineno(4), '=', p[1], p[3]]
 
 
 def p_var_sublist_assign(p):
@@ -159,7 +160,7 @@ def p_var_sublist_assign(p):
     """
     # [line, '=', ['[]*', 'a', [['row', 0, 4]]] , [1, 2, 3, 4]]
     values = p[3][0]
-    newSublist = [p[1][0], p[1][1]+'*', p[1][2], p[1][3]]
+    newSublist = [p[1][0], p[1][1] + '*', p[1][2], p[1][3]]
     p[0] = [p.lineno(4), '=', newSublist, values]
 
 
@@ -322,6 +323,7 @@ def p_valor_param(p):
     """
     p[0] = p[1]
 
+
 ###################################### FUNCIONES DE LISTAS #####################################################
 
 
@@ -333,6 +335,7 @@ def p_statement_assign_range(p):
     # Build tree
     # [10, '=', ID, [10, 'range', ID, expresion, params]]
     p[0] = [p.lineno(1), '=', p[1], p[3]]
+
 
 def p_statement_range(p):
     """
@@ -386,7 +389,6 @@ def p_del(p):
     p[0] = [p.lineno(1), 'DELETE_LIST', p[1], p[5]]
 
 
-
 def p_len(p):
     '''
     funcionreservada : LEN PARENTESISIZQ ID PARENTESISDER PYC
@@ -399,7 +401,6 @@ def p_len(p):
 
 
 def p_neg(p):
-
     '''
     funcionreservada :   ID CORCHETEIZQ expression CORCHETEDER CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
                        | ID CORCHETEIZQ expression CORCHETEDER PUNTO NEG PYC
@@ -417,7 +418,6 @@ def p_neg(p):
 
 
 def p_T(p):
-
     '''
     funcionreservada :    ID CORCHETEIZQ expression CORCHETEDER CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
                         | ID CORCHETEIZQ expression CORCHETEDER PUNTO T PYC
@@ -432,7 +432,6 @@ def p_T(p):
         p[0] = [p.lineno(1), 'T', p[1], p[3]]
     elif len(p) == 11:
         p[0] = [p.lineno(1), 'T', p[1], p[3], p[6]]
-
 
 
 def p_F(p):
@@ -490,7 +489,6 @@ def p_blink(p):
 
     # ['BLINK', f, c, int, rangotiempo, bool]
     p[0] = [p.lineno(1), "BLINK", params[0], params[1], params[2], rango, params[4]]
-
 
 
 """   
@@ -570,6 +568,8 @@ def p_for(p):
                         | FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
                         | FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
                         | FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
+                        | FOR expression IN sublist STEP INT LLAVEIZQ ordenes LLAVEDER
+                        | FOR expression IN sublist LLAVEIZQ ordenes LLAVEDER
     '''
 
     if 'Step' not in p:
@@ -581,7 +581,6 @@ def p_for(p):
 ####################################### MATRICES ########################################################
 
 def p_def_shapef(p):
-
     '''
     funcionreservada : ID IGUAL ID PUNTO SHAPEF PYC
     '''
@@ -592,7 +591,6 @@ def p_def_shapef(p):
 
 
 def p_shapeF(p):
-
     '''
     funcionreservada : ID PUNTO SHAPEF PYC
     '''
@@ -603,7 +601,6 @@ def p_shapeF(p):
 
 
 def p_def_shapec(p):
-
     '''
     funcionreservada : ID IGUAL ID PUNTO SHAPEC PYC
     '''
@@ -614,7 +611,6 @@ def p_def_shapec(p):
 
 
 def p_shapeC(p):
-
     '''
     funcionreservada : ID PUNTO SHAPEC PYC
     '''
@@ -624,7 +620,6 @@ def p_shapeC(p):
     p[0] = [p.lineno(1), 'SHAPEC', p[1]]
 
 
-
 def p_insertMatrix(p):
     '''
     funcionreservada : ID PUNTO INSERT PARENTESISIZQ input COMA expression COMA expression PARENTESISDER PYC
@@ -632,7 +627,8 @@ def p_insertMatrix(p):
     '''
 
     if type(p[5]) == int or type(p[5]) == bool:
-        errors.append("Error en la linea {0}. \'{1}\' el elemento a insertar debe ser de tipo lista.".format(p.lineno(1), p[5]))
+        errors.append(
+            "Error en la linea {0}. \'{1}\' el elemento a insertar debe ser de tipo lista.".format(p.lineno(1), p[5]))
         return None
 
     if type(p[7]) == bool:
@@ -649,8 +645,6 @@ def p_insertMatrix(p):
     p[0] = [p.lineno(1), 'INSERT_MATRIX', p[1], p[5], p[7], p[9]]
 
 
-
-
 def p_deleteMatrix(p):
     '''
     funcionreservada : ID PUNTO DELETE PARENTESISIZQ valor_param COMA valor_param PARENTESISDER PYC
@@ -660,9 +654,7 @@ def p_deleteMatrix(p):
     p[0] = [p.lineno(1), 'DELETE_MATRIX', p[1], p[5], p[7]]
 
 
-
 ############################### BIFURCACION ###############################################
-
 
 
 # Condicion
@@ -673,6 +665,12 @@ def p_condicion(p):
                              | expression  MENORIGUAL valorIf
                              | expression  MAYORIGUAL valorIf
                              | expression  DIFERENTE valorIf
+                             | sublist IGUALES valorIf
+                             | sublist  MAYORQUE valorIf
+                             | sublist  MENORQUE valorIf
+                             | sublist  MENORIGUAL valorIf
+                             | sublist  MAYORIGUAL valorIf
+                             | sublist  DIFERENTE valorIf
     """
     p[0] = [p[1], p[2], p[3]]
 
@@ -702,6 +700,7 @@ def p_procedure(p):
 
     p[0] = [p.lineno(1), 'PROCEDURE', p[2], p[4], p[7]]
 
+
 def p_empty_procedure(p):
     '''
     procedure : PROCEDURE ID PARENTESISIZQ params PARENTESISDER LLAVEIZQ LLAVEDER PYC
@@ -710,23 +709,13 @@ def p_empty_procedure(p):
 
     p[0] = [p.lineno(1), None, p[1]]
 
+
 def p_call(p):
     '''
     funcionreservada : CALL ID PARENTESISIZQ params PARENTESISDER PYC
     '''
 
     p[0] = [p.lineno(1), 'CALL', p[2], p[4]]
-
-# Error rule for syntax errors.
-def p_error(p):
-    if p:
-
-        error_message = "Syntax error in line: " + str(p.lineno)
-        #file = open(globals.projectFolderPath + "/src/tmp/error_log.txt", "w")
-        #file.write(error_message)
-        #file.close()
-        print(error_message)
-
 
 
 # Ordenes (se dan en forma de una lista de listas)
@@ -755,9 +744,37 @@ def p_var_sublist_ID(p):
     # [line, '=', ['[]*', 'a', [['row', 0, 4]]] , [1, 2, 3, 4]]
     values = p[3]
 
-
     p[0] = [p.lineno(4), '=sublist', p[1], values]
     print("Sublista : ", p[0])
+
+
+# def p_error(p):
+#     if p:
+#         print("Syntax error at token", p.type)
+#         # Just discard the token and tell the parser it's okay.
+#         parser.errok()
+#     else:
+#         print("Syntax error at EOF")
+
+
+
+
+# Error rule for syntax errors.
+def p_error(p):
+    # print(p)
+    if p:
+        parser.errok()
+        # Look-ahead para buscar el ";" del final (AUN NO IMPLEMENTADO)
+        while True:
+            # Obtiene el siguiente token
+            tok = parser.token()
+            # Si no detecta punto y coma
+            if not tok:
+                errors.append("Error de sintaxis en linea {0}".format(p.lineno))
+                break
+    # Reinicia el parser
+    parser.restart()
+
 
 ''' %%%%%%%%%%%%%%%%%%%%%%%%%%%%  OUTPUT  %%%%%%%%%%%%%%%%%%%%%%%%%%%% '''
 # Create the dictionary in which we will store and retrieve all errors we get.
@@ -766,6 +783,7 @@ errors = []
 # Build the parser
 parser = yacc.yacc()
 
+
 # Create a REPL to provide a way to interface with our calculator.
 # print("\n--------- RESULTS ---------")
 
@@ -773,15 +791,8 @@ def run_syntax_analysis(insumo):
     global errors
     global parser
 
-    errors = []
-
-    # Build the parser
-    parser = yacc.yacc()
-
-    errors = []
     result = parser.parse(insumo)
     return (result, errors)
-
 
 # Implementación para leer un archivo que será el insumo del parser
 # with open(program_file, 'r') as file:

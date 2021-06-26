@@ -267,15 +267,16 @@ class Ide(Frame):
 
         errors = compile_program(self.inputTxt.get("1.0", tkinter.END))
 
-        print("errores en ide")
-        print(len(errors))
+        # print("errores en ide")
+        # print(len(errors))
 
         if len(errors) == 0:
             self.insertTextOutput("El codigo se ha compilado correctamente sin errores")
             return True
         else:
             self.insertTextOutput("ERRORES ENCONTADOS, NO SE PUDO COMPILAR CORRECTAMENTE:\n")
-            self.insertTextOutput(str(errors))
+            for e in errors:
+                self.insertTextOutput(str(e)+"\n")
             return False
 
     def compileAndRunFunction(self):
