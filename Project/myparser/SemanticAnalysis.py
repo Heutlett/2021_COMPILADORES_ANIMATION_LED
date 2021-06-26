@@ -281,7 +281,11 @@ def individual_assign_validation(line, procedure, ID, value):
 
 def get_sublist(procedure, sublist):
     # print("P  :", sublist)
-    return sublist_assign(sublist, procedure, None)
+    result = sublist_assign(sublist, procedure, None)
+    if result is None:
+        errorList.pop(len(errorList)-1)
+        return None
+    return result[1]
 
 def transform_var(ID, line):
     ID = [line, "var", ID]
@@ -303,14 +307,14 @@ def sublist_assign(sublist, procedure, value=None):
     # SUBLIST ROW
     # SUBLIST COL
 
+    print(" >>>  Sublist ", sublist)
     line = sublist[0]
     ID = transform_var(sublist[2], line)
-    # Verificar que la variable existe en el diccionario recibido o en el global.
     var = exe_orden(ID, procedure)
 
+    # Verificar que la variable existe en el diccionario recibido o en el global.
     if var is None:
-        if value is not None:
-            return None
+        return None
 
 
     # Si la variable existe pero no es una lista.
@@ -1333,7 +1337,10 @@ def exe_orden(tree, procedure_name):
 
 
         elif tree[1] == 'IF':
-            var = buscar_variable(tree[2][0], procedure_name)
+            if type(tree[2][0]) == str:
+                var = buscar_variable(tree[2][0], procedure_name)
+            elif type(tree[2][0]) == list:
+                var = exe_orden(tree[2][0],procedure_name)
             if var is not None:
                 bifurcacion(var, tree[2][1], buscar_valor_param(tree[2][2], procedure_name), tree[3], procedure_name)
                 print("[EJECUTADO CORRECTAMENTE]\t➤\t", "IF     ", "\t→\t", tree)

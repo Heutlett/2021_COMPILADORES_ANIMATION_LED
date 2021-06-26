@@ -1,9 +1,12 @@
 Procedure Main (){
 	m1 = [[False, False, False],[False, False, True],[True, False, True],[True,True,True]];
-	m1[0]=[True,True,True];
-	m1[0,1]= False;
-	m1[0,0]= False;
-	m1[0:4] = [[False, False, False],[False, False, False],[False, False, False],[False, False, False]];
+	##m1[0]=[True,True,True];
+	##m1[0,1]= False;
+	##m1[0,0]= False;
+	##m1[0:4] = [[False, False, False],[False, False, False],[False, False, False],[False, False, False]];
+	If  m1[1][1] == False {
+		b=1;
+	}
 };
 Procedure pro1(){
 	a = 1;

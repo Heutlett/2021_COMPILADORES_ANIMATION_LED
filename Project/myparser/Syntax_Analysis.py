@@ -673,8 +673,15 @@ def p_condicion(p):
                              | expression  MENORIGUAL valorIf
                              | expression  MAYORIGUAL valorIf
                              | expression  DIFERENTE valorIf
+                             | sublist IGUALES valorIf
+                             | sublist  MAYORQUE valorIf
+                             | sublist  MENORQUE valorIf
+                             | sublist  MENORIGUAL valorIf
+                             | sublist  MAYORIGUAL valorIf
+                             | sublist  DIFERENTE valorIf
     """
     p[0] = [p[1], p[2], p[3]]
+
 
 
 def p_valorIf(p):
