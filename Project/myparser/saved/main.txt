@@ -1,4 +1,5 @@
 Procedure Main (){
+	Blink(0,0,1,"Seg",True);
 	call pro1();
 };
 Procedure pro1(){

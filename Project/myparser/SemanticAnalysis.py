@@ -1287,6 +1287,7 @@ def exe_orden(tree, procedure_name):
 
         elif tree[1] == 'BLINK':
             print(tree, "  ----->   BLINK")
+            exe_blink(tree[2],tree[3],tree[4],tree[5],tree[6],procedure_name)
 
 
         elif tree[1] == 'DELAY':
@@ -2213,8 +2214,12 @@ Estado: bool
 """
 
 
-def exe_blink(row, column, tiempo, rangoTiempo, estado):
-    pass
+def exe_blink(row, column, tiempo, rangoTiempo, estado, procedure_name):
+    tiempo1 = buscar_valor_param(tiempo, procedure_name)
+    row1 = buscar_valor_param(row, procedure_name)
+    column1 = buscar_valor_param(column,procedure_name)
+    estado1 = buscar_valor_param(estado,procedure_name)
+    instrucciones.append(['BLINK', row1, column1, tiempo1, rangoTiempo, estado1])
 
 
 def exe_delay(tiempo, rangoTiempo, procedure_name):
@@ -2472,10 +2477,10 @@ def compile_program(insumo):
     #
     #
     # print()
-    # print("⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")
-    # print("◉  INSTRUCCIONES ARDUINO ◉")
-    # print()
-    # pp.pprint(instrucciones)
+    print("⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")
+    print("◉  INSTRUCCIONES ARDUINO ◉")
+    print()
+    pp.pprint(instrucciones)
 
     print()
     print("⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")

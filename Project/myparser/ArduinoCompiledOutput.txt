@@ -1,1 +1,1 @@
-[['DELAY', 'seg', 99]]
+[['BLINK', 0, 0, 1, 'seg', True]]

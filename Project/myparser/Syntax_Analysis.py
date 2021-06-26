@@ -482,12 +482,10 @@ def p_blink(p):
         errors.append("ERROR in line {0}! The estado param must be a boolean "
                       "".format(p.lineno(1)))
         return
-    elif "\"" in params[4]:
-        errors.append("ERROR in line {0}! The estado param must be a boolean "
-                      "".format(p.lineno(1)))
-        return
+
     # ['BLINK', f, c, int, rangotiempo, bool]
     p[0] = [p.lineno(1), "BLINK", params[0], params[1], params[2], rango, params[4]]
+
 
 
 """   
