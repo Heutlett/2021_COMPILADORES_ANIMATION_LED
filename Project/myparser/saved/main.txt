@@ -20,7 +20,8 @@ Procedure Main (){
 	##for fila in m1[1:3]{
 	##	lista1[fila] =  True;
 	##}
-	x,y = True, False;
+	##x,y = True, False;
+	z =2**3;
 };
 Procedure pro1(){
 	a = 1;

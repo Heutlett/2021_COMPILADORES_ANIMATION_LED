@@ -96,7 +96,7 @@ def equalsType(var, tipo):
     return False
 
 
-arithmetic_operators = ['+', '-', '*', '/', '//', '%', '^']
+arithmetic_operators = ['+', '-', '*', '/', '//', '%', '**']
 sublist_operators = ['row', 'row,col', 'col', 'sublist']
 
 
@@ -161,7 +161,7 @@ def arithmetic_operation(line, operator, a, b, procedure):
         return a // b
     elif operator == '%':
         return a % b
-    elif operator == '^':
+    elif operator == '**':
         return pow(a, b)
     else:
         errorList.append("ArithmeticError in line {0}!".format(line))
