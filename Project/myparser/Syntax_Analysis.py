@@ -471,6 +471,11 @@ def p_blink(p):
     funcionreservada : BLINK PARENTESISIZQ params PARENTESISDER PYC
     '''
     params = p[3]
+    if type(params[3]) != str:
+        errors.append("ERROR in line {0}! The forth param must be a (Seg, Mil, Min)! "
+                      "".format(p.lineno(1)))
+        return "Error in Blink, line {0}.".format(p.lineno(5))
+
     rango = params[3].lower()[1:-1]  # De '"seg"' a "seg"
 
     global rangoTiempo

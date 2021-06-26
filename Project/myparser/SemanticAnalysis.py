@@ -2318,6 +2318,10 @@ def exe_print_ledx(tipo_objeto, index, arreglo):
 
 def check_procedures_name_count():
     for procedure in sintacticList:
+        # print("Current Procedure >> ", procedure)
+        if procedure is None:
+            return
+
         procedures_list.append(procedure[2])
 
     for procedure in procedures_list:
@@ -2337,9 +2341,13 @@ def check_procedures_name_count():
 # Revisa que tod0 el código se encuentre dentro de PROCEDURES
 def check_blocks():
     # print("Block", sintacticList)
-    # if
+
 
     for line in sintacticList:
+        # print("Current Line >> ", line)
+        if line is None:
+            errorList.append("Error sintactico. No se logra seguir con el análisis semántico.")
+            return
 
         if line[1] is None:
             errorList.append("Error en la linea {0}. El procedimiento \'{1}\' se encuentra vacio.".format(line[0], line[2]))
