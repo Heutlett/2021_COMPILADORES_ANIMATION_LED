@@ -137,21 +137,20 @@ def p_var_assign(p):
     """
     var_assign : ID IGUAL expression PYC
                | ID IGUAL primitive PYC
-               | ids IGUAL params PYC
     """
     # Build our tree
     # Examples:
     # [line, '=', ID, value]
+    p[0] = [p.lineno(4), '=', p[1], p[3]]
+
+def p_var_multiple(p):
+    """
+    var_assign : ids IGUAL params PYC
+    """
+    # Build our tree
+    # Examples:
     # [line, '=', [ID1,ID2,..., IDn], [val1,val2,..., valn]]
-
-    # print("ID:", p[1])
-    # print("Val:", p[3])
-    values = p[3]
-    if type(p[1]) == list:
-        values = p[3][0]
-
-    p[0] = [p.lineno(4), '=', p[1], values]
-
+    p[0] = [p.lineno(4), '=', p[1], p[3]]
 
 def p_var_sublist_assign(p):
     """
@@ -570,6 +569,8 @@ def p_for(p):
                         | FOR expression IN expression LLAVEIZQ ordenes LLAVEDER
                         | FOR expression IN INT STEP INT LLAVEIZQ ordenes LLAVEDER
                         | FOR expression IN expression STEP INT LLAVEIZQ ordenes LLAVEDER
+                        | FOR expression IN sublist STEP INT LLAVEIZQ ordenes LLAVEDER
+                        | FOR expression IN sublist LLAVEIZQ ordenes LLAVEDER
     '''
 
     if 'Step' not in p:

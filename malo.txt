@@ -13,11 +13,9 @@ Malo:
 -If miNMatriz[:, 1] == True
 -miNMatriz[:, 1] .Neg;
 -y = 2 ** 3;
--list1[0:1] = True;
--list1[0] = True;
--mivariable[0] = True;    ##Actualiza primer fila
--mivariable[1][1] = True;
--mivariable[1,1] = True;  
+
+
+
 -mivariable[:,1] = True;
--miNMatriz[1][1] = True;
+
 -miNMatriz[1][1] = miNMatriz2[2][2];

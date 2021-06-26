@@ -195,7 +195,7 @@ def var_assign_operation(line, procedure, ID, value):
     # print("▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ", tmp)
     if tmp is None:
         return None
-    return assignacion(tmp,procedure)
+    return assignacion(tmp, procedure)
 
 
 def assignacion(tmp, procedure):
@@ -214,6 +214,7 @@ def assignacion(tmp, procedure):
     else:
         # print("OUTPUT IS SOMETHING:", tmp)
         return None
+
 
 # Funcion para operar la asignacion de las variables.
 def var_assign_operation_aux(line, procedure, ID, value):
@@ -236,7 +237,7 @@ def var_assign_operation_aux(line, procedure, ID, value):
             tmp = var_assign_operation(line, procedure, ID[i], value[i])
             if tmp is None:
                 return None
-        return True
+        return value
 
     # Si es solo una variable.
     # [line, ID, value, dict]
@@ -275,7 +276,7 @@ def individual_assign_validation(line, procedure, ID, value):
         return None
 
     # Si se cumplen todas las validaciones.
-    #print("-> {0} : {1}".format(ID, procedure[ID]))
+    # print("-> {0} : {1}".format(ID, procedure[ID]))
     return [ID, value]
 
 
@@ -283,13 +284,15 @@ def get_sublist(procedure, sublist):
     # print("P  :", sublist)
     result = sublist_assign(sublist, procedure, None)
     if result is None:
-        errorList.pop(len(errorList)-1)
+        errorList.pop(len(errorList) - 1)
         return None
     return result[1]
+
 
 def transform_var(ID, line):
     ID = [line, "var", ID]
     return ID
+
 
 def sublist_assign(sublist, procedure, value=None):
     '''
@@ -307,7 +310,6 @@ def sublist_assign(sublist, procedure, value=None):
     # SUBLIST ROW
     # SUBLIST COL
 
-    print(" >>>  Sublist ", sublist)
     line = sublist[0]
     ID = transform_var(sublist[2], line)
     var = exe_orden(ID, procedure)
@@ -329,10 +331,9 @@ def sublist_assign(sublist, procedure, value=None):
 
         if value is not None:
 
-
-            newAssign = [ID[2], get_sublist_one_index(line, procedure, var, indexes[0], ID, value)]
+            newAssign = [ID[2], get_sublist_one_index(line, procedure, var, indexes[0], ID[2], value)]
         else:
-            newAssign = [ID[2], get_sublist_one_index(line, procedure, var, indexes[0], ID, None)]
+            newAssign = [ID[2], get_sublist_one_index(line, procedure, var, indexes[0], ID[2], None)]
 
     # elif len(indexes) == 2:
     #     newAssign = False
@@ -377,7 +378,6 @@ def get_sublist_one_index(line, procedure, var, indexes, ID, value):
 
 
 def do_row(line, procedure, lst, row, ID, value):
-
     # Verificaciones de asignacion y de llamada.
     esApto = row_verification(line, procedure, lst, row, ID, value)
 
@@ -399,9 +399,8 @@ def do_row(line, procedure, lst, row, ID, value):
 
 
 def do_col(line, procedure, lst, col, ID, value):
-
     # Verificaciones de asignacion y de llamada.
-    esApto = col_verification(line, procedure, lst, col,  ID, value)
+    esApto = col_verification(line, procedure, lst, col, ID, value)
 
     # Si no cumple con los requisitos.
     if not esApto:
@@ -416,8 +415,9 @@ def do_col(line, procedure, lst, col, ID, value):
         value = getVariable(value, procedure)
 
     # Actualizar lista.
+
     lst = matrix_column_assign(lst, col, value)
-    lst[col] = value
+    # lst[col] = value
     return lst
 
 
@@ -431,6 +431,10 @@ def get_matrix_column(matrix, col):
 
 # Funcion que asigna los valores de columna de una matriz a otra.
 def matrix_column_assign(matrix, col, new_val_list):
+    if not is_matriz(matrix):
+        matrix[col] = new_val_list
+        return matrix
+
     for r in range(len(matrix)):
         # print(var[r][col], "|", new_val_list[r])
         matrix[r][col] = new_val_list[r]
@@ -438,7 +442,6 @@ def matrix_column_assign(matrix, col, new_val_list):
 
 
 def do_row_col(line, procedure, lst, row, col, ID, value):
-
     # Verificaciones de asignacion y de llamada.
     esApto = row_col_verification(line, procedure, lst, row, col, ID, value)
 
@@ -460,7 +463,6 @@ def do_row_col(line, procedure, lst, row, col, ID, value):
 
 
 def do_sublist(line, procedure, lst, start, end, ID, value=None):
-
     # Verificaciones de asignacion y de llamada.
     esApto = sublist_verification(line, procedure, lst, start, end, ID, value)
 
@@ -505,7 +507,6 @@ def entry_type_verification(line, procedure, lst, ID, value):
     # Si el valor no es lista y no coincide con los elementos dentro de la lista a la que se debe asignar.
     else:
 
-
         # Si la variable es una lista, los elementos dentro deben cumplir con el tipo.
         if list_check_type_validation(line, value):
             if get_type_list_or_var(lst) != get_type_list_or_var(value):
@@ -519,7 +520,6 @@ def entry_type_verification(line, procedure, lst, ID, value):
 
 
 def row_verification(line, procedure, lst, row, ID, value):
-
     '''
     # Funcion que verifica el indice de fila en una lista.
     :param line: linea en donde se encuentra el lector.
@@ -553,16 +553,19 @@ def col_verification(line, procedure, lst, col, ID, value):
     :return: True si se cumplen todas las verificaciones, False en caso contrario.
     '''
 
-    if type(lst[0]) != lst:
-        errorList.append("TypeError in line {0}: {1} object is not subscriptable.".format(line, var_type(lst)))
-        return False
+    if type(lst[0]) != list:
+        return True
+        #     errorList.append("TypeError in line {0}: {1} object is not subscriptable.".format(line, var_type(lst)))
+        # return False
 
-    if col >= len(lst[0]):
+    if all_cols_same_len(lst) and col >= len(lst[0]):
         errorList.append("IndexError in line {0}: Index \"{1}\" (column) out of range.".format(line, col))
         return False
 
     # Validaciones de la entrada.
     if value is not None:
+
+
         if not entry_type_verification(line, procedure, lst, ID, value):
             return False
 
@@ -599,7 +602,7 @@ def row_col_verification(line, procedure, lst, row, col, ID, value):
         errorList.append("IndexError in line {0}: Index \"{1}\" (row) out of range.".format(line, row))
         return False
 
-    if col >= len(lst):
+    if col >= len(lst[0]):
         errorList.append("IndexError in line {0}: Index \"{1}\" (column) out of range.".format(line, col))
         return False
 
@@ -657,7 +660,7 @@ def ID_a_sublist(line, ID, value, procedure_name):
 """
 
 
-def multi_assign_validation(line, ids, values, procedure):
+def multi_assign_validation(line, procedure, ids, values):
     '''
     Funcion para verificar que la lista de IDS y VALUES corresponden al mismo tamaño,
     conservan los mismos tipos y que cada ID es unico.
@@ -680,7 +683,7 @@ def multi_assign_validation(line, ids, values, procedure):
 
     # IDs must be unique.
     for ID in ids:
-        if ID in procedure.keys():
+        if getVariable(ID,procedure) is not None:
             text = "TypeError in line {1}! \"{0}\" is already declared.".format(ID, line)
             errorList.append(text)
             return False
@@ -713,7 +716,7 @@ def var_verification(line, procedure, ID, value):
         else:
             if getVariable(ID, procedure) is not None:
                 if type(getVariable(ID, procedure)) != type(getVariable(value, procedure)):
-                    errorList.append("TypeError in line {0}! The type of \"{2}\" does not match the type of {1}."
+                    errorList.append("TypeError in line {0}! The type of \"{1}\" does not match the type of {2}."
                                      .format(line, ID, value))
 
     # CHECK ID...
@@ -721,7 +724,7 @@ def var_verification(line, procedure, ID, value):
     # Si el tipo del ID y la variable no coincide.
     if getVariable(ID, procedure) is not None:
         if type(getVariable(ID, procedure)) != type(value):
-            errorList.append("TypeError in line {0}! The type of \"{2}\" does not match the type of {1}."
+            errorList.append("TypeError in line {0}! The type of \"{1}\" does not match the type of {2}."
                              .format(line, ID, value))
             return False
 
@@ -1340,7 +1343,7 @@ def exe_orden(tree, procedure_name):
             if type(tree[2][0]) == str:
                 var = buscar_variable(tree[2][0], procedure_name)
             elif type(tree[2][0]) == list:
-                var = exe_orden(tree[2][0],procedure_name)
+                var = exe_orden(tree[2][0], procedure_name)
             if var is not None:
                 bifurcacion(var, tree[2][1], buscar_valor_param(tree[2][2], procedure_name), tree[3], procedure_name)
                 print("[EJECUTADO CORRECTAMENTE]\t➤\t", "IF     ", "\t→\t", tree)
@@ -1350,8 +1353,15 @@ def exe_orden(tree, procedure_name):
 
 
         elif tree[1] == 'FOR':
+            var = tree[3]
 
-            result = ciclo_for(tree[2], tree[3], tree[5], buscar_valor_param(tree[4], procedure_name), procedure_name)
+            if type(var) == str:
+                var = buscar_variable(var, procedure_name)
+            elif type(var) == list and var[1] == '[]':
+                var = exe_orden(tree[2][0], procedure_name)
+
+            print("varrarra", var)
+            result = ciclo_for(tree[2], var, tree[5], buscar_valor_param(tree[4], procedure_name), procedure_name)
             if result is None:
                 return None
             print("[EJECUTADO CORRECTAMENTE]\t➤\t", "FOR       ", "\t→\t", tree)
@@ -2364,7 +2374,6 @@ def check_procedures_name_count():
 # Revisa que tod0 el código se encuentre dentro de PROCEDURES
 def check_blocks():
     # print("Block", sintacticList)
-
 
     for line in sintacticList:
         # print("Current Line >> ", line)
