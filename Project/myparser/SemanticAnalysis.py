@@ -2350,6 +2350,10 @@ def exe_print_ledx(tipo_objeto, index, arreglo):
 
 
 def check_procedures_name_count():
+
+    if sintacticList is None:
+        return
+
     for procedure in sintacticList:
         # print("Current Procedure >> ", procedure)
         if procedure is None:
@@ -2374,6 +2378,9 @@ def check_procedures_name_count():
 # Revisa que tod0 el código se encuentre dentro de PROCEDURES
 def check_blocks():
     # print("Block", sintacticList)
+    if sintacticList is None:
+        errorList.append("Error, se presentan errores sintácticos. No se recibe insumo del análisis sintáctico!")
+        return
 
     for line in sintacticList:
         # print("Current Line >> ", line)
@@ -2394,6 +2401,9 @@ def check_blocks():
 # Revisa que solo exista un main en el codigo
 def check_main_count():
     count = 0
+
+    if sintacticList is None:
+        return
 
     for line in sintacticList:
 
@@ -2488,6 +2498,7 @@ def compile_program(insumo):
 
     """ ################################ Resultados del analisis sintactico ############################################ """
 
+
     check_blocks()
     check_main_count()
     check_procedures_name_count()
@@ -2498,7 +2509,10 @@ def compile_program(insumo):
     print()
     pp.pprint(main_code)
 
-    # print("\n--------- Lista de procedimientos ---------")
+    print()
+    print("⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")
+    print("◉  PROCEDURES LIST  ◉")
+    print()
     pp.pprint(procedures_list)
 
     print()
@@ -2510,14 +2524,14 @@ def compile_program(insumo):
     print()
     pp.pprint(global_variables)
 
-    # print()
-    # print("⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")
-    # print("◉  LOCAL VARIABLES FOR EACH PROCEDURE  ◉")
-    # print()
-    # pp.pprint(local_variables)
-    #
-    #
-    # print()
+    print()
+    print("⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")
+    print("◉  LOCAL VARIABLES FOR EACH PROCEDURE  ◉")
+    print()
+    pp.pprint(local_variables)
+
+
+    print()
     print("⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")
     print("◉  INSTRUCCIONES ARDUINO ◉")
     print()
@@ -2533,8 +2547,8 @@ def compile_program(insumo):
 
     file = open("ArduinoCompiledOutput.txt", "w")
 
-    print("tamaño errores en syntax")
-    print(len(errorList))
+    # print("tamaño errores en syntax")
+    # print(len(errorList))
 
     if len(errorList) == 0:
         file.write(str(instrucciones))
