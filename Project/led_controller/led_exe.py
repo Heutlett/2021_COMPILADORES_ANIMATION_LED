@@ -91,6 +91,7 @@ def trans_mtrx(m):
 '''Envia una matriz por serial a Arduino'''
 def send_mtrx(r):
     serialcomm.write(r.encode())
+    print("SE HACE")
     time.sleep(0.5)
     print(serialcomm.readline().decode('ascii'))
 
