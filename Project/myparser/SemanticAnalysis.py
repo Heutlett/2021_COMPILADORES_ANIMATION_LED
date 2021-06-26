@@ -294,6 +294,7 @@ def sublist_assign(procedure, sublist, value=None):
 
     # Verificar que la variable existe en el diccionario recibido o en el global.
     # print("SUBLIST >> ", sublist)
+
     var = getVariable(ID, procedure)
     if var is None:
         if value is not None:
@@ -338,7 +339,6 @@ def get_sublist_one_index(line, procedure, ID, indexes, value):
         row = buscar_valor_param(indexes[1], procedure, line)
         if row is None:
             return None
-
 
     if action == 'row':
         return do_row(line, procedure, ID, row, value)
@@ -877,8 +877,9 @@ def ciclo_for(temp_var, iterable, step, ordenes, procedure_name):
     :param ordenes: ordenes que se ejecutaran
     :return: None
     """
-    
-    print("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■")
+
+    print(
+        "■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■")
     print(" ✱ EJECUTANDO FOR: ", "for {0} in {1} step {2}".format(temp_var, iterable, step))
 
     if not validate_iterable_for(iterable, procedure_name):
@@ -892,7 +893,6 @@ def ciclo_for(temp_var, iterable, step, ordenes, procedure_name):
         return None
 
     var = buscar_variable(temp_var, procedure_name)
-
 
     if var is None:
         # print("La variable de cambio no se ha encontrado, se procede a crearla")
@@ -933,8 +933,10 @@ def ciclo_for(temp_var, iterable, step, ordenes, procedure_name):
             del dict[temp_var]
 
     print("  ◒ finalizadas ordenes: FOR")
-    print("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■")
+    print(
+        "■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■")
     return True
+
 
 def bifurcacion(iterable, operator, value, ordenes, procedure_name):
     """
@@ -1024,6 +1026,7 @@ def bifurcacion(iterable, operator, value, ordenes, procedure_name):
             print("▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰")
             return
 
+
 """
 ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲                                     ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲  
 ●   ●   ●   ●   ●   ●   ●   ●   ●        EJECUCION PRINCIPAL          ●   ●   ●   ●   ●   ●   ●   ●   ●
@@ -1064,7 +1067,7 @@ def procedure_execute(nombre, params):
 def buscar_variable(id, procedure_name):
     var = getVariableFromDict(id, procedure_name)
     # if var is None:
-        # print("Busqueda sin resultados, la variable no se encuentra declarada globalmente ni localmente")
+    # print("Busqueda sin resultados, la variable no se encuentra declarada globalmente ni localmente")
     return var
 
 
@@ -1129,15 +1132,18 @@ def exe_ordenes(ordenes, procedure_name):
             print()
             continue
 
-        print("⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")
+        print(
+            "⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")
         result = exe_orden(orden, procedure_name)
 
         if result is None:
             print('[ERROR]  ✖  ', orden[1])
-            print("⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")
+            print(
+                "⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")
             continue
         # print("☀ Resultado:\t", exe_orden(orden, procedure_name))
-        print("⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")
+        print(
+            "⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯")
         print()
 
 
@@ -1213,25 +1219,28 @@ def exe_orden(tree, procedure_name):
             result = exe_neg(tree, procedure_name)
             if result is None:
                 return None
-            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "NEG             ", "\t→\t", buscar_valor_param(tree[2],procedure_name, tree[0]))
+            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "NEG             ", "\t→\t",
+                  buscar_valor_param(tree[2], procedure_name, tree[0]))
             return result
-            
+
 
 
         elif tree[1] == 'T':
             result = exe_T(tree, procedure_name)
             if result is None:
                 return None
-            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "T               ", "\t→\t", buscar_valor_param(tree[2],procedure_name, tree[0]))
+            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "T               ", "\t→\t",
+                  buscar_valor_param(tree[2], procedure_name, tree[0]))
             return result
-            
+
 
 
         elif tree[1] == 'F':
             result = exe_F(tree, procedure_name)
             if result is None:
                 return None
-            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "F               ", "\t→\t", buscar_valor_param(tree[2],procedure_name, tree[0]))
+            print("[EJECUTADO CORRECTAMENTE]\t➤\t", "F               ", "\t→\t",
+                  buscar_valor_param(tree[2], procedure_name, tree[0]))
             return result
 
         elif tree[1] == 'INSERT_MATRIX':
@@ -1287,7 +1296,7 @@ def exe_orden(tree, procedure_name):
 
         elif tree[1] == 'BLINK':
             print(tree, "  ----->   BLINK")
-            exe_blink(tree[2],tree[3],tree[4],tree[5],tree[6],procedure_name)
+            exe_blink(tree[2], tree[3], tree[4], tree[5], tree[6], procedure_name)
 
 
         elif tree[1] == 'DELAY':
@@ -1464,9 +1473,6 @@ def validar_matriz_cuadrada(matriz):
     return True
 
 
-
-
-
 def exe_delete_matrix(linea, procedure_name):
     """
     matriz.delete(0,0);
@@ -1516,7 +1522,6 @@ def exe_delete_matrix(linea, procedure_name):
         return None
 
 
-
 def exe_insert_matrix_operation(line, ID, keyValue, param, tipo_insercion, indice=None):
     """
     matrix.insert(lista, 1, 0);
@@ -1553,8 +1558,9 @@ def exe_insert_matrix_operation(line, ID, keyValue, param, tipo_insercion, indic
     # TIPO DE INSERCION
     if tipo_insercion != 0 and tipo_insercion != 1:
         errorList.append(
-            "Error en la linea {0}. El tipo de insercion solo admite los valores 1 o 0, \'{1}\' no es valido.".format(line,
-                                                                                                        tipo_insercion))
+            "Error en la linea {0}. El tipo de insercion solo admite los valores 1 o 0, \'{1}\' no es valido.".format(
+                line,
+                tipo_insercion))
         return None
 
     # INSERTAR EN FILAS.
@@ -1648,7 +1654,7 @@ def exe_delete_matrix(linea, procedure_name):
         errorList.append("Error en la linea {0}. La matriz {1} no existe".format(linea[0], id))
         return
 
-    if not is_matriz(var) or not validar_matriz_cuadrada(var):
+    if not is_matriz(var):
         errorList.append("Error en la linea {0}. El ID {1} no corresponde a una matriz".format(linea[0], id))
         return
 
@@ -1804,8 +1810,6 @@ def is_matriz(var):
     return False
 
 
-
-
 def exe_neg(linea, procedure_name):
     """        
     matriz.Neg;
@@ -1817,6 +1821,11 @@ def exe_neg(linea, procedure_name):
     """
 
     id = linea[2]
+    if len(linea) == 4:
+        linea[3] = buscar_valor_param(linea[3], procedure_name)
+    if len(linea) == 5:
+        linea[3] = buscar_valor_param(linea[3], procedure_name)
+        linea[4] = buscar_valor_param(linea[4], procedure_name)
     var = buscar_variable(id, procedure_name)
 
     if var is None:
@@ -1956,7 +1965,6 @@ def exe_F(linea, procedure_name):
     [16, 'F', 'lista', 1, 1],
     """
 
-
     id = linea[2]
     var = buscar_variable(id, procedure_name)
 
@@ -2041,7 +2049,7 @@ def exe_F(linea, procedure_name):
 
                 else:
                     errorList.append(
-                        "Error en la linea {0}. El indice excede los limites de la lista \'{1}\'".format(linea[0],                                                                                                     id))
+                        "Error en la linea {0}. El indice excede los limites de la lista \'{1}\'".format(linea[0], id))
                     return None
 
     if len(linea) == 5:
@@ -2063,11 +2071,10 @@ def exe_F(linea, procedure_name):
             except Exception:
                 errorList.append(
                     "Error en la linea {0}. El indice supera el limite del tamaño de la matriz \'{1}\'".format(linea[0],
-                                                                                                           id))
+                                                                                                               id))
                 return None
 
     return True
-
 
 
 def exe_T(linea, procedure_name):
@@ -2081,7 +2088,6 @@ def exe_T(linea, procedure_name):
     """
     id = linea[2]
     var = buscar_variable(id, procedure_name)
-
 
     if var is None:
         errorList.append("Error en la linea {0}. No se ha encontrado la variable {1}".format(linea[0], id))
@@ -2109,7 +2115,7 @@ def exe_T(linea, procedure_name):
                                     "Error en la linea {0}. No se puede negar un entero diferente de 1 o 0.".format(
                                         linea[0]))
                                 return None
-                            
+
             else:  # es una lista
 
                 for i in range(len(var)):
@@ -2123,7 +2129,6 @@ def exe_T(linea, procedure_name):
                             "Error en la linea {0}. La lista {1} contiene valores que no se pueden negar".format(
                                 linea[0], id))
                         return None
-
 
     # [12, 'T', 'lista', 1],
 
@@ -2197,6 +2202,7 @@ def exe_T(linea, procedure_name):
 
     return True
 
+
 """
 ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲                                     ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲ ▲  
 ●   ●   ●   ●   ●   ●   ●   ●   ●      FUNCIONES DE ANIMACION         ●   ●   ●   ●   ●   ●   ●   ●   ●
@@ -2217,8 +2223,8 @@ Estado: bool
 def exe_blink(row, column, tiempo, rangoTiempo, estado, procedure_name):
     tiempo1 = buscar_valor_param(tiempo, procedure_name)
     row1 = buscar_valor_param(row, procedure_name)
-    column1 = buscar_valor_param(column,procedure_name)
-    estado1 = buscar_valor_param(estado,procedure_name)
+    column1 = buscar_valor_param(column, procedure_name)
+    estado1 = buscar_valor_param(estado, procedure_name)
     instrucciones.append(['BLINK', row1, column1, tiempo1, rangoTiempo, estado1])
 
 
@@ -2350,7 +2356,8 @@ def check_blocks():
             return
 
         if line[1] is None:
-            errorList.append("Error en la linea {0}. El procedimiento \'{1}\' se encuentra vacio.".format(line[0], line[2]))
+            errorList.append(
+                "Error en la linea {0}. El procedimiento \'{1}\' se encuentra vacio.".format(line[0], line[2]))
             return
 
         elif line[1] != 'PROCEDURE':

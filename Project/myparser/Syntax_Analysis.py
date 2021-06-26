@@ -686,10 +686,10 @@ def p_valorIf(p):
 
 # Definición de if
 def p_if(p):
-    """ funcionreservada : IF PARENTESISIZQ condicion PARENTESISDER LLAVEIZQ ordenes LLAVEDER
+    """ funcionreservada : IF condicion LLAVEIZQ ordenes LLAVEDER
    """
 
-    p[0] = [p.lineno(1), 'IF', p[3], p[6]]
+    p[0] = [p.lineno(1), 'IF', p[2], p[4]]
 
 
 ###################################### PROCEDIMIENTOS ###############################################
@@ -716,6 +716,16 @@ def p_call(p):
     '''
 
     p[0] = [p.lineno(1), 'CALL', p[2], p[4]]
+
+# Error rule for syntax errors.
+def p_error(p):
+    if p:
+
+        error_message = "Syntax error in line: " + str(p.lineno)
+        #file = open(globals.projectFolderPath + "/src/tmp/error_log.txt", "w")
+        #file.write(error_message)
+        #file.close()
+        print(error_message)
 
 
 
