@@ -31,76 +31,15 @@ Procedure Main (){
           [0, 0, 1, 1, 1, 1, 0, 0],
           [0, 0, 1, 0, 0, 1, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0]];
-    PrintLedX("M",0,matriz1);
+    PrintLed(1,1,True);
     Delay(100,"Mil");
     PrintLedX("M",0,matriz2);
     Delay(1,"Seg");
     PrintLedX("M",0,matriz3);
-    Delay(5,"Seg");
+    Delay(2,"Seg");
     PrintLedX("M",0,matriz4);
     Delay(1,"Seg");
     PrintLedX("M",0,matriz3);
-    Delay(1,"Min");
+    Delay(3,"Seg");
     PrintLedX("M",0,matriz2);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

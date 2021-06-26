@@ -17,6 +17,11 @@
 #define COL_7 A2
 #define COL_8 A3
 
+//==============================================================================================================================
+//***************************************************VARIABLES GLOBALES*********************************************************
+//==============================================================================================================================
+
+//Arreglos para manejo de matriz de leds
 const byte rows[] = {
     ROW_1, ROW_2, ROW_3, ROW_4, ROW_5, ROW_6, ROW_7, ROW_8
 };
@@ -24,51 +29,43 @@ const byte col[] = {
   COL_1,COL_2, COL_3, COL_4, COL_5, COL_6, COL_7, COL_8
 };
 
-
+//Manejo de conversiones Hexadecimal - Binario
 String h = "0123456789ABCDEF";
 String b[16] = {"0000","0001","0010","0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1101","1110","1111"};
 
 
-
+//Almacena instrucciones
 String mtrxS[20];
                    
-
-
-float timeCount = 0;
-
-
+//Buffer, almacena mensaje Serial
 String inBytes;
 
-int p = 0;
+//------------Variables del controlador-----------------
+int p = 0; //
 
-int s = 0;
+int rsize=0; //Tamaño-cantidad de instrucciones a leer
 
-int t = 1;
+bool runcron=false; //Cronometro empieza a correr
 
-int rsize=2;
+int cron=0; //Cronometro
 
-bool runcron=false;
+int frame = 0; //Instrucción que se está revisando
 
-int cron=0;
+int dlay = 0; //Cuantos delays se han encontrado después del último frame
 
-int frame = 0;
+String current; //Frame que se debe imprimir
 
-int dlay = 0;
-
-int dlay_c = 0;
-
-String current;
-
-int wait=0;
+int wait=0; //Tiempo que se debe esperar antes de pasar a la siguiente instrucción
+//------------------------------------------------------
 
 void setup() 
 {
-    // Open serial port
+    // Se abre el puerto Serial
     Serial.begin(9600);
     
-    // Set all used pins to OUTPUT
-    // This is very important! If the pins are set to input
-    // the display will be very dim.
+    // Set establece todos los pines usados en OUTPUT
+    // Muy importante, pues si están en INPUT la luz
+    // de la matriz será muy tenue
     for (byte i = 2; i <= 13; i++)
         pinMode(i, OUTPUT);
     pinMode(A0, OUTPUT);
@@ -79,31 +76,33 @@ void setup()
 
 void loop() {
 
+// Si se recibe una entrada Serial, se imprime un mensaje
+// y seguidamente se acomodan las reglas en mtrxS
 if(Serial.available()>0){
       inBytes = Serial.readStringUntil('\n');
-      Serial.println("LLEGAA");
+      Serial.println("Se recibe entrada");
       buildRules(inBytes);
-      Serial.println("SE LOGRA");
-      printMatriz();
-      runcron=true;
-      //Serial.print(inBytes);      
+      //printMatriz();
+      runcron=true;   
 }
 
-
+// No será hasta que se reciba una entrada Serial que
+// el cronometro empiece a andar
 if (runcron){
   cron++;
   current = mtrxS[frame-dlay];
   drawScreen3(current);
 }
 
+// Ciclo del cronometro ajustable
 if ((cron%1)==0){
   if (frame == p){
-    Serial.println("AGAIN");
+    Serial.println("AGAIN");// Inicia nuevamente el ciclo de animación
     frame=0;
     }
   else{
     if (wait<=0){
-      Serial.println("FRAME++");
+      Serial.println("FRAME++"); // Se pasa al siguiente "frame"
       frame++;
       if (mtrxS[frame][0]=='2'){
         managgeDelay(mtrxS[frame]);
@@ -113,7 +112,7 @@ if ((cron%1)==0){
         dlay=0;
       }
     }else{
-      Serial.print("WAIT--");
+      Serial.print("WAIT--"); // Se disminuye una unidad en el "wait"
       Serial.println(wait);
       wait--;
     }
@@ -122,7 +121,12 @@ if ((cron%1)==0){
 }
 
 
-
+/**
+ * managgeDelay
+ * @param String msg
+ * Maneja el delay, analiza la instrucción y distribuye
+ * la cantidad d epuntos a esperar.
+ */
  void managgeDelay(String msg){
     if(msg[1]=='1'){
       wait+=getNum(msg);
@@ -135,6 +139,13 @@ if ((cron%1)==0){
     }   
  }
 
+/**
+ * getNum
+ * @param String msg
+ * @return int numero
+ * Obtiene la cantidad que se debe esperar para 
+ * un determinado delay.
+ */
  int getNum(String msg){
     String str = "";
     char c_arr[5];
@@ -147,63 +158,21 @@ if ((cron%1)==0){
     Serial.println(atoi(c_arr));
     return atoi(c_arr); 
  }
- 
- void  drawScreen(byte buffer2[])
- { 
-   // Turn on each row in series
-    for (int i = 0; i < 8; i++)        // count next row
-     {
-        digitalWrite(rows[i], HIGH);    //initiate whole row
-        for (int a = 0; a < 8; a++)    // count next row
-        {
-          // if You set (~buffer2[i] >> a) then You will have positive
-          digitalWrite(col[a], (~buffer2[a] >> i) & 0x01); // initiate whole column
-          
-          delayMicroseconds(100);       // uncoment deley for diferent speed of display
-          //delayMicroseconds(1000);
-          //delay(10);
-          //delay(100);
-          
-          digitalWrite(col[a], 1);      // reset whole column
-        }
-        digitalWrite(rows[i], LOW);     // reset whole row
-        // otherwise last row will intersect with next row
-    }
-}
- void  drawScreen2(int matrix[8][8])
- { 
-   // Turn on each row in series
-    for (int i = 0; i < 8; i++)        // count next row
-     {
-        digitalWrite(rows[i], HIGH);    //initiate whole row
-        for (int a = 0; a < 8; a++)    // count next row
-        {
-          // if You set (~buffer2[i] >> a) then You will have positive
-          digitalWrite(col[a], (~matrix[a][i])& 0x01); // initiate whole column
-          
-          //delayMicroseconds(10);       // uncoment deley for diferent speed of display
-          //delayMicroseconds(1000);
-          //delay(10);
-          //delay(100);
-          
-          digitalWrite(col[a], 1);      // reset whole column
-        }
-        digitalWrite(rows[i], LOW);     // reset whole row
-        // otherwise last row will intersect with next row
-    }
-}
 
+/**
+ * drawScreen3
+ * @param String matrix
+ * Recibe la matriz en forma de string de 64 bits
+ * y lo interpreta para encender los leds respectivos
+ */
  void  drawScreen3(String matrix)
  { 
-   // Turn on each row in series
-    for (int i = 0; i < 8; i++)        // count next row
+   // Enciende cada fila
+    for (int i = 0; i < 8; i++)        // cuenta a la siguiente fila
      {
-        digitalWrite(rows[i], HIGH);    //initiate whole row
-        for (int a = 0; a < 8; a++)    // count next row
+        digitalWrite(rows[i], HIGH);    //enciende una fila completa
+        for (int a = 0; a < 8; a++)    // cuenta a la siguiente columna
         {
-          // if You set (~buffer2[i] >> a) then You will have positive
-          //digitalWrite(col[a], (~charToInt(matrix[a][i]))& 0x01); // initiate whole column
-          //Serial.println(matrix)
           if (matrix[(8*a)+i]=='1'){
             digitalWrite(col[a], 0);  
           }
@@ -211,50 +180,19 @@ if ((cron%1)==0){
             digitalWrite(col[a], 1);  
           }
           
-          //delayMicroseconds(10);       // uncoment deley for diferent speed of display
-          //delayMicroseconds(1000);
-          //delay(10);
-          //delay(100);
-          
-          digitalWrite(col[a], 1);      // reset whole column
+          digitalWrite(col[a], 1);      // apaga una columna
         }
-        digitalWrite(rows[i], LOW);     // reset whole row
-        // otherwise last row will intersect with next row
+        digitalWrite(rows[i], LOW);     // apaga una fila
     }
 }
 
-int charToInt(char c){
-  int num = 0;
 
-  //Substract '0' from entered char to get
-  //corresponding digit
-  num = c - '0';
-
-  return num;
-}
-
- void  drawDot(int r, int c, int s)
- { 
-   // Turn on each row in series
-    for (int i = 0; i < 8; i++)        // count next row
-     {
-        digitalWrite(rows[i], HIGH);    //initiate whole row
-        for (int a = 0; a < 8; a++)    // count next row
-        {
-          // if You set (~buffer2[i] >> a) then You will have positive
-          if(r==i and c==a and s ==1){
-            digitalWrite(col[a], LOW); // initiate whole column
-          }else{
-            digitalWrite(col[a], HIGH);
-          }
-          delayMicroseconds(10);       // uncoment deley for diferent speed of display    
-          digitalWrite(col[a], 1);      // reset whole column
-        }
-        digitalWrite(rows[i], LOW);     // reset whole row
-        // otherwise last row will intersect with next row
-    }
-}
-
+/**
+ * printMatriz
+ * Se utilza para realizar pruebas, realiza la
+ * impresión en consola de las instrucciones dentro
+ * del arreglo.
+ */
 void printMatriz(){
   Serial.println (rsize);
   for (int i = 0; i<rsize; i++){
@@ -267,7 +205,14 @@ void printMatriz(){
     }
   }
 
-
+/**
+ * buildRules
+ * @param String msg
+ * Realiza la lectura del String proveniente del Serial
+ * mediante otras funciones envía intervalos extraidos
+ * del String para ser integrados en el arreglo de 
+ * instrucciones.
+ */
 void buildRules(String msg){
   int c = 0;
   int i = 0;
@@ -286,6 +231,12 @@ void buildRules(String msg){
     rsize=c;
   }
 
+/**
+ * getNum
+ * @param String msg, int i, int c, int op
+ * Mediante la instrucción y una operación dada,
+ * llena el arreglo de instrucciones.
+ */
 void buildMtrx(String msg, int i, int c, int op){
   if (op==1){
     mtrxS[p]= hextobin(msg,i);
@@ -297,6 +248,13 @@ void buildMtrx(String msg, int i, int c, int op){
   p++;
   }
 
+/**
+ * delayer
+ * @param String msg, int i
+ * @return String instruccion
+ * Convierte instruccion delay del Serial
+ * a instruccion entendible para el controlador.
+ */
 String delayer(String msg, int i){
   String rslt = "2";
   String time_u= "";
@@ -318,7 +276,13 @@ String delayer(String msg, int i){
   return rslt;
 }
   
-  
+/**
+ * hextobin
+ * @param String msg, int i
+ * @return String binary
+ * A partir de una cadena de hexadecimales,
+ * convierte el número a binario.
+ */
 String hextobin(String msg, int i){
   String reslt = "";
   for(int j = 0; j<16; j++){
@@ -327,7 +291,6 @@ String hextobin(String msg, int i){
       //Serial.print("-----");
       //Serial.print(msg[i+j]);
       if(h[k]==msg[i+j]){
-        //Serial.println(" OK");
         reslt += b[k];
         break;
         }
@@ -336,14 +299,3 @@ String hextobin(String msg, int i){
     }
     return reslt;
   }
-// 
-  /* this is siplest resemplation how for loop is working with each row.
-    digitalWrite(COL_1, (~1);b >> 0) & 0x01); // Get the 1st bit: 10000000
-    digitalWrite(COL_2, (~b >> 1) & 0x0 // Get the 2nd bit: 01000000
-    digitalWrite(COL_3, (~b >> 2) & 0x01); // Get the 3rd bit: 00100000
-    digitalWrite(COL_4, (~b >> 3) & 0x01); // Get the 4th bit: 00010000
-    digitalWrite(COL_5, (~b >> 4) & 0x01); // Get the 5th bit: 00001000
-    digitalWrite(COL_6, (~b >> 5) & 0x01); // Get the 6th bit: 00000100
-    digitalWrite(COL_7, (~b >> 6) & 0x01); // Get the 7th bit: 00000010
-    digitalWrite(COL_8, (~b >> 7) & 0x01); // Get the 8th bit: 00000001
-}*/

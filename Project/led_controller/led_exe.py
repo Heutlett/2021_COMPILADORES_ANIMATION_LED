@@ -81,7 +81,10 @@ def trans_mtrx(m):
     reslt=""
     for i in m:
         for j in i:
-            reslt+=j.__str__()
+            if j:
+                reslt+="1"
+            else:
+                reslt+="0"
 
     return converthex(reslt)
 
@@ -140,8 +143,10 @@ def exe_led(rules):
     rules = ast.literal_eval(str(rules))
     print("Prueba: ",type(rules))
     time.sleep(4)
-    send_mtrx(build_send(rules))
-    print(build_send(rules))
+    msg=build_send(rules)
+    print(msg)
+    send_mtrx(msg)
+    print(msg)
     serialcomm.close()
 
 
